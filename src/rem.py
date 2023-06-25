@@ -21,28 +21,11 @@ from entry import predict_epoch_end
 import pandas as pd
 
 class Rem():
-    def __init__(self,dataset_name="qsar"):
+    def __init__(self,args):
         # ------------
         # args
         # ------------ #'--accelerator', 'ddp'
-        sys.argv += ['--input_file', 'qsar.csv', '--output_file', 'qsar', '--num_workers', '1', '--seed', '0','--batch_size',
-                     '1', '--dataset_name', dataset_name, '--gpus', '1', '--ffn_dim', '2048','--hidden_dim',
-                     '768', '--dropout_rate', '0.1', '--intput_dropout_rate', '0.1', '--attention_dropout_rate', '0.1','--n_layer',
-                     '8', '--peak_lr', '2.5e-4', '--end_lr', '1e-6', '--head_size', '24', '--weight_decay', '0.00','--edge_type',
-                     'one_hop', '--warmup_updates', '1000', '--tot_updates', '500000', '--default_root_dir','./',
-                     '--progress_bar_refresh_rate', '1']
-
-        parser = ArgumentParser()
-        parser = pl.Trainer.add_argparse_args(parser)
-        parser = GraphFormer.add_model_specific_args(parser)
-        parser = GraphDataModule.add_argparse_args(parser)
-        parser.add_argument('--pooling', default='attention', type=str)
-        parser.add_argument('--downstream_ffn_dim', default=768, type=int)
-        parser.add_argument('--downstream_dropout', default=0, type=float)
-        parser.add_argument('--input_file', default='', type=str)
-        parser.add_argument('--output_file', default='out', type=str)
-
-        self.args = parser.parse_args()
+        self.args=args
         self.args.plugins = DDPPlugin(find_unused_parameters=True)
         self.args.max_steps = self.args.tot_updates + 1
 
@@ -149,12 +132,28 @@ class Rem():
 def main_finetune():
     """
     """
+
+    sys.argv += ['--num_workers', '1', '--seed', '0', '--batch_size',
+                 '1', '--dataset_name', "tmp", '--gpus', '1', '--ffn_dim', '2048', '--hidden_dim',
+                 '768', '--dropout_rate', '0.1', '--intput_dropout_rate', '0.1', '--attention_dropout_rate', '0.1',
+                 '--n_layer',
+                 '8', '--peak_lr', '2.5e-4', '--end_lr', '1e-6', '--head_size', '24', '--weight_decay', '0.00',
+                 '--edge_type',
+                 'one_hop', '--warmup_updates', '1000', '--tot_updates', '500000', '--default_root_dir', './',
+                 '--progress_bar_refresh_rate', '1']
+
     parser = ArgumentParser()
+    parser = pl.Trainer.add_argparse_args(parser)
+    parser = GraphFormer.add_model_specific_args(parser)
+    parser = GraphDataModule.add_argparse_args(parser)
+    parser.add_argument('--pooling', default='attention', type=str)
+    parser.add_argument('--downstream_ffn_dim', default=768, type=int)
+    parser.add_argument('--downstream_dropout', default=0, type=float)
     parser.add_argument('--input_rootpath', type=str)
     parser.add_argument('--input_filename', type=str)
-    args = parser.parse_args()
 
-    rem=Rem()
+    args = parser.parse_args()
+    rem=Rem(args)
     rem.train(root=args.input_rootpath,
               input_file=args.input_filename)
 
