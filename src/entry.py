@@ -91,7 +91,7 @@ def cli_main():
 
 
  
-    result = trainer.predict(model, datamodule=dm)
+    result = trainer.predict_repr(model, datamodule=dm)
     predict_epoch_end(args,result)
     
 def predict_epoch_end(args, test_step_outputs):

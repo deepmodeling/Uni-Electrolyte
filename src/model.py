@@ -940,3 +940,12 @@ class Embedding_extractor(pl.LightningModule):
         y_hat = self(x)
         return {"pred": y_hat.detach().cpu().numpy(),'idx':batch_idx}
 
+    def training_step(self, batch, batch_idx):
+        # training_step defines the train loop.
+        # it is independent of forward
+        x, y = batch
+        y_hat = self(x)
+        loss = nn.functional.mse_loss(y_hat, y)
+        # Logging to TensorBoard (if installed) by default
+        self.log("train_loss", loss)
+        return loss

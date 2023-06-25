@@ -399,8 +399,12 @@ class EmbeddingDataset(InMemoryDataset):
         total_error = 0
         for df in [test_df]:
             for idx in tqdm(range(len(df))):
-                SMILES = df.iloc[idx].tolist()[0]
-                
+                SMILES = df.iloc[idx]["SMILES"]
+                try:
+                    TARGET=df.iloc[idx]["TARGET"]
+                except:
+                    TARGET=0
+
                 src_graph = smiles2graph_wrapper(SMILES)
                 if True:
                     if src_graph=="error":
@@ -417,10 +421,11 @@ class EmbeddingDataset(InMemoryDataset):
                     data.__num_nodes__ = int(src_graph['num_nodes'])
                     data.edge_index = src_graph['edge_index']
                     data.edge_attr = src_graph['edge_feat']
-                    data.x = src_graph['node_feat']   
+                    data.x = src_graph['node_feat']
                     data.all_rel_pos_3d =src_graph['rel_pos_3d']
+                    data.smiles=SMILES
                     '''=================new=================='''
-                    data.y = float(0)
+                    data.y = TARGET
                     data.reverse = 0
 
                     data.edge_index = torch.from_numpy(data.edge_index).to(torch.int64)

@@ -56,7 +56,7 @@ class Rem():
         # ------------
         # metric = 'valid_' + get_dataset(dm.dataset_name)['metric']
         dirpath = self.args.default_root_dir + f'/lightning_logs/checkpoints'
-        checkpoint_callback = ModelCheckpoint(
+        self.checkpoint_callback = ModelCheckpoint(
             dirpath=dirpath,
             save_top_k=1,
             save_last=True,
@@ -70,15 +70,15 @@ class Rem():
             self.args.resume_from_checkpoint = dirpath + '/last.ckpt'
             print('args.resume_from_checkpoint', self.args.resume_from_checkpoint)
 
-        self.trainer = pl.Trainer.from_argparse_args(self.args)
-        self.trainer.callbacks.append(checkpoint_callback)
-        self.trainer.callbacks.append(LearningRateMonitor(logging_interval='step'))
 
-
-    def predict(self,smiles_list):
+    def predict_repr(self, smiles_list):
         # ------------
         # data
         # ------------
+        self.trainer = pl.Trainer.from_argparse_args(self.args)
+        self.trainer.callbacks.append(self.checkpoint_callback)
+        self.trainer.callbacks.append(LearningRateMonitor(logging_interval='step'))
+
         os.system("mkdir -p data/%s/raw/"%(self.args.dataset_name))
         os.system("mkdir -p results/%s/"%(self.args.dataset_name))
         os.system("rm data/%s/raw/*"%self.args.dataset_name)
@@ -108,8 +108,58 @@ class Rem():
         result = self.trainer.predict(self.model, datamodule=dm)
         return predict_epoch_end(self.args, result)
 
+    def train(self,root,input_file):
+        # ------------
+        # data
+        # ------------
 
-def main():
+        #dataloader
+        from torch.utils.data import DataLoader
+        from functools import partial
+        from collator import collator
+        from custom_dataset import EmbeddingDataset
+
+        train_dataset=EmbeddingDataset(root=root, input_file=input_file),
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=1,
+            shuffle=False,
+            num_workers=0,
+            pin_memory=True,
+            persistent_workers=True,
+            collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
+                               rel_pos_max=1024),
+        )
+        print('len(test_dataloader)', len(train_loader))
+        self.model = Embedding_extractor(self.args)
+
+        self.trainer = pl.Trainer.from_argparse_args(self.args)
+        self.trainer.callbacks.append(self.checkpoint_callback)
+        self.trainer.callbacks.append(LearningRateMonitor(logging_interval='step'))
+        trainer = pl.Trainer(limit_train_batches=100, max_epochs=1)
+        trainer.fit(model=self.model, train_dataloaders=train_loader)
+
+
+
+
+
+
+
+
+def main_finetune():
+    """
+    """
+    parser = ArgumentParser()
+    parser.add_argument('--input_rootpath', type=str)
+    parser.add_argument('--input_filename', type=str)
+    args = parser.parse_args()
+
+    rem=Rem()
+    rem.train(root=args.input_rootpath,
+              input_file=args.input_filename)
+
+
+def main_repr():
     """
     pipeline task on nb-server
     :param
@@ -139,7 +189,7 @@ def main():
         input_smiles_list.append(smiles_out)
 
     rem = Rem()
-    rr=rem.predict(input_smiles_list)
+    rr=rem.predict_repr(input_smiles_list)
 
     smiles_out_list=[]
     vector_list=[]
@@ -163,4 +213,4 @@ if __name__=="__main__":
     # pdb.set_trace()
     # print()
 
-    main()
+    main_finetune()
