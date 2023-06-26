@@ -387,53 +387,52 @@ class EmbeddingDataset(InMemoryDataset):
 
     def process(self):
         raw_data_folder = osp.join(self.root, 'raw')
-        test_df = pd.read_csv(osp.join(raw_data_folder, self.raw_file_names[0]), header=None)
+        df = pd.read_csv(osp.join(raw_data_folder, self.raw_file_names[0]), header=None)
         
         correct_smiles=open(self.folder+"/processed/smiles.txt","w")
-        self.testindx = len(test_df)
+        self.testindx = len(df)
 
         
         print('Converting SMILES strings into graphs...')
         i=0
         rng = np.random.default_rng()
         total_error = 0
-        for df in [test_df]:
-            for idx in tqdm(range(len(df))):
-                SMILES = df.iloc[idx]["SMILES"]
-                try:
-                    TARGET=df.iloc[idx]["TARGET"]
-                except:
-                    TARGET=0
+        for idx in tqdm(range(len(df))):
+            SMILES = df.iloc[idx]["SMILES"]
+            try:
+                TARGET=df.iloc[idx]["TARGET"]
+            except:
+                TARGET=0
 
-                src_graph = smiles2graph_wrapper(SMILES)
-                if True:
-                    if src_graph=="error":
-                        print(SMILES)
-                        total_error+=1
-                        print(i+1)
-                        continue
-                    correct_smiles.write(SMILES+"\n")
-                    data = Data()
-                    assert(len(src_graph['edge_feat']) == src_graph['edge_index'].shape[1])
-                    assert(len(src_graph['node_feat']) == src_graph['num_nodes'])
-                    
-                    # Gen X
-                    data.__num_nodes__ = int(src_graph['num_nodes'])
-                    data.edge_index = src_graph['edge_index']
-                    data.edge_attr = src_graph['edge_feat']
-                    data.x = src_graph['node_feat']
-                    data.all_rel_pos_3d =src_graph['rel_pos_3d']
-                    data.smiles=SMILES
-                    '''=================new=================='''
-                    data.y = TARGET
-                    data.reverse = 0
+            src_graph = smiles2graph_wrapper(SMILES)
+            if True:
+                if src_graph=="error":
+                    print(SMILES)
+                    total_error+=1
+                    print(i+1)
+                    continue
+                correct_smiles.write(SMILES+"\n")
+                data = Data()
+                assert(len(src_graph['edge_feat']) == src_graph['edge_index'].shape[1])
+                assert(len(src_graph['node_feat']) == src_graph['num_nodes'])
 
-                    data.edge_index = torch.from_numpy(data.edge_index).to(torch.int64)
-                    data.edge_attr = torch.from_numpy(data.edge_attr).to(torch.int64)
-                    data.x = torch.from_numpy(data.x).to(torch.int64)
-                    data.reverse = torch.tensor([data.reverse],dtype = torch.int64)              
-                    torch.save(data, osp.join(self.processed_dir, 'data_{}.pt'.format(i)))
-                    i += 1
+                # Gen X
+                data.__num_nodes__ = int(src_graph['num_nodes'])
+                data.edge_index = src_graph['edge_index']
+                data.edge_attr = src_graph['edge_feat']
+                data.x = src_graph['node_feat']
+                data.all_rel_pos_3d =src_graph['rel_pos_3d']
+                data.smiles=SMILES
+                '''=================new=================='''
+                data.y = TARGET
+                data.reverse = 0
+
+                data.edge_index = torch.from_numpy(data.edge_index).to(torch.int64)
+                data.edge_attr = torch.from_numpy(data.edge_attr).to(torch.int64)
+                data.x = torch.from_numpy(data.x).to(torch.int64)
+                data.reverse = torch.tensor([data.reverse],dtype = torch.int64)
+                torch.save(data, osp.join(self.processed_dir, 'data_{}.pt'.format(i)))
+                i += 1
         print('complete, total error smiles:',total_error)
 
     def len(self):
