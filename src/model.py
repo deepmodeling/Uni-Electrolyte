@@ -236,7 +236,8 @@ class GraphFormer(pl.LightningModule):
 
         for enc_layer in self.layers:
             enc_out = enc_layer(enc_out, graph_attn_bias,valid=valid)
-
+        # import pdb
+        # pdb.set_trace()
         return enc_out
 
 
@@ -918,34 +919,145 @@ class Embedding_extractor(pl.LightningModule):
             flag_m=args.flag_m,
             flag_step_size=args.flag_step_size,
         )
+
+        if args.freeze==True:
+            print("freeze the bulk of rem ")
+            self.ptm.freeze()
+
         self.outpath = args.default_root_dir
         self.srcpath = args.default_root_dir+"/data/"+args.dataset_name
         downstream_ffn_dim = args.downstream_ffn_dim
         self.feature_extractor = self.ptm.translate_encoder
         self.pooling = PoolingLayer(downstream_ffn_dim, method='sum')
+        self.args=args
 
+        self.sigmoid_sup=args.sigmoid_sup
+        self.sigmoid_inf=args.sigmoid_inf       
+        self.output_layer=nn.Linear(downstream_ffn_dim, 1)
+        self.output_sigmoid=nn.Sigmoid()
 
-
-
+        self.validation_step_outputs = []
+        self.train_step_outputs = []
+        self.test_step_outputs=[]
+        
+        self.mae_loss=nn.L1Loss()
     def forward(self, x):
 
         x = self.feature_extractor(x)
         x = self.pooling(x)
-        return x
+        # import pdb
+        # pdb.set_trace()
+        y_pred=(self.sigmoid_sup-self.sigmoid_inf)*self.output_sigmoid(self.output_layer(x))+self.sigmoid_inf
+        return y_pred
 
+    def configure_optimizers(self):
 
+        optimizer = torch.optim.AdamW(self.parameters(), lr=self.args.peak_lr, weight_decay=self.args.weight_decay)
+        lr_scheduler = {
+            'scheduler': PolynomialDecayLR(
+                optimizer,
+                warmup_updates=self.args.warmup_updates,
+                tot_updates=self.args.tot_updates,
+                lr=self.args.peak_lr,
+                end_lr=self.args.end_lr,
+                power=2.0,
+            ),
+            'name': 'learning_rate',
+            'interval':'step',
+            'frequency': 1,
+        }
+        
+        return [optimizer],[lr_scheduler]
+ 
 
     def predict_step(self, batch, batch_idx):
         x = batch
-        y_hat = self(x)
-        return {"pred": y_hat.detach().cpu().numpy(),'idx':batch_idx}
+        y_pred = self(x)
+      
+        return {"pred": y_pred.detach().cpu().numpy(),'idx':batch_idx}
 
     def training_step(self, batch, batch_idx):
         # training_step defines the train loop.
         # it is independent of forward
-        x, y = batch
-        y_hat = self(x)
-        loss = nn.functional.mse_loss(y_hat, y)
+        
+        
+        y_pred = self(batch)
+        # import pdb
+        # pdb.set_trace()
+        loss = self.mae_loss(y_pred,batch.y)
         # Logging to TensorBoard (if installed) by default
-        self.log("train_loss", loss)
+        self.log("batch_train_loss", loss,prog_bar=True)
+        self.train_step_outputs.append(loss)
         return loss
+
+    def validation_step(self, batch, batch_idx):
+        # training_step defines the train loop.
+        # it is independent of forward
+        
+        
+        y_pred = self(batch)
+        # import pdb
+        # pdb.set_trace()
+        loss = self.mae_loss(y_pred,batch.y)
+        # Logging to TensorBoard (if installed) by default
+        self.log("batch_val_loss", loss,prog_bar=True)
+        self.validation_step_outputs.append(loss)
+        return loss
+
+    def test_step(self, batch, batch_idx):
+       
+        # import pdb
+        # pdb.set_trace()
+        y_pred = self(batch) 
+        
+        loss =self.mae_loss(y_pred,batch.y)
+        # Logging to TensorBoard (if installed) by default
+        self.log("batch_test_loss", loss,prog_bar=True)
+        self.test_step_outputs.append(loss)
+        return loss
+
+    def on_test_epoch_end(self):
+       
+        all_loss = torch.stack(self.test_step_outputs)
+        self.log('epoch_test_loss', torch.mean(all_loss), prog_bar=True)
+   
+        self.test_step_outputs.clear()
+
+        pass
+    
+
+    def on_validation_epoch_end(self):
+        #print("on_validation_epoch_end")
+        # import pdb
+        # pdb.set_trace()
+        all_loss = torch.stack(self.validation_step_outputs)
+        self.log('epoch_val_loss', torch.mean(all_loss))
+        print('epoch_val_loss', torch.mean(all_loss))
+   
+        self.validation_step_outputs.clear()
+
+        pass
+    def on_train_epoch_end(self):
+        #print("on_train_epoch_end")
+        # import pdb
+        # pdb.set_trace()
+        all_loss = torch.stack(self.train_step_outputs)
+        self.log('epoch_train_loss', torch.mean(all_loss))
+        print('epoch_train_loss', torch.mean(all_loss))
+        self.train_step_outputs.clear()
+        pass
+
+    # def validation_epoch_end(self,outputs):
+    #     #print("validation_epoch_end")
+    #     # import pdb
+    #     # pdb.set_trace()
+    #     pass
+    #     #print("validation_epoch_end")
+    #     #self.log('epoch_val_loss', torch.mean(torch.stack(outputs)), prog_bar=True)
+       
+
+    # def train_epoch_end(self,outputs): # no accessible 
+    #     print("train_epoch_end")
+    #     # import pdb
+    #     # pdb.set_trace()
+    #     pass

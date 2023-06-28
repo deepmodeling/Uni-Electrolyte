@@ -387,7 +387,7 @@ class EmbeddingDataset(InMemoryDataset):
 
     def process(self):
         raw_data_folder = osp.join(self.root, 'raw')
-        df = pd.read_csv(osp.join(raw_data_folder, self.raw_file_names[0]), header=None)
+        df = pd.read_csv(osp.join(raw_data_folder, self.raw_file_names[0]))
         
         correct_smiles=open(self.folder+"/processed/smiles.txt","w")
         self.testindx = len(df)
@@ -424,7 +424,7 @@ class EmbeddingDataset(InMemoryDataset):
                 data.all_rel_pos_3d =src_graph['rel_pos_3d']
                 data.smiles=SMILES
                 '''=================new=================='''
-                data.y = TARGET
+                data.y = torch.tensor(TARGET).to(torch.float)
                 data.reverse = 0
 
                 data.edge_index = torch.from_numpy(data.edge_index).to(torch.int64)

@@ -1,3 +1,5 @@
+
+
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -19,6 +21,10 @@ import os,sys
 from pytorch_lightning.plugins import DDPPlugin
 from entry import predict_epoch_end
 import pandas as pd
+import torch
+import torch.utils.data as data
+from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+
 
 class Rem():
     def __init__(self,args):
@@ -91,7 +97,7 @@ class Rem():
         result = self.trainer.predict(self.model, datamodule=dm)
         return predict_epoch_end(self.args, result)
 
-    def train(self,root,input_file):
+    def train(self):
         # ------------
         # data
         # ------------
@@ -102,25 +108,91 @@ class Rem():
         from collator import collator
         from custom_dataset import EmbeddingDataset
 
-        train_dataset=EmbeddingDataset(root=root, input_file=input_file),
-        train_loader = DataLoader(
+
+
+        all_train_dataset=get_dataset(dataset_name=self.args.dataset_name,input_file=self.args.input_filename)["dataset"]
+        
+        # use 20% of training data for validation
+        train_set_size = int(len(all_train_dataset) * 0.9)
+        valid_set_size = len(all_train_dataset) - train_set_size
+
+        # split the train set into two
+        seed = torch.Generator().manual_seed(self.args.seed)
+        train_dataset, valid_dataset = data.random_split(all_train_dataset, [train_set_size, valid_set_size], generator=seed)
+        
+        train_dataloader = DataLoader(
             train_dataset,
-            batch_size=1,
+            batch_size=self.args.batch_size,
             shuffle=False,
-            num_workers=0,
+            num_workers=self.args.num_workers,
+            pin_memory=True,
+            persistent_workers=True,
+            collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
+                               rel_pos_max=1024),)
+        print('len(train_dataloader)', len(train_dataloader))
+
+        valid_dataloader = DataLoader(
+            valid_dataset,
+            batch_size=self.args.batch_size,
+            shuffle=False,
+            num_workers=self.args.num_workers,
+            pin_memory=True,
+            persistent_workers=True,
+            collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,rel_pos_max=1024),)
+        print('len(valid_dataloader)', len(valid_dataloader))
+
+        iid_test_dataset=get_dataset(dataset_name=self.args.iid_test_dataset_name,input_file=self.args.iid_test_input_filename)["dataset"]
+        iid_test_dataloader = DataLoader(
+            iid_test_dataset,
+            batch_size=self.args.batch_size,
+            shuffle=False,
+            num_workers=self.args.num_workers,
             pin_memory=True,
             persistent_workers=True,
             collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
                                rel_pos_max=1024),
         )
-        print('len(test_dataloader)', len(train_loader))
+        print('len(iid_test_dataloader)', len(iid_test_dataloader))
+        
+
+        ood_test_dataset=get_dataset(dataset_name=self.args.ood_test_dataset_name,input_file=self.args.ood_test_input_filename)["dataset"]
+        ood_test_dataloader = DataLoader(
+            ood_test_dataset,
+            batch_size=self.args.batch_size,
+            shuffle=False,
+            num_workers=self.args.num_workers,
+            pin_memory=True,
+            persistent_workers=True,
+            collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
+                               rel_pos_max=1024),
+        )
+        print('len(ood_test_dataloader)', len(ood_test_dataloader))
+        
+      
+
         self.model = Embedding_extractor(self.args)
+      
+        # self.model=Embedding_extractor.load_from_checkpoint(
+        #     "lightning_logs/version_0/checkpoints/epoch=156-step=10989.ckpt",
+        #     args=self.args)
+        # self.model=Embedding_extractor.load_from_checkpoint(
+        #     "lightning_logs/version_2/checkpoints/epoch=44-step=3149.ckpt",
+        #     args=self.args)
+
 
         self.trainer = pl.Trainer.from_argparse_args(self.args)
         self.trainer.callbacks.append(self.checkpoint_callback)
         self.trainer.callbacks.append(LearningRateMonitor(logging_interval='step'))
-        trainer = pl.Trainer(limit_train_batches=100, max_epochs=1)
-        trainer.fit(model=self.model, train_dataloaders=train_loader)
+        self.trainer.callbacks.append(EarlyStopping(monitor="batch_val_loss", mode="min",patience=100))
+        trainer = pl.Trainer( 
+            max_epochs=self.args.epoch,
+            devices=1,
+            accelerator="auto",)
+        trainer.fit(model=self.model, train_dataloaders=train_dataloader,val_dataloaders=valid_dataloader)
+        
+        trainer.test(model=self.model, dataloaders=ood_test_dataloader)
+
+        trainer.test(model=self.model, dataloaders=iid_test_dataloader)
 
 
 
@@ -128,34 +200,6 @@ class Rem():
 
 
 
-
-def main_finetune():
-    """
-    """
-
-    sys.argv += ['--num_workers', '1', '--seed', '0', '--batch_size',
-                 '1', '--dataset_name', "tmp", '--gpus', '1', '--ffn_dim', '2048', '--hidden_dim',
-                 '768', '--dropout_rate', '0.1', '--intput_dropout_rate', '0.1', '--attention_dropout_rate', '0.1',
-                 '--n_layer',
-                 '8', '--peak_lr', '2.5e-4', '--end_lr', '1e-6', '--head_size', '24', '--weight_decay', '0.00',
-                 '--edge_type',
-                 'one_hop', '--warmup_updates', '1000', '--tot_updates', '500000', '--default_root_dir', './',
-                 '--progress_bar_refresh_rate', '1']
-
-    parser = ArgumentParser()
-    parser = pl.Trainer.add_argparse_args(parser)
-    parser = GraphFormer.add_model_specific_args(parser)
-    parser = GraphDataModule.add_argparse_args(parser)
-    parser.add_argument('--pooling', default='attention', type=str)
-    parser.add_argument('--downstream_ffn_dim', default=768, type=int)
-    parser.add_argument('--downstream_dropout', default=0, type=float)
-    parser.add_argument('--input_rootpath', type=str)
-    parser.add_argument('--input_filename', type=str)
-
-    args = parser.parse_args()
-    rem=Rem(args)
-    rem.train(root=args.input_rootpath,
-              input_file=args.input_filename)
 
 
 def main_repr():
@@ -201,6 +245,43 @@ def main_repr():
     import pickle
     with open("%s.pkl"%(args.output_filepath),"wb") as pkl_fp:
         pickle.dump(out_dict,pkl_fp)
+
+
+
+def main_finetune():
+    """
+    """
+
+    sys.argv += ['--num_workers', '11', '--seed', '0','--epoch' ,"1000" ,  '--batch_size', 
+                 '512', '--gpus', '1', '--ffn_dim', '2048', '--hidden_dim',
+                 '768', '--dropout_rate', '0.1', '--intput_dropout_rate', '0.1', '--attention_dropout_rate', '0.1',
+                 '--n_layer',
+                 '8', '--peak_lr', '2.5e-4', '--end_lr', '1e-6', '--head_size', '24', '--weight_decay', '0.00',
+                 '--edge_type',
+                 'one_hop', '--warmup_updates', '1000', '--tot_updates', '500000', '--default_root_dir', './',
+                 '--progress_bar_refresh_rate', '1']
+
+    parser = ArgumentParser()
+    parser = pl.Trainer.add_argparse_args(parser)
+    parser = GraphFormer.add_model_specific_args(parser)
+    parser = GraphDataModule.add_argparse_args(parser)
+    parser.add_argument('--pooling', default='attention', type=str)
+    parser.add_argument('--downstream_ffn_dim', default=768, type=int)
+    parser.add_argument('--downstream_dropout', default=0, type=float)
+    #parser.add_argument('--dataset_name', type=str)
+    parser.add_argument('--input_filename', type=str)
+    parser.add_argument("--sigmoid_inf",type=float)
+    parser.add_argument("--sigmoid_sup",type=float)
+    parser.add_argument("--epoch",type=int)
+    parser.add_argument("--iid_test_dataset_name",type=str)
+    parser.add_argument("--iid_test_input_filename",type=str)
+    parser.add_argument("--ood_test_dataset_name",type=str)
+    parser.add_argument("--ood_test_input_filename",type=str)
+    parser.add_argument("--freeze",type=bool)
+
+    args = parser.parse_args()
+    rem=Rem(args)
+    rem.train()
 
 
 if __name__=="__main__":
