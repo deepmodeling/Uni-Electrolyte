@@ -1032,7 +1032,7 @@ class Embedding_extractor(pl.LightningModule):
         # pdb.set_trace()
         all_loss = torch.stack(self.validation_step_outputs)
         self.log('epoch_val_loss', torch.mean(all_loss))
-        print('epoch_val_loss', torch.mean(all_loss))
+        print('epoch_val_loss', torch.mean(all_loss).item())
    
         self.validation_step_outputs.clear()
 
@@ -1043,7 +1043,7 @@ class Embedding_extractor(pl.LightningModule):
         # pdb.set_trace()
         all_loss = torch.stack(self.train_step_outputs)
         self.log('epoch_train_loss', torch.mean(all_loss))
-        print('epoch_train_loss', torch.mean(all_loss))
+        print('epoch_train_loss', torch.mean(all_loss).item())
         self.train_step_outputs.clear()
         pass
 

@@ -45,15 +45,15 @@ class Rem():
         # ------------
         # metric = 'valid_' + get_dataset(dm.dataset_name)['metric']
         dirpath = self.args.default_root_dir + f'/lightning_logs/checkpoints'
-        self.checkpoint_callback = ModelCheckpoint(
-            dirpath=dirpath,
-            save_top_k=1,
-            save_last=True,
-            every_n_train_steps=10,
-            monitor='rmse/validation',
-            mode='min',
-            # every_n_epochs = 2,
-        )
+        # self.checkpoint_callback = ModelCheckpoint(
+        #     dirpath=dirpath,
+        #     save_top_k=1,
+        #     save_last=True,
+        #     every_n_train_steps=10,
+        #     monitor='batch_train_loss',
+        #     mode='min',
+        #     # every_n_epochs = 2,
+        # )
 
         if not self.args.test and not self.args.validate and os.path.exists(dirpath + '/last.ckpt'):
             self.args.resume_from_checkpoint = dirpath + '/last.ckpt'
@@ -178,18 +178,29 @@ class Rem():
         # self.model=Embedding_extractor.load_from_checkpoint(
         #     "lightning_logs/version_2/checkpoints/epoch=44-step=3149.ckpt",
         #     args=self.args)
+        # self.model=Embedding_extractor.load_from_checkpoint(
+        #     "lightning_logs/version_1/checkpoints/epoch=6-step=489.ckpt",
+        #     args=self.args)
 
 
         self.trainer = pl.Trainer.from_argparse_args(self.args)
-        self.trainer.callbacks.append(self.checkpoint_callback)
-        self.trainer.callbacks.append(LearningRateMonitor(logging_interval='step'))
-        self.trainer.callbacks.append(EarlyStopping(monitor="batch_val_loss", mode="min",patience=100))
         trainer = pl.Trainer( 
             max_epochs=self.args.epoch,
             devices=1,
-            accelerator="auto",)
-        trainer.fit(model=self.model, train_dataloaders=train_dataloader,val_dataloaders=valid_dataloader)
-        
+            accelerator="auto",
+            callbacks=[EarlyStopping(monitor="epoch_val_loss", mode="min",patience=50,verbose=True),
+            LearningRateMonitor(logging_interval='step'),
+            ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}',save_top_k=3,save_last=True,monitor="epoch_val_loss",mode='min',verbose=True,auto_insert_metric_name=True),
+            ],
+            #limit_train_batches=20,
+            #log_every_n_steps=10
+            )
+        trainer.fit(
+            model=self.model, 
+            train_dataloaders=train_dataloader,
+            val_dataloaders=valid_dataloader,
+            )
+         
         trainer.test(model=self.model, dataloaders=ood_test_dataloader)
 
         trainer.test(model=self.model, dataloaders=iid_test_dataloader)
