@@ -4,6 +4,7 @@
 #from IPython import embed
 from data import get_dataset
 from lr import PolynomialDecayLR
+from torch.optim.lr_scheduler import CyclicLR
 # from torchmetrics import PrecisionRecallCurve
 # import sys
 import torch
@@ -617,7 +618,9 @@ class GraphFormer(pl.LightningModule):
             'interval':'step',
             'frequency': 1,
         }
+
         
+
         return [optimizer],[lr_scheduler]
 
     @staticmethod
@@ -885,7 +888,32 @@ class FFN(nn.Module):
         return y
 
     
+class DropoutOutputLayer(nn.Module):
+    def __init__(
+        self,
+        input_dim,
+        inner_dim,
+        output_dim,
+        activation_fn="tanh",
+        pooler_dropout=0,
+    ):
+        super().__init__()
+        self.dense = nn.Linear(input_dim, inner_dim)
+        if activation_fn=="tanh":
+            self.activation_fn = nn.Tanh
+        else:
+            raise Exception
+        self.dropout = nn.Dropout(p=pooler_dropout)
+        self.out_proj = nn.Linear(inner_dim, output_dim)
 
+    def forward(self, features, **kwargs):
+        x = features
+        x = self.dropout(x)
+        x = self.dense(x)
+        x = self.activation_fn(x)
+        x = self.dropout(x)
+        x = self.out_proj(x)
+        return x
 
 class Embedding_extractor(pl.LightningModule):
     def __init__(self, args):
@@ -923,6 +951,8 @@ class Embedding_extractor(pl.LightningModule):
         if args.freeze==True:
             print("freeze the bulk of rem ")
             self.ptm.freeze()
+        else :
+            print("no freeze")
 
         self.outpath = args.default_root_dir
         self.srcpath = args.default_root_dir+"/data/"+args.dataset_name
@@ -935,38 +965,63 @@ class Embedding_extractor(pl.LightningModule):
         self.sigmoid_inf=args.sigmoid_inf       
         self.output_layer=nn.Linear(downstream_ffn_dim, 1)
         self.output_sigmoid=nn.Sigmoid()
+        # self.dropout_output_layer=DropoutOutputLayer(
+        #     input_dim=downstream_ffn_dim,
+        #     inner_dim=downstream_ffn_dim,
+        #     output_dim=1,
+        #     activation_fn="tanh",
+        #     pooler_dropout=0.2)
 
         self.validation_step_outputs = []
         self.train_step_outputs = []
         self.test_step_outputs=[]
         
         self.mae_loss=nn.L1Loss()
+
+
+
     def forward(self, x):
 
         x = self.feature_extractor(x)
         x = self.pooling(x)
         # import pdb
         # pdb.set_trace()
-        y_pred=(self.sigmoid_sup-self.sigmoid_inf)*self.output_sigmoid(self.output_layer(x))+self.sigmoid_inf
+        x=self.output_layer(x)
+        #x=self.dropout_output_layer(x)
+        y_pred=(self.sigmoid_sup-self.sigmoid_inf)*self.output_sigmoid(x)+self.sigmoid_inf
         return y_pred
 
     def configure_optimizers(self):
 
         optimizer = torch.optim.AdamW(self.parameters(), lr=self.args.peak_lr, weight_decay=self.args.weight_decay)
-        lr_scheduler = {
-            'scheduler': PolynomialDecayLR(
+        # lr_scheduler = {
+        #     'scheduler': PolynomialDecayLR(
+        #         optimizer,
+        #         warmup_updates=self.args.warmup_updates,
+        #         tot_updates=self.args.tot_updates,
+        #         lr=self.args.peak_lr,
+        #         end_lr=self.args.end_lr,
+        #         power=2.0,
+        #     ),
+        #     'name': 'learning_rate',
+        #     'interval':'step',
+        #     'frequency': 1,
+        # }
+        lr_scheduler = { 
+            'scheduler': CyclicLR(
                 optimizer,
-                warmup_updates=self.args.warmup_updates,
-                tot_updates=self.args.tot_updates,
-                lr=self.args.peak_lr,
-                end_lr=self.args.end_lr,
-                power=2.0,
+                base_lr= self.args.end_lr,
+                max_lr=self.args.peak_lr,
+                mode ="exp_range",
+                gamma =0.9999,
+                step_size_up=400,
+                step_size_down=800,
+                cycle_momentum=False,
             ),
-            'name': 'learning_rate',
+            'name': 'learning_rate',      
             'interval':'step',
             'frequency': 1,
         }
-        
         return [optimizer],[lr_scheduler]
  
 

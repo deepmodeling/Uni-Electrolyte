@@ -24,7 +24,9 @@ import pandas as pd
 import torch
 import torch.utils.data as data
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
-
+from pytorch_lightning.loggers.tensorboard import TensorBoardLogger
+import datetime
+now = datetime.datetime.now() 
 
 class Rem():
     def __init__(self,args):
@@ -178,13 +180,14 @@ class Rem():
         # self.model=Embedding_extractor.load_from_checkpoint(
         #     "lightning_logs/version_2/checkpoints/epoch=44-step=3149.ckpt",
         #     args=self.args)
-        # self.model=Embedding_extractor.load_from_checkpoint(
-        #     "lightning_logs/version_1/checkpoints/epoch=6-step=489.ckpt",
-        #     args=self.args)
+        #self.model=Embedding_extractor.load_from_checkpoint(
+        #    "/data/rem/src/lightning_logs/cyc_no_freeze_20230704123045/version_0/checkpoints/epoch=308-epoch=epoch_val_loss=0.187.ckpt",
+        #    args=self.args)
 
 
-        self.trainer = pl.Trainer.from_argparse_args(self.args)
+
         trainer = pl.Trainer( 
+            logger= TensorBoardLogger("lightning_logs", name="%s_%s"%(self.args.log_name_prefix,now.strftime("%Y%m%d%H%M%S"))),
             max_epochs=self.args.epoch,
             devices=1,
             accelerator="auto",
@@ -195,11 +198,7 @@ class Rem():
             #limit_train_batches=20,
             #log_every_n_steps=10
             )
-        trainer.fit(
-            model=self.model, 
-            train_dataloaders=train_dataloader,
-            val_dataloaders=valid_dataloader,
-            )
+        trainer.fit(model=self.model, train_dataloaders=train_dataloader,val_dataloaders=valid_dataloader,)
          
         trainer.test(model=self.model, dataloaders=ood_test_dataloader)
 
@@ -268,8 +267,8 @@ def main_finetune():
                  '768', '--dropout_rate', '0.1', '--intput_dropout_rate', '0.1', '--attention_dropout_rate', '0.1',
                  '--n_layer',
                  '8', '--peak_lr', '2.5e-4', '--end_lr', '1e-6', '--head_size', '24', '--weight_decay', '0.00',
-                 '--edge_type',
-                 'one_hop', '--warmup_updates', '1000', '--tot_updates', '500000', '--default_root_dir', './',
+                 '--edge_type',   
+                 'one_hop', '--warmup_updates', '1000', '--tot_updates', '10000', '--default_root_dir', './',
                  '--progress_bar_refresh_rate', '1']
 
     parser = ArgumentParser()
@@ -288,7 +287,8 @@ def main_finetune():
     parser.add_argument("--iid_test_input_filename",type=str)
     parser.add_argument("--ood_test_dataset_name",type=str)
     parser.add_argument("--ood_test_input_filename",type=str)
-    parser.add_argument("--freeze",type=bool)
+    parser.add_argument("--freeze",action="store_true")
+    parser.add_argument("--log_name_prefix",type=str)
 
     args = parser.parse_args()
     rem=Rem(args)
