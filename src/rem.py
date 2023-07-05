@@ -181,8 +181,8 @@ class Rem():
         #     "lightning_logs/version_2/checkpoints/epoch=44-step=3149.ckpt",
         #     args=self.args)
         #self.model=Embedding_extractor.load_from_checkpoint(
-        #    "/data/rem/src/lightning_logs/cyc_no_freeze_20230704123045/version_0/checkpoints/epoch=308-epoch=epoch_val_loss=0.187.ckpt",
-        #    args=self.args)
+        #        "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_20230704181545/version_0/checkpoints/epoch=257-epoch=epoch_val_loss=0.166.ckpt",
+        #        args=self.args)
 
 
 
@@ -191,9 +191,10 @@ class Rem():
             max_epochs=self.args.epoch,
             devices=1,
             accelerator="auto",
-            callbacks=[EarlyStopping(monitor="epoch_val_loss", mode="min",patience=50,verbose=True),
-            LearningRateMonitor(logging_interval='step'),
-            ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}',save_top_k=3,save_last=True,monitor="epoch_val_loss",mode='min',verbose=True,auto_insert_metric_name=True),
+            callbacks=[
+                #EarlyStopping(monitor="epoch_val_loss", mode="min",patience=50,verbose=True),
+                LearningRateMonitor(logging_interval='step'),
+                ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}',save_top_k=10,save_last=True,monitor="epoch_val_loss",mode='min',verbose=True,auto_insert_metric_name=True),
             ],
             #limit_train_batches=20,
             #log_every_n_steps=10
@@ -262,7 +263,7 @@ def main_finetune():
     """
     """
 
-    sys.argv += ['--num_workers', '11', '--seed', '0','--epoch' ,"1000" ,  '--batch_size', 
+    sys.argv += ['--num_workers', '11', '--seed', '0','--epoch' ,"100000" ,  '--batch_size', 
                  '512', '--gpus', '1', '--ffn_dim', '2048', '--hidden_dim',
                  '768', '--dropout_rate', '0.1', '--intput_dropout_rate', '0.1', '--attention_dropout_rate', '0.1',
                  '--n_layer',

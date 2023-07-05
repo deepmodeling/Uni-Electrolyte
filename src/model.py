@@ -165,9 +165,11 @@ class GraphFormer(pl.LightningModule):
         attn_bias, rel_pos, x = batched_data.attn_bias, batched_data.rel_pos, batched_data.x
         """
         attn_bias:(batch_num,atom_num+1,atom_num+1)  #+1是头部字符
-        rel_pos:(batch_num,atom_num+1,atom_num+1) ，对称的
+        rel_pos:(batch_num,atom_num,atom_num) ，对称的
         x:(batch_num,atom_num,28)
         """
+        # import pdb
+        # pdb.set_trace()
         in_degree, out_degree = batched_data.in_degree, batched_data.in_degree
         edge_input, attn_edge_type = batched_data.edge_input, batched_data.attn_edge_type
         all_rel_pos_3d_1 = batched_data.all_rel_pos_3d_1
@@ -900,7 +902,7 @@ class DropoutOutputLayer(nn.Module):
         super().__init__()
         self.dense = nn.Linear(input_dim, inner_dim)
         if activation_fn=="tanh":
-            self.activation_fn = nn.Tanh
+            self.activation_fn = nn.Tanh()
         else:
             raise Exception
         self.dropout = nn.Dropout(p=pooler_dropout)
@@ -965,12 +967,12 @@ class Embedding_extractor(pl.LightningModule):
         self.sigmoid_inf=args.sigmoid_inf       
         self.output_layer=nn.Linear(downstream_ffn_dim, 1)
         self.output_sigmoid=nn.Sigmoid()
-        # self.dropout_output_layer=DropoutOutputLayer(
-        #     input_dim=downstream_ffn_dim,
-        #     inner_dim=downstream_ffn_dim,
-        #     output_dim=1,
-        #     activation_fn="tanh",
-        #     pooler_dropout=0.2)
+        self.dropout_output_layer=DropoutOutputLayer(
+            input_dim=downstream_ffn_dim,
+            inner_dim=downstream_ffn_dim,
+            output_dim=1,
+            activation_fn="tanh",
+            pooler_dropout=0.2)
 
         self.validation_step_outputs = []
         self.train_step_outputs = []
@@ -983,11 +985,12 @@ class Embedding_extractor(pl.LightningModule):
     def forward(self, x):
 
         x = self.feature_extractor(x)
-        x = self.pooling(x)
+        #x = self.pooling(x)
+        x=x[:,0,:]
         # import pdb
         # pdb.set_trace()
-        x=self.output_layer(x)
-        #x=self.dropout_output_layer(x)
+        #x=self.output_layer(x)
+        x=self.dropout_output_layer(x)
         y_pred=(self.sigmoid_sup-self.sigmoid_inf)*self.output_sigmoid(x)+self.sigmoid_inf
         return y_pred
 
@@ -1013,7 +1016,7 @@ class Embedding_extractor(pl.LightningModule):
                 base_lr= self.args.end_lr,
                 max_lr=self.args.peak_lr,
                 mode ="exp_range",
-                gamma =0.9999,
+                #gamma =0.9999,
                 step_size_up=400,
                 step_size_down=800,
                 cycle_momentum=False,
