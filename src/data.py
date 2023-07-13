@@ -15,7 +15,7 @@ from functools import partial
 
 dataset = None
 
-def get_dataset(dataset_name,input_file=None):
+def get_dataset(dataset_name,input_file=None,loaded_target_list=None):
     global dataset
 
     # if dataset is not None:  #这两行代码会导致每次query不更新dm
@@ -27,7 +27,7 @@ def get_dataset(dataset_name,input_file=None):
         # 'num_class':
         'loss_fn': F.binary_cross_entropy,
         'metric': 'train_loss',
-        'dataset': EmbeddingDataset(root="data/"+dataset_name,input_file=input_file),
+        'dataset': EmbeddingDataset(root="data/"+dataset_name,input_file=input_file,loaded_target_list=loaded_target_list),
         'max_node': 1000,
     }
 

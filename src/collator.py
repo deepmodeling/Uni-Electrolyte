@@ -1,5 +1,3 @@
-# Copyright (c) Microsoft Corporation.
-# Licensed under the MIT License.
 
 import torch
 # import numpy as np
@@ -124,7 +122,8 @@ weight[0] = 0.1
 
 
 class Batch():
-    def __init__(self, idx, attn_bias, attn_edge_type, rel_pos, all_rel_pos_3d_1, in_degree, out_degree, x, edge_input, y, y_gt ,reverse, num_nodes, batch):
+    def __init__(self, idx, attn_bias, attn_edge_type, rel_pos, all_rel_pos_3d_1, 
+    in_degree, out_degree, x, edge_input, y, y_gt ,reverse, num_nodes, batch,smiles,EP_ID):
         super(Batch, self).__init__()
         self.idx = idx
         self.in_degree, self.out_degree = in_degree, out_degree
@@ -142,6 +141,8 @@ class Batch():
         self.reverse = reverse
         self.num_nodes = num_nodes
         self.batch = batch
+        self.smiles=smiles
+        self.EP_ID=EP_ID
 
     def to(self, device):
         self.idx = self.idx.to(device)
@@ -168,18 +169,18 @@ class Batch():
         return self.in_degree.size(0)
 
 
-def collator(items, max_node=512, multi_hop_max_dist=20, rel_pos_max = 20):
+def collator(items, max_node=512, multi_hop_max_dist=20, rel_pos_max = 20,predicted_target="None"):
     # print("haha")
     
     items = [item for item in items if item is not None]
     items_ = [(item.idx, item.attn_bias, item.attn_edge_type, item.rel_pos, \
                item.in_degree, item.out_degree, item.x, \
-               item.edge_input[:, :, :multi_hop_max_dist, :], item.y, \
-               item.reverse) for item in items]
+               item.edge_input[:, :, :multi_hop_max_dist, :], getattr(item,predicted_target), \
+               item.reverse,item.smiles,item.EP_ID) for item in items]
             # delete
             #    item.central_input, item.lpe_input, item.y_attn_bias, \
             #    item.lpe_eigenval) for item in items]
-    idxs, attn_biases, attn_edge_types, rel_poses, in_degrees, out_degrees, xs, edge_inputs, ys, reverses = zip(*items_)
+    idxs, attn_biases, attn_edge_types, rel_poses, in_degrees, out_degrees, xs, edge_inputs, ys, reverses,smiles,EP_ID = zip(*items_)
     # delete
     # central_inputs,lpe_inputs,y_attn_biases,lpe_eigenvals= zip(*items_)
     items_ = [(item.all_rel_pos_3d_1,) for item in items]
@@ -226,4 +227,6 @@ def collator(items, max_node=512, multi_hop_max_dist=20, rel_pos_max = 20):
         reverse = reverse,
         num_nodes = num_nodes,
         batch = batch,
+        smiles=smiles,
+        EP_ID=EP_ID
     )

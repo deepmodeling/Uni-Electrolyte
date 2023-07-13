@@ -365,7 +365,8 @@ def smiles2graph(smiles_string, bfs=True):
 
     
 class EmbeddingDataset(InMemoryDataset):
-    def __init__(self, root = 'data/koff/', smiles2graph = smiles2graph, transform=None, pre_transform = None, smiles2graph_wrapper = smiles2graph_wrapper,input_file=None):
+    def __init__(self, root = 'data/koff/', smiles2graph = smiles2graph, 
+    transform=None, pre_transform = None, smiles2graph_wrapper = smiles2graph_wrapper,input_file=None,loaded_target_list=None):
 
         self.original_root = root
         self.smiles2graph = smiles2graph
@@ -373,6 +374,8 @@ class EmbeddingDataset(InMemoryDataset):
         self.folder = osp.join(root)
         self.expected_test_count = 0
         self.input_file = input_file
+        
+        self.loaded_target_list=loaded_target_list
 
         super(EmbeddingDataset, self).__init__(self.folder, transform, pre_transform)
 
@@ -388,21 +391,22 @@ class EmbeddingDataset(InMemoryDataset):
     def process(self):
         raw_data_folder = osp.join(self.root, 'raw')
         df = pd.read_csv(osp.join(raw_data_folder, self.raw_file_names[0]))
-        
+        print("^^^^^^^^^")
+        print(df.keys())
         correct_smiles=open(self.folder+"/processed/smiles.txt","w")
         self.testindx = len(df)
 
-        
+  
+
+
         print('Converting SMILES strings into graphs...')
         i=0
         rng = np.random.default_rng()
         total_error = 0
         for idx in tqdm(range(len(df))):
             SMILES = df.iloc[idx]["SMILES"]
-            try:
-                TARGET=df.iloc[idx]["TARGET"]
-            except:
-                TARGET=0
+            EP_ID=df.iloc[idx]["EP ID"]
+
 
             src_graph = smiles2graph_wrapper(SMILES)
             if True:
@@ -415,6 +419,9 @@ class EmbeddingDataset(InMemoryDataset):
                 data = Data()
                 assert(len(src_graph['edge_feat']) == src_graph['edge_index'].shape[1])
                 assert(len(src_graph['node_feat']) == src_graph['num_nodes'])
+ 
+                for key in self.loaded_target_list: 
+                    setattr(data,key,torch.tensor(df.iloc[idx][key]).to(torch.float))
 
                 # Gen X
                 data.__num_nodes__ = int(src_graph['num_nodes'])
@@ -423,8 +430,9 @@ class EmbeddingDataset(InMemoryDataset):
                 data.x = src_graph['node_feat']
                 data.all_rel_pos_3d =src_graph['rel_pos_3d']
                 data.smiles=SMILES
+                data.EP_ID=EP_ID
                 '''=================new=================='''
-                data.y = torch.tensor(TARGET).to(torch.float)
+                #data.y = torch.tensor(predicted_target).to(torch.float)
                 data.reverse = 0
 
                 data.edge_index = torch.from_numpy(data.edge_index).to(torch.int64)

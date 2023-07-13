@@ -22,6 +22,7 @@ torch.set_printoptions(threshold=sys.maxsize)
 torch.set_printoptions(precision=10)
 #from scipy.spatial.distance import cdist
 from scipy import sparse as sp
+import pandas as pd
 #import scipy
 import networkx as nx
 np.random.seed(0)
@@ -941,8 +942,8 @@ class Embedding_extractor(pl.LightningModule):
             dataset_name=args.dataset_name,
             warmup_updates=args.warmup_updates,
             tot_updates=args.tot_updates,
-            peak_lr=args.peak_lr,
-            end_lr=args.peak_lr,
+            peak_lr=args.peak_lr, #useless
+            end_lr=args.peak_lr,  #useless
             edge_type=args.edge_type,
             multi_hop_max_dist=args.multi_hop_max_dist,
             flag=args.flag,
@@ -976,7 +977,8 @@ class Embedding_extractor(pl.LightningModule):
 
         self.validation_step_outputs = []
         self.train_step_outputs = []
-        self.test_step_outputs=[]
+        self.test_loss_outputs=[]
+        self.test_outputs_dict={"smiles":[],"y_true":[],"y_pred":[],"id":[],"EP_ID":[]}
         
         self.mae_loss=nn.L1Loss()
 
@@ -1016,7 +1018,7 @@ class Embedding_extractor(pl.LightningModule):
                 base_lr= self.args.end_lr,
                 max_lr=self.args.peak_lr,
                 mode ="exp_range",
-                #gamma =0.9999,
+                gamma =0.9999,
                 step_size_up=400,
                 step_size_down=800,
                 cycle_momentum=False,
@@ -1069,17 +1071,35 @@ class Embedding_extractor(pl.LightningModule):
         y_pred = self(batch) 
         
         loss =self.mae_loss(y_pred,batch.y)
+        
         # Logging to TensorBoard (if installed) by default
         self.log("batch_test_loss", loss,prog_bar=True)
-        self.test_step_outputs.append(loss)
+        self.test_loss_outputs.append(loss)
+        self.test_outputs_dict["y_pred"]+=y_pred.flatten().tolist()
+        self.test_outputs_dict["y_true"]+=batch.y.flatten().tolist()
+        # import pdb
+        # pdb.set_trace()
+        self.test_outputs_dict["smiles"]+=list(batch.smiles)
+        self.test_outputs_dict["EP_ID"]+=list(batch.EP_ID)
+        self.test_outputs_dict["id"]+=batch.idx.tolist()
+        
         return loss
 
     def on_test_epoch_end(self):
        
-        all_loss = torch.stack(self.test_step_outputs)
+        all_loss = torch.stack(self.test_loss_outputs)
         self.log('epoch_test_loss', torch.mean(all_loss), prog_bar=True)
-   
-        self.test_step_outputs.clear()
+
+        test_outputs_df=pd.DataFrame(self.test_outputs_dict)
+        test_outputs_df.to_csv("lightning_logs/%s/test_output.csv"%(self.args.log_name))
+        self.test_loss_outputs.clear()
+        #不重置这个字典可以使生成的csv有全部test集的测试结果
+        # self.test_outputs_dict["y_pred"]=[]
+        # self.test_outputs_dict["y_true"]=[]
+        # self.test_outputs_dict["smiles"]=[]
+        # self.test_outputs_dict["smiles"]=[]
+        # self.test_outputs_dict["id"]=[]
+        # self.test_outputs_dict["EP_ID"]=[]
 
         pass
     

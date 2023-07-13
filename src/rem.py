@@ -5,6 +5,7 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 
 import os
+import shutil
 os.environ['CUBLAS_WORKSPACE_CONFIG'] = ':4096:8'
 os.environ['NCCL_SOCKET_IFNAME']='lo'
 os.environ['CUDA_VISIBLE_DEVICES']='0'
@@ -110,9 +111,13 @@ class Rem():
         from collator import collator
         from custom_dataset import EmbeddingDataset
 
-
-
-        all_train_dataset=get_dataset(dataset_name=self.args.dataset_name,input_file=self.args.input_filename)["dataset"]
+   
+        if not os.path.exists("data/%s"%(self.args.dataset_name)):
+  
+            os.mkdir("data/%s"%(self.args.dataset_name))
+            os.mkdir("data/%s/raw"%(self.args.dataset_name))
+            shutil.copy("/data/%s"%(self.args.input_filename),"data/%s/raw/%s"%(self.args.dataset_name,self.args.input_filename))
+        all_train_dataset=get_dataset(dataset_name=self.args.dataset_name,input_file=self.args.input_filename,loaded_target_list=self.args.loaded_target_list)["dataset"]
         
         # use 20% of training data for validation
         train_set_size = int(len(all_train_dataset) * 0.9)
@@ -130,7 +135,7 @@ class Rem():
             pin_memory=True,
             persistent_workers=True,
             collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
-                               rel_pos_max=1024),)
+                               rel_pos_max=1024,predicted_target=self.args.predicted_target),)
         print('len(train_dataloader)', len(train_dataloader))
 
         valid_dataloader = DataLoader(
@@ -140,10 +145,16 @@ class Rem():
             num_workers=self.args.num_workers,
             pin_memory=True,
             persistent_workers=True,
-            collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,rel_pos_max=1024),)
+            collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
+                                rel_pos_max=1024,predicted_target=self.args.predicted_target),)
         print('len(valid_dataloader)', len(valid_dataloader))
 
-        iid_test_dataset=get_dataset(dataset_name=self.args.iid_test_dataset_name,input_file=self.args.iid_test_input_filename)["dataset"]
+        if not os.path.exists("data/%s"%(self.args.iid_test_dataset_name)):
+            os.mkdir("data/%s"%(self.args.iid_test_dataset_name))
+            os.mkdir("data/%s/raw"%(self.args.iid_test_dataset_name))
+            shutil.copy("/data/%s"%(self.args.iid_test_input_filename),"data/%s/raw/%s"%(self.args.iid_test_dataset_name,self.args.iid_test_input_filename))
+        
+        iid_test_dataset=get_dataset(dataset_name=self.args.iid_test_dataset_name,input_file=self.args.iid_test_input_filename,loaded_target_list=self.args.loaded_target_list)["dataset"]
         iid_test_dataloader = DataLoader(
             iid_test_dataset,
             batch_size=self.args.batch_size,
@@ -152,12 +163,17 @@ class Rem():
             pin_memory=True,
             persistent_workers=True,
             collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
-                               rel_pos_max=1024),
+                               rel_pos_max=1024,predicted_target=self.args.predicted_target),
         )
         print('len(iid_test_dataloader)', len(iid_test_dataloader))
         
 
-        ood_test_dataset=get_dataset(dataset_name=self.args.ood_test_dataset_name,input_file=self.args.ood_test_input_filename)["dataset"]
+        if not os.path.exists("data/%s"%(self.args.ood_test_dataset_name)):
+            os.mkdir("data/%s"%(self.args.ood_test_dataset_name))
+            os.mkdir("data/%s/raw"%(self.args.ood_test_dataset_name))
+            shutil.copy("/data/%s"%(self.args.ood_test_input_filename),"data/%s/raw/%s"%(self.args.ood_test_dataset_name,self.args.ood_test_input_filename))
+        
+        ood_test_dataset=get_dataset(dataset_name=self.args.ood_test_dataset_name,input_file=self.args.ood_test_input_filename,loaded_target_list=self.args.loaded_target_list)["dataset"]
         ood_test_dataloader = DataLoader(
             ood_test_dataset,
             batch_size=self.args.batch_size,
@@ -166,7 +182,7 @@ class Rem():
             pin_memory=True,
             persistent_workers=True,
             collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
-                               rel_pos_max=1024),
+                               rel_pos_max=1024,predicted_target=self.args.predicted_target),
         )
         print('len(ood_test_dataloader)', len(ood_test_dataloader))
         
@@ -178,23 +194,30 @@ class Rem():
         #     "lightning_logs/version_0/checkpoints/epoch=156-step=10989.ckpt",
         #     args=self.args)
         # self.model=Embedding_extractor.load_from_checkpoint(
-        #     "lightning_logs/version_2/checkpoints/epoch=44-step=3149.ckpt",
+        #     "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_HOMO_20230706124935/version_0/checkpoints/epoch=582-epoch=epoch_val_loss=0.182.ckpt",
         #     args=self.args)
-        #self.model=Embedding_extractor.load_from_checkpoint(
-        #        "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_20230704181545/version_0/checkpoints/epoch=257-epoch=epoch_val_loss=0.166.ckpt",
+        # self.model=Embedding_extractor.load_from_checkpoint(
+        #     "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_LUMO_20230706131306/version_0/checkpoints/epoch=907-epoch=epoch_val_loss=0.232.ckpt",
+        #     args=self.args)
+        # self.model=Embedding_extractor.load_from_checkpoint(
+        #        "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_20230704183633/version_0/checkpoints/epoch=599-epoch=epoch_val_loss=0.164.ckpt",
         #        args=self.args)
-
-
-
+        # self.model=Embedding_extractor.load_from_checkpoint(
+        #     "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_log_dcs_20230706131417/version_0/checkpoints/epoch=269-epoch=epoch_val_loss=0.157.ckpt",
+        #     args=self.args)
+        # self.model=Embedding_extractor.load_from_checkpoint(
+        #    "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_log_vs_20230706133839/version_0/checkpoints/epoch=136-epoch=epoch_val_loss=0.165.ckpt",
+        #     args=self.args)
+        
         trainer = pl.Trainer( 
-            logger= TensorBoardLogger("lightning_logs", name="%s_%s"%(self.args.log_name_prefix,now.strftime("%Y%m%d%H%M%S"))),
+            logger= TensorBoardLogger("lightning_logs", name=self.args.log_name),
             max_epochs=self.args.epoch,
             devices=1,
             accelerator="auto",
             callbacks=[
                 #EarlyStopping(monitor="epoch_val_loss", mode="min",patience=50,verbose=True),
                 LearningRateMonitor(logging_interval='step'),
-                ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}',save_top_k=10,save_last=True,monitor="epoch_val_loss",mode='min',verbose=True,auto_insert_metric_name=True),
+                ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}',save_top_k=3,save_last=True,monitor="epoch_val_loss",mode='min',verbose=True,auto_insert_metric_name=True),
             ],
             #limit_train_batches=20,
             #log_every_n_steps=10
@@ -263,11 +286,11 @@ def main_finetune():
     """
     """
 
-    sys.argv += ['--num_workers', '11', '--seed', '0','--epoch' ,"100000" ,  '--batch_size', 
+    sys.argv += ['--num_workers', '11', '--seed', '0','--epoch' ,"1000" ,  '--batch_size', 
                  '512', '--gpus', '1', '--ffn_dim', '2048', '--hidden_dim',
                  '768', '--dropout_rate', '0.1', '--intput_dropout_rate', '0.1', '--attention_dropout_rate', '0.1',
                  '--n_layer',
-                 '8', '--peak_lr', '2.5e-4', '--end_lr', '1e-6', '--head_size', '24', '--weight_decay', '0.00',
+                 '8', '--peak_lr', '1e-3', '--end_lr', '1e-6', '--head_size', '24', '--weight_decay', '0.00',
                  '--edge_type',   
                  'one_hop', '--warmup_updates', '1000', '--tot_updates', '10000', '--default_root_dir', './',
                  '--progress_bar_refresh_rate', '1']
@@ -290,8 +313,13 @@ def main_finetune():
     parser.add_argument("--ood_test_input_filename",type=str)
     parser.add_argument("--freeze",action="store_true")
     parser.add_argument("--log_name_prefix",type=str)
+    parser.add_argument("--predicted_target",type=str)
+    parser.add_argument("--loaded_target_list",type=str,help="target keys needed for loaded with ',' as split sign" )
 
-    args = parser.parse_args()
+    args = parser.parse_args() 
+    args.loaded_target_list=args.loaded_target_list.split(",")
+    args.log_name="%s_%s_%s"%(args.log_name_prefix,args.predicted_target,now.strftime("%Y%m%d%H%M%S"))
+   
     rem=Rem(args)
     rem.train()
 
