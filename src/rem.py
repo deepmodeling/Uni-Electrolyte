@@ -205,9 +205,9 @@ class Rem():
         # self.model=Embedding_extractor.load_from_checkpoint(
         #     "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_log_dcs_20230706131417/version_0/checkpoints/epoch=269-epoch=epoch_val_loss=0.157.ckpt",
         #     args=self.args)
-        # self.model=Embedding_extractor.load_from_checkpoint(
-        #    "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_log_vs_20230706133839/version_0/checkpoints/epoch=136-epoch=epoch_val_loss=0.165.ckpt",
-        #     args=self.args)
+        #self.model=Embedding_extractor.load_from_checkpoint(
+        #    "/data/rem/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_log_dcs_20230715131757/version_0/checkpoints/epoch=201-epoch=epoch_val_loss=0.155.ckpt",
+        #        args=self.args)
         
         trainer = pl.Trainer( 
             logger= TensorBoardLogger("lightning_logs", name=self.args.log_name),
@@ -223,10 +223,11 @@ class Rem():
             #log_every_n_steps=10
             )
         trainer.fit(model=self.model, train_dataloaders=train_dataloader,val_dataloaders=valid_dataloader,)
-         
+        
+        trainer.test(model=self.model, dataloaders=iid_test_dataloader)
         trainer.test(model=self.model, dataloaders=ood_test_dataloader)
 
-        trainer.test(model=self.model, dataloaders=iid_test_dataloader)
+        
 
 
 
@@ -290,7 +291,7 @@ def main_finetune():
                  '512', '--gpus', '1', '--ffn_dim', '2048', '--hidden_dim',
                  '768', '--dropout_rate', '0.1', '--intput_dropout_rate', '0.1', '--attention_dropout_rate', '0.1',
                  '--n_layer',
-                 '8', '--peak_lr', '1e-3', '--end_lr', '1e-6', '--head_size', '24', '--weight_decay', '0.00',
+                 '8', '--peak_lr', '2.5e-4', '--end_lr', '1e-6', '--head_size', '24', '--weight_decay', '0.00',
                  '--edge_type',   
                  'one_hop', '--warmup_updates', '1000', '--tot_updates', '10000', '--default_root_dir', './',
                  '--progress_bar_refresh_rate', '1']
