@@ -202,11 +202,11 @@ class Rem():
         # self.model=Embedding_extractor.load_from_checkpoint(
         #        "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_20230704183633/version_0/checkpoints/epoch=599-epoch=epoch_val_loss=0.164.ckpt",
         #        args=self.args)
-        # self.model=Embedding_extractor.load_from_checkpoint(
-        #     "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_log_dcs_20230706131417/version_0/checkpoints/epoch=269-epoch=epoch_val_loss=0.157.ckpt",
-        #     args=self.args)
         #self.model=Embedding_extractor.load_from_checkpoint(
-        #    "/data/rem/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_log_dcs_20230715131757/version_0/checkpoints/epoch=201-epoch=epoch_val_loss=0.155.ckpt",
+        #     "/data/rem/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_log_dcs_20230715131757/version_0/checkpoints/epoch=201-epoch=epoch_val_loss=0.155.ckpt",
+        #        args=self.args)
+        #self.model=Embedding_extractor.load_from_checkpoint(
+        #"/data/rem/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_log_vs_20230714180801/version_0/checkpoints/epoch=238-epoch=epoch_val_loss=0.163.ckpt",
         #        args=self.args)
         
         trainer = pl.Trainer( 

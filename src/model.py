@@ -980,6 +980,7 @@ class Embedding_extractor(pl.LightningModule):
         self.test_loss_outputs=[]
         self.test_outputs_dict={"smiles":[],"y_true":[],"y_pred":[],"id":[],"EP_ID":[]}
         self.test_de_log_loss_outputs=[]
+        self.test_de_log_ratio_loss_outputs=[]
         self.mae_loss=nn.L1Loss()
 
 
@@ -1072,12 +1073,16 @@ class Embedding_extractor(pl.LightningModule):
         
         loss =self.mae_loss(y_pred,batch.y)
         de_log_loss=self.mae_loss(torch.pow(10,y_pred),torch.pow(10,batch.y))
-        
+        de_log_ratio_loss=torch.mean(torch.abs(torch.pow(10,y_pred)/torch.pow(10,batch.y)-1))
         # Logging to TensorBoard (if installed) by default
         self.log("batch_test_loss", loss,prog_bar=True)
         self.log("batch_test_de_log_loss", de_log_loss )
+        self.log("batch_de_log_ratio_loss",de_log_ratio_loss)
+        
         self.test_loss_outputs.append(loss)
         self.test_de_log_loss_outputs.append(de_log_loss)
+        self.test_de_log_ratio_loss_outputs.append(de_log_ratio_loss)
+
         self.test_outputs_dict["y_pred"]+=y_pred.flatten().tolist()
         self.test_outputs_dict["y_true"]+=batch.y.flatten().tolist()
         # import pdb
@@ -1096,6 +1101,10 @@ class Embedding_extractor(pl.LightningModule):
         all_de_log_loss=torch.stack(self.test_de_log_loss_outputs)
         self.log('epoch_test_de_log_loss', torch.mean(all_de_log_loss), prog_bar=True)
      
+        all_de_log_ratio_loss=torch.stack(self.test_de_log_ratio_loss_outputs)
+        self.log('epoch_test_de_log_ratio_loss', torch.mean(all_de_log_ratio_loss), prog_bar=True)
+     
+
 
         test_outputs_df=pd.DataFrame(self.test_outputs_dict)
         import datetime
