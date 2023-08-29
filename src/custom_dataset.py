@@ -404,9 +404,16 @@ class EmbeddingDataset(InMemoryDataset):
         rng = np.random.default_rng()
         total_error = 0
         for idx in tqdm(range(len(df))):
-            SMILES = df.iloc[idx]["SMILES"]
-            EP_ID=df.iloc[idx]["EP ID"]
-
+            if "SMILES" in df.keys():
+                SMILES = df.iloc[idx]["SMILES"]
+            else:
+                SMILES=df.iloc[idx]["smiles"]
+            if "EP ID" in df.keys():
+                EP_ID=df.iloc[idx]["EP ID"]
+            elif "idx" in df.keys():
+                EP_ID=df.iloc[idx]["idx"]
+            else:
+                EP_ID=idx
 
             src_graph = smiles2graph_wrapper(SMILES)
             if True:

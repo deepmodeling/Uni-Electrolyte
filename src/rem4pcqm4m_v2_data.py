@@ -116,8 +116,8 @@ class Rem():
 
         #get split from ogb loading mode
         from ogb.lsc import PCQM4Mv2Dataset
-        dataset = PCQM4Mv2Dataset(root=self.args.dataset_name, only_smiles=True)
-        split_dict = dataset.get_idx_split()
+        ogb_dataset = PCQM4Mv2Dataset(root=self.args.dataset_name, only_smiles=True)
+        split_dict = ogb_dataset.get_idx_split()
         train_idx = split_dict['train']  # numpy array storing indices of training molecules
         valid_idx = split_dict['valid']  # numpy array storing indices of validation molecules
         testdev_idx = split_dict['test-dev']  # numpy array storing indices of test-dev molecules
