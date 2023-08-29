@@ -123,7 +123,7 @@ class GraphFormer(pl.LightningModule):
         #todo fix eval
         # self.evaluator = get_dataset(dataset_name)['evaluator']
         self.metric = get_dataset(dataset_name)['metric']
-        self.loss_fn = get_dataset(dataset_name)['loss_fn']
+        #self.loss_fn = get_dataset(dataset_name)['loss_fn']
         self.dataset_name = dataset_name
         
         self.warmup_updates = warmup_updates

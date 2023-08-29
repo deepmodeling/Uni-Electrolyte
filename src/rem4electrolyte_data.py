@@ -303,7 +303,7 @@ def main_finetune():
     parser.add_argument('--pooling', default='attention', type=str)
     parser.add_argument('--downstream_ffn_dim', default=768, type=int)
     parser.add_argument('--downstream_dropout', default=0, type=float)
-    #parser.add_argument('--dataset_name', type=str)
+    #parser.add_argument('--dataset_name', type=str) #这句话不被加上也有dataset_name参数
     parser.add_argument('--input_filename', type=str)
     parser.add_argument("--sigmoid_inf",type=float)
     parser.add_argument("--sigmoid_sup",type=float)

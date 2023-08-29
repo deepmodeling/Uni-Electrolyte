@@ -365,7 +365,7 @@ def smiles2graph(smiles_string, bfs=True):
 
     
 class EmbeddingDataset(InMemoryDataset):
-    def __init__(self, root = 'data/koff/', smiles2graph = smiles2graph, 
+    def __init__(self, root = '', smiles2graph = smiles2graph,
     transform=None, pre_transform = None, smiles2graph_wrapper = smiles2graph_wrapper,input_file=None,loaded_target_list=None):
 
         self.original_root = root
@@ -382,7 +382,7 @@ class EmbeddingDataset(InMemoryDataset):
     @property
     def raw_file_names(self):
         return [self.input_file]
-        return ['RIP1.csv']
+
 
     @property
     def processed_file_names(self):
