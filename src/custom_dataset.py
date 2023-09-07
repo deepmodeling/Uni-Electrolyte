@@ -351,7 +351,7 @@ def smiles2graph(smiles_string, bfs=True):
 
     graph['edge_index'] = edge_index
     graph['edge_feat'] = edge_attr
-    graph['node_feat'] = x
+    graph['node_feat'] = x  #第一个特征是原子数
     graph['num_nodes'] = len(x)
     graph['rel_pos_3d'] = rel_pos_3d
 
@@ -493,6 +493,7 @@ def preprocess_item(item, noise=False,random=True):
     if len(edge_attr.size()) == 1:
         edge_attr = edge_attr[:, None]
 
+    #20230905：当前版本all_rel_pos_3d 为拓扑距离
     all_rel_pos_3d_with_noise = torch.from_numpy(algos.bin_rel_pos_3d_1(item.all_rel_pos_3d, noise=noise)).long()
 
     rel_pos_3d_attr = all_rel_pos_3d_with_noise[edge_index[0, :], edge_index[1, :]]

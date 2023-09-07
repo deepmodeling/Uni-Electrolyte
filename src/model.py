@@ -166,22 +166,23 @@ class GraphFormer(pl.LightningModule):
         attn_bias, rel_pos, x = batched_data.attn_bias, batched_data.rel_pos, batched_data.x
         """
         attn_bias:(batch_num,atom_num+1,atom_num+1)  #+1是头部字符
-        rel_pos:(batch_num,atom_num,atom_num) ，对称的
-        x:(batch_num,atom_num,28)
+        rel_pos，all_rel_pos_3d_1:(batch_num,atom_num,atom_num) ，20230905 目前这两个都是对称的拓扑距离矩阵，rel_pos比all_rel_pos_3d_1 大1
+        x:(batch_num,atom_num,28)  0号特征为原子数
         """
         # import pdb
         # pdb.set_trace()
         in_degree, out_degree = batched_data.in_degree, batched_data.in_degree
         edge_input, attn_edge_type = batched_data.edge_input, batched_data.attn_edge_type
         all_rel_pos_3d_1 = batched_data.all_rel_pos_3d_1
-        """
-        all_rel_pos_3d_1:(batch_num,atom_num,atom_num)
-        """
 
-        """
-        实时计算graph_attention_bias矩阵矩阵:(batch_num,head_size,atom_num+1,atom_num+1)
-        
-        """
+
+        # atomic_nums=x[:,:,0]
+        # batch_num=atomic_nums.shape[0]
+        # atom_num=atomic_nums.shape[1]
+        # edge_pair_atomic_nums = atomic_nums.view(batch_num, atom_num, 1) *64 + atomic_nums.view(batch_num, 1, atom_num)
+
+
+        #实时计算graph_attention_bias矩阵矩阵:(batch_num,head_size,atom_num+1,atom_num+1)
         # graph_attn_bias
         n_graph, n_node = x.size()[:2]
         graph_attn_bias = attn_bias.clone()
