@@ -176,7 +176,7 @@ class GraphFormer(pl.LightningModule):
         all_rel_pos_3d_1 = batched_data.all_rel_pos_3d_1
 
 
-        # atomic_nums=x[:,:,0]
+        # atomic_nums=x[:,:,0] #原子序数特征
         # batch_num=atomic_nums.shape[0]
         # atom_num=atomic_nums.shape[1]
         # edge_pair_atomic_nums = atomic_nums.view(batch_num, atom_num, 1) *64 + atomic_nums.view(batch_num, 1, atom_num)

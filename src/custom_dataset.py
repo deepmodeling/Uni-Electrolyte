@@ -388,67 +388,154 @@ class EmbeddingDataset(InMemoryDataset):
     def processed_file_names(self):
         return ['data_0.pt']
 
-    def process(self):
+
+    def process_sdf(self):
+
         raw_data_folder = osp.join(self.root, 'raw')
-        df = pd.read_csv(osp.join(raw_data_folder, self.raw_file_names[0]))
+        suppl= Chem.ForwardSDMolSupplier(osp.join(raw_data_folder, self.raw_file_names[0]))
         print("^^^^^^^^^")
-        print(df.keys())
-        correct_smiles=open(self.folder+"/processed/smiles.txt","w")
-        self.testindx = len(df)
 
-  
-
+        correct_smiles = open(self.folder + "/processed/smiles.txt", "w")
+        self.testindx = len(suppl)
 
         print('Converting SMILES strings into graphs...')
-        i=0
+        i = 0
         rng = np.random.default_rng()
         total_error = 0
-        for idx in tqdm(range(len(df))):
-            if "SMILES" in df.keys():
-                SMILES = df.iloc[idx]["SMILES"]
-            else:
-                SMILES=df.iloc[idx]["smiles"]
-            if "EP ID" in df.keys():
-                EP_ID=df.iloc[idx]["EP ID"]
-            elif "idx" in df.keys():
-                EP_ID=df.iloc[idx]["idx"]
-            else:
-                EP_ID=idx
+        for idx, mol in enumerate(tqdm(suppl)):
+
+            SMILES = mol.GetProp("smiles")
+            EP_ID = mol.GetProp("ep_id")
+
+            HOMO = mol.GetProp("homo")
+            LUMO = mol.GetProp("lumo")
+            be = mol.GetProp("binding_e")
+            log_vs = mol.GetProp("viscosity") #20230908 数据中是log值
+            log_dcs = mol.GetProp("dielectric_constant")#20230908 数据中是log值
 
             src_graph = smiles2graph_wrapper(SMILES)
             if True:
-                if src_graph=="error":
+                if src_graph == "error":
                     print(SMILES)
-                    total_error+=1
-                    print(i+1)
+                    total_error += 1
+                    print(i + 1)
                     continue
-                correct_smiles.write(SMILES+"\n")
+                correct_smiles.write(SMILES + "\n")
                 data = Data()
-                assert(len(src_graph['edge_feat']) == src_graph['edge_index'].shape[1])
-                assert(len(src_graph['node_feat']) == src_graph['num_nodes'])
- 
-                for key in self.loaded_target_list: 
-                    setattr(data,key,torch.tensor(df.iloc[idx][key]).to(torch.float))
+                assert (len(src_graph['edge_feat']) == src_graph['edge_index'].shape[1])
+                assert (len(src_graph['node_feat']) == src_graph['num_nodes'])
+
+                if len(self.loaded_target_list)!=5:
+                    raise Exception
+                if "be" not in self.loaded_target_list:
+                    raise Exception
+                else:
+                    setattr(data, "be", torch.tensor(be).to(torch.float))
+                if "HOMO" not in self.loaded_target_list:
+                    raise Exception
+                else:
+                    setattr(data, "HOMO", torch.tensor(HOMO).to(torch.float))
+                if "LUMO" not in self.loaded_target_list:
+                    raise Exception
+                else:
+                    setattr(data, "LUMO", torch.tensor(LUMO).to(torch.float))
+                if "log_vs" not in self.loaded_target_list:
+                    raise Exception
+                else:
+                    setattr(data, "log_vs", torch.tensor(log_vs).to(torch.float))
+                if "log_dcs" not in self.loaded_target_list:
+                    raise Exception
+                else:
+                    setattr(data, "log_dcs", torch.tensor(log_dcs).to(torch.float))
+
+
 
                 # Gen X
                 data.__num_nodes__ = int(src_graph['num_nodes'])
                 data.edge_index = src_graph['edge_index']
                 data.edge_attr = src_graph['edge_feat']
                 data.x = src_graph['node_feat']
-                data.all_rel_pos_3d =src_graph['rel_pos_3d']
-                data.smiles=SMILES
-                data.EP_ID=EP_ID
+                data.all_rel_pos_3d = src_graph['rel_pos_3d']
+                data.smiles = SMILES
+                data.EP_ID = EP_ID
                 '''=================new=================='''
-                #data.y = torch.tensor(predicted_target).to(torch.float)
+                # data.y = torch.tensor(predicted_target).to(torch.float)
                 data.reverse = 0
 
                 data.edge_index = torch.from_numpy(data.edge_index).to(torch.int64)
                 data.edge_attr = torch.from_numpy(data.edge_attr).to(torch.int64)
                 data.x = torch.from_numpy(data.x).to(torch.int64)
-                data.reverse = torch.tensor([data.reverse],dtype = torch.int64)
+                data.reverse = torch.tensor([data.reverse], dtype=torch.int64)
                 torch.save(data, osp.join(self.processed_dir, 'data_{}.pt'.format(i)))
                 i += 1
-        print('complete, total error smiles:',total_error)
+        print('complete, total error smiles:', total_error)
+
+    def process(self):
+
+
+        if self.raw_file_names[0][-3:]=="sdf":
+            self.process_sdf()
+        else: #csv
+            raw_data_folder = osp.join(self.root, 'raw')
+            df = pd.read_csv(osp.join(raw_data_folder, self.raw_file_names[0]))
+            print("^^^^^^^^^")
+            print(df.keys())
+            correct_smiles=open(self.folder+"/processed/smiles.txt","w")
+            self.testindx = len(df)
+
+  
+
+
+            print('Converting SMILES strings into graphs...')
+            i=0
+            rng = np.random.default_rng()
+            total_error = 0
+            for idx in tqdm(range(len(df))):
+                if "SMILES" in df.keys():
+                    SMILES = df.iloc[idx]["SMILES"]
+                else:
+                    SMILES=df.iloc[idx]["smiles"]
+                if "EP ID" in df.keys():
+                    EP_ID=df.iloc[idx]["EP ID"]
+                elif "idx" in df.keys():
+                    EP_ID=df.iloc[idx]["idx"]
+                else:
+                    EP_ID=idx
+
+                src_graph = smiles2graph_wrapper(SMILES)
+                if True:
+                    if src_graph=="error":
+                        print(SMILES)
+                        total_error+=1
+                        print(i+1)
+                        continue
+                    correct_smiles.write(SMILES+"\n")
+                    data = Data()
+                    assert(len(src_graph['edge_feat']) == src_graph['edge_index'].shape[1])
+                    assert(len(src_graph['node_feat']) == src_graph['num_nodes'])
+
+                    for key in self.loaded_target_list:
+                        setattr(data,key,torch.tensor(df.iloc[idx][key]).to(torch.float))
+
+                    # Gen X
+                    data.__num_nodes__ = int(src_graph['num_nodes'])
+                    data.edge_index = src_graph['edge_index']
+                    data.edge_attr = src_graph['edge_feat']
+                    data.x = src_graph['node_feat']
+                    data.all_rel_pos_3d =src_graph['rel_pos_3d']
+                    data.smiles=SMILES
+                    data.EP_ID=EP_ID
+                    '''=================new=================='''
+                    #data.y = torch.tensor(predicted_target).to(torch.float)
+                    data.reverse = 0
+
+                    data.edge_index = torch.from_numpy(data.edge_index).to(torch.int64)
+                    data.edge_attr = torch.from_numpy(data.edge_attr).to(torch.int64)
+                    data.x = torch.from_numpy(data.x).to(torch.int64)
+                    data.reverse = torch.tensor([data.reverse],dtype = torch.int64)
+                    torch.save(data, osp.join(self.processed_dir, 'data_{}.pt'.format(i)))
+                    i += 1
+            print('complete, total error smiles:',total_error)
 
     def len(self):
         with open(self.folder+"/processed/smiles.txt","r") as smiles:
