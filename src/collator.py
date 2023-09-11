@@ -123,7 +123,7 @@ weight[0] = 0.1
 
 class Batch():
     def __init__(self, idx, attn_bias, attn_edge_type, rel_pos, all_rel_pos_3d_1, 
-    in_degree, out_degree, x, edge_input, y, y_gt ,reverse, num_nodes, batch,smiles,EP_ID):
+    in_degree, out_degree, x, edge_input, y, y_gt ,reverse, num_nodes, batch,smiles,EP_ID,pos):
         super(Batch, self).__init__()
         self.idx = idx
         self.in_degree, self.out_degree = in_degree, out_degree
@@ -143,6 +143,7 @@ class Batch():
         self.batch = batch
         self.smiles=smiles
         self.EP_ID=EP_ID
+        self.pos=pos
 
     def to(self, device):
         self.idx = self.idx.to(device)
@@ -159,6 +160,9 @@ class Batch():
         self.reverse = self.reverse.to(device)
         self.num_nodes = self.num_nodes.to(device)
         self.batch = self.batch.to(device)
+
+
+        self.pos = self.pos.to(device)
         #self.y_max_NE_num = self.y_max_NE_num.to(device)
 #         print("self")
         return self
@@ -176,16 +180,15 @@ def collator(items, max_node=512, multi_hop_max_dist=20, rel_pos_max = 20,predic
     items_ = [(item.idx, item.attn_bias, item.attn_edge_type, item.rel_pos, \
                item.in_degree, item.out_degree, item.x, \
                item.edge_input[:, :, :multi_hop_max_dist, :], getattr(item,predicted_target), \
-               item.reverse,item.smiles,item.EP_ID) for item in items]
+               item.reverse,item.smiles,item.EP_ID,item.pos) for item in items]
             # delete
             #    item.central_input, item.lpe_input, item.y_attn_bias, \
             #    item.lpe_eigenval) for item in items]
-    idxs, attn_biases, attn_edge_types, rel_poses, in_degrees, out_degrees, xs, edge_inputs, ys, reverses,smiles,EP_ID = zip(*items_)
+    idxs, attn_biases, attn_edge_types, rel_poses, in_degrees, out_degrees, xs, edge_inputs, ys, reverses,smiles,EP_ID,poss = zip(*items_)
     # delete
     # central_inputs,lpe_inputs,y_attn_biases,lpe_eigenvals= zip(*items_)
-    items_ = [(item.all_rel_pos_3d_1,) for item in items]
-
-    all_rel_pos_3d_1s, = zip(*items_)
+    all_rel_pos_3d_items_ = [(item.all_rel_pos_3d_1,) for item in items]
+    all_rel_pos_3d_1s, = zip(*all_rel_pos_3d_items_)
     
     #retrosynthesis or forward synthesis
     reverse = torch.cat([i for i in reverses])
@@ -211,7 +214,8 @@ def collator(items, max_node=512, multi_hop_max_dist=20, rel_pos_max = 20,predic
     all_rel_pos_3d_1 = torch.cat([pad_rel_pos_3d_unsqueeze(i, max_node_num) for i in all_rel_pos_3d_1s])
     in_degree = torch.cat([pad_1d_unsqueeze(i, max_node_num) for i in in_degrees])
     out_degree = torch.cat([pad_1d_unsqueeze(i, max_node_num) for i in out_degrees])
-    
+    pos=torch.cat([pad_2d_unsqueeze(i, max_node_num) for i in poss])
+
     return Batch(
         idx=torch.LongTensor(idxs),
         attn_bias=attn_bias,
@@ -228,5 +232,6 @@ def collator(items, max_node=512, multi_hop_max_dist=20, rel_pos_max = 20,predic
         num_nodes = num_nodes,
         batch = batch,
         smiles=smiles,
-        EP_ID=EP_ID
+        EP_ID=EP_ID,
+        pos=pos
     )

@@ -53,6 +53,48 @@ class RBFLayer(nn.Module):
         D = D.unsqueeze(-1)
         return self.cutoff_fn(D) * torch.exp(-self.widths*torch.pow((torch.exp(-D) - self.centers), 2))
 
+@torch.jit.script
+def gaussian(x, mean, std):
+    pi = 3.14159
+    a = (2*pi) ** 0.5
+    return torch.exp(-0.5 * (((x - mean) / std) ** 2)) / (a * std)
+
+class GaussianLayer(nn.Module):
+    def __init__(self, K=128, edge_types=1024):
+        super().__init__()
+        self.K = K
+        self.means = nn.Embedding(1, K)
+        self.stds = nn.Embedding(1, K)
+        self.mul = nn.Embedding(edge_types, 1)
+        self.bias = nn.Embedding(edge_types, 1)
+        nn.init.uniform_(self.means.weight, 0, 3)
+        nn.init.uniform_(self.stds.weight, 0, 3)
+        nn.init.constant_(self.bias.weight, 0)
+        nn.init.constant_(self.mul.weight, 1)
+
+    def forward(self, x, edge_types):
+        mul = self.mul(edge_types)
+        bias = self.bias(edge_types)
+        x = mul * x.unsqueeze(-1) + bias
+        x = x.expand(-1, -1, -1, self.K)
+        mean = self.means.weight.float().view(-1)
+        std = self.stds.weight.float().view(-1).abs() + 1e-5
+        return gaussian(x.float(), mean, std).type_as(self.means.weight)
+
+class NonLinear(nn.Module):
+    def __init__(self, input, output_size, hidden=None):
+        super(NonLinear, self).__init__()
+        if hidden is None:
+            hidden = input
+        self.layer1 = nn.Linear(input, hidden)
+        self.layer2 = nn.Linear(hidden, output_size)
+
+    def forward(self, x):
+        x = F.gelu(self.layer1(x))
+        x = self.layer2(x)
+        return x
+
+
 class GraphFormer(pl.LightningModule):
     def __init__(
             self,
@@ -160,10 +202,15 @@ class GraphFormer(pl.LightningModule):
         
         self.graph_token.weight.requires_grad = unfreeze
         self.graph_token_virtual_distance.weight.requires_grad = unfreeze
-        
+
+
+        #3D
+        self.bias_proj = NonLinear(K, self.args.attention_heads)
+        self.gbf  = GaussianLayer(K, self.edge_types)
+
     def translate_encoder(self,batched_data, beam=1, perturb=None, y=None, valid = True):
         """Get output of encoder."""
-        attn_bias, rel_pos, x = batched_data.attn_bias, batched_data.rel_pos, batched_data.x
+        attn_bias, rel_pos, x ,_3D_pos= batched_data.attn_bias, batched_data.rel_pos, batched_data.x,batched_data.pos
         """
         attn_bias:(batch_num,atom_num+1,atom_num+1)  #+1是头部字符
         rel_pos，all_rel_pos_3d_1:(batch_num,atom_num,atom_num) ，20230905 目前这两个都是对称的拓扑距离矩阵，rel_pos比all_rel_pos_3d_1 大1
@@ -175,11 +222,28 @@ class GraphFormer(pl.LightningModule):
         edge_input, attn_edge_type = batched_data.edge_input, batched_data.attn_edge_type
         all_rel_pos_3d_1 = batched_data.all_rel_pos_3d_1
 
+        import pdb
+        pdb.set_trace()
 
-        # atomic_nums=x[:,:,0] #原子序数特征
-        # batch_num=atomic_nums.shape[0]
-        # atom_num=atomic_nums.shape[1]
-        # edge_pair_atomic_nums = atomic_nums.view(batch_num, atom_num, 1) *64 + atomic_nums.view(batch_num, 1, atom_num)
+        #3D feature & attn_bias
+        atomic_nums=x[:,:,0] #原子序数特征
+        batch_num=atomic_nums.shape[0]
+        atom_num=atomic_nums.shape[1]
+        edge_pair_atomic_num_type = atomic_nums.view(batch_num, atom_num, 1) *64 + atomic_nums.view(batch_num, 1, atom_num)
+        delta_pos = _3D_pos.unsqueeze(1) - _3D_pos.unsqueeze(2)
+        dist = delta_pos.norm(dim=-1)
+        delta_pos /= dist.unsqueeze(-1) + 1e-5
+        gbf_feature = self.gbf(dist, edge_pair_atomic_num_type)
+
+
+        edge_features = gbf_feature.masked_fill(
+            padding_mask.unsqueeze(1).unsqueeze(-1), 0.0
+        )
+        _3d_graph_attn_bias = self.bias_proj(gbf_feature).permute(0, 3, 1, 2).contiguous()
+        _3d_graph_attn_bias.masked_fill_(
+            padding_mask.unsqueeze(1).unsqueeze(2), float("-inf")
+        )
+
 
 
         #实时计算graph_attention_bias矩阵矩阵:(batch_num,head_size,atom_num+1,atom_num+1)

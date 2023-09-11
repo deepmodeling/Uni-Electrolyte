@@ -275,6 +275,84 @@ def smiles2graph_wrapper(smiles_list):
         return "error"
     return src_graph
 
+def mol2graph(mol):
+    """
+
+    """
+    # build networkx graph for bfs
+
+    AllChem.ComputeGasteigerCharges(mol)
+    peri = Chem.rdchem.GetPeriodicTable()
+    g_edge_attr = []
+    # atoms
+    i = 0
+    atom_features_list = []
+    pos=[]
+    mol_conformer=mol.GetConformer()
+    for atom in mol.GetAtoms():
+        atom_position=list(mol_conformer.GetAtomPosition( atom.GetIdx()))
+        pos.append(atom_position)
+        atom_features_list.append(atom_to_feature_vector(atom, peri, mol))
+
+    pos=np.array(atom_position)
+    x = np.array(atom_features_list, dtype=np.int64)
+    x = np.concatenate([x, donor_acceptor_feature(x.shape[0], mol)], axis=1)
+    x = np.concatenate([x, chiral_centers_feature(x.shape[0], mol)], axis=1)
+
+    # adj_mat_indx && adj_mat
+    atom_num = len(x)
+    adj_mat = adj = torch.zeros(atom_num, atom_num)
+
+    # bonds
+    num_bond_features = 5
+    if len(mol.GetBonds()) > 0:  # mol has bonds
+        edges_list = []
+        edge_features_list = []
+        for bond in mol.GetBonds():
+            i = bond.GetBeginAtomIdx()
+            j = bond.GetEndAtomIdx()
+            begin_atom = bond.GetBeginAtom()
+            end_atom = bond.GetEndAtom()
+
+            edge_feature = bond_to_feature_vector(bond)
+            # add edges in both directions
+            edges_list.append((i, j))
+            '''new'''
+            # adjacency matrix
+
+            edge_features_list.append(edge_feature)
+            edges_list.append((j, i))
+
+            edge_features_list.append(edge_feature)
+
+        # data.edge_index: Graph connectivity in COO format with shape [2, num_edges]
+        edge_index = np.array(edges_list, dtype=np.int64).T
+
+        # data.edge_attr: Edge feature matrix with shape [num_edges, num_edge_features]
+        edge_attr = np.array(edge_features_list, dtype=np.int64)
+
+    else:  # mol has no bonds
+        edge_index = np.empty((2, 0), dtype=np.int64)
+        edge_attr = np.empty((0, num_bond_features), dtype=np.int64)
+
+    '''New'''
+
+    # attn
+    rel_pos_3d = shortest_path(mol)
+    graph = dict()
+
+    # graph['node_edge_seq'] = nx.to_numpy_array(G,weight="edge").tolist()
+
+    graph['edge_index'] = edge_index
+    graph['edge_feat'] = edge_attr
+    graph['node_feat'] = x  # 第一个特征是原子数
+    graph['num_nodes'] = len(x)
+    graph['rel_pos_3d'] = rel_pos_3d #拓扑距离
+    graph["pos"]=pos #真正的3D坐标
+
+    return graph
+
+
 def smiles2graph(smiles_string, bfs=True):
     """
     Converts SMILES string to graph Data object
@@ -413,7 +491,7 @@ class EmbeddingDataset(InMemoryDataset):
             log_vs = mol.GetProp("viscosity") #20230908 数据中是log值
             log_dcs = mol.GetProp("dielectric_constant")#20230908 数据中是log值
 
-            src_graph = smiles2graph_wrapper(SMILES)
+            src_graph = mol2graph(mol)
             if True:
                 if src_graph == "error":
                     print(SMILES)
@@ -459,6 +537,7 @@ class EmbeddingDataset(InMemoryDataset):
                 data.smiles = SMILES
                 data.EP_ID = EP_ID
                 '''=================new=================='''
+                data.pos=torch.from_numpy(src_graph["pos"]).float()
                 # data.y = torch.tensor(predicted_target).to(torch.float)
                 data.reverse = 0
 
@@ -528,7 +607,7 @@ class EmbeddingDataset(InMemoryDataset):
                     '''=================new=================='''
                     #data.y = torch.tensor(predicted_target).to(torch.float)
                     data.reverse = 0
-
+                    data.pos=torch.zeros(data.__num_nodes__,3).float()
                     data.edge_index = torch.from_numpy(data.edge_index).to(torch.int64)
                     data.edge_attr = torch.from_numpy(data.edge_attr).to(torch.int64)
                     data.x = torch.from_numpy(data.x).to(torch.int64)
