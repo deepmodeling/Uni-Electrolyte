@@ -287,14 +287,11 @@ def mol2graph(mol):
     # atoms
     i = 0
     atom_features_list = []
-    pos=[]
     mol_conformer=mol.GetConformer()
     for atom in mol.GetAtoms():
-        atom_position=list(mol_conformer.GetAtomPosition( atom.GetIdx()))
-        pos.append(atom_position)
         atom_features_list.append(atom_to_feature_vector(atom, peri, mol))
 
-    pos=np.array(atom_position)
+    pos=mol.GetConformer().GetPositions()
     x = np.array(atom_features_list, dtype=np.int64)
     x = np.concatenate([x, donor_acceptor_feature(x.shape[0], mol)], axis=1)
     x = np.concatenate([x, chiral_centers_feature(x.shape[0], mol)], axis=1)
@@ -474,22 +471,25 @@ class EmbeddingDataset(InMemoryDataset):
         print("^^^^^^^^^")
 
         correct_smiles = open(self.folder + "/processed/smiles.txt", "w")
-        self.testindx = len(suppl)
+        #self.testindx = len(suppl)
 
         print('Converting SMILES strings into graphs...')
         i = 0
         rng = np.random.default_rng()
         total_error = 0
         for idx, mol in enumerate(tqdm(suppl)):
-
+            
+            if mol is None :
+                print("idx:%s is None"%(idx))
+                continue
             SMILES = mol.GetProp("smiles")
             EP_ID = mol.GetProp("ep_id")
 
-            HOMO = mol.GetProp("homo")
-            LUMO = mol.GetProp("lumo")
-            be = mol.GetProp("binding_e")
-            log_vs = mol.GetProp("viscosity") #20230908 数据中是log值
-            log_dcs = mol.GetProp("dielectric_constant")#20230908 数据中是log值
+            HOMO = float( mol.GetProp("homo"))
+            LUMO = float(mol.GetProp("lumo"))
+            be = float(mol.GetProp("binding_e"))
+            log_vs = float(mol.GetProp("viscosity")) #20230908 数据中是log值
+            log_dcs = float(mol.GetProp("dielectric_constant"))#20230908 数据中是log值
 
             src_graph = mol2graph(mol)
             if True:

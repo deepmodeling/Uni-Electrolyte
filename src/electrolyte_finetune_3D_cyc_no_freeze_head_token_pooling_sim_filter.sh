@@ -11,7 +11,6 @@ if [[ $1 = "be" ]]; then
     --log_name_prefix  3D_20230706_vacuum \
     --sigmoid_inf -5  --sigmoid_sup 1   
 
-
 elif [[ $1 = "HOMO" ]]; then
     python rem4electrolyte_data.py  --predicted_target HOMO  --loaded_target_list be,log_dcs,log_vs,HOMO,LUMO \
      --dataset_name  3D_20230706_vacuum_train  \
