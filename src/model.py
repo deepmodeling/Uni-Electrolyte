@@ -1071,7 +1071,7 @@ class Embedding_extractor(pl.LightningModule):
     def configure_optimizers(self):
 
         params=self.parameters()
-        unfreezed_params=filter(lambda p:p.requites_grad,model.parameters())
+        unfreezed_params=filter(lambda p:p.requires_grad,self.parameters())
         optimizer = torch.optim.AdamW(unfreezed_params, lr=self.args.peak_lr, weight_decay=self.args.weight_decay)
         # lr_scheduler = {
         #     'scheduler': PolynomialDecayLR(
