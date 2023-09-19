@@ -8,7 +8,7 @@ if [[ $1 = "be" ]]; then
     --iid_test_input_filename iid_test.sdf  \
     --ood_test_dataset_name 3D_20230706_vacuum_ood  \
     --ood_test_input_filename  ood_test.sdf  \
-    --log_name_prefix  3D_20230706_vacuum \
+    --log_name_prefix  3D_20230706_vacuum_freeze_ \
     --sigmoid_inf -5  --sigmoid_sup 1   
 
 elif [[ $1 = "HOMO" ]]; then
@@ -19,7 +19,7 @@ elif [[ $1 = "HOMO" ]]; then
     --iid_test_input_filename iid_test.sdf  \
     --ood_test_dataset_name 3D_20230706_vacuum_ood  \
     --ood_test_input_filename  ood_test.sdf  \
-    --log_name_prefix  3D_20230706_vacuum \
+    --log_name_prefix  3D_20230706_vacuum_freeze \
     --sigmoid_inf -18  --sigmoid_sup 3  
 
 
@@ -31,7 +31,7 @@ elif [[ $1 = "LUMO" ]]; then
     --iid_test_input_filename iid_test.sdf  \
     --ood_test_dataset_name 3D_20230706_vacuum_ood  \
     --ood_test_input_filename  ood_test.sdf  \
-    --log_name_prefix  3D_20230706_vacuum \
+    --log_name_prefix  3D_20230706_vacuum_freeze \
   --sigmoid_inf -8  --sigmoid_sup 13   
  
 elif [[ $1 = "log_dcs" ]]; then
@@ -42,7 +42,7 @@ elif [[ $1 = "log_dcs" ]]; then
     --iid_test_input_filename iid_test.sdf  \
     --ood_test_dataset_name 3D_20230706_vacuum_ood  \
     --ood_test_input_filename  ood_test.sdf  \
-    --log_name_prefix  3D_20230706_vacuum \
+    --log_name_prefix  3D_20230706_vacuum_freeze \
   --sigmoid_inf -0.5  --sigmoid_sup 2.5 
 
 elif [[ $1 = "log_vs" ]]; then
@@ -53,7 +53,7 @@ elif [[ $1 = "log_vs" ]]; then
     --iid_test_input_filename iid_test.sdf  \
     --ood_test_dataset_name 3D_20230706_vacuum_ood  \
     --ood_test_input_filename  ood_test.sdf  \
-    --log_name_prefix  3D_20230706_vacuum \
+    --log_name_prefix  3D_20230706_vacuum_freeze \
   --sigmoid_inf -4  --sigmoid_sup 3 
 
 

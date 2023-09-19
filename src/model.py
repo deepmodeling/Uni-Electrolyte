@@ -32,6 +32,9 @@ np.random.seed(0)
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
 def softplus_inverse(x):
     return x + np.log(-np.expm1(-x))
 
@@ -303,7 +306,10 @@ class GraphFormer(pl.LightningModule):
         graph_node_feature = torch.cat([graph_token_feature, node_feature], dim=1)
         enc_out = graph_node_feature
  
-        for enc_layer in self.layers:
+        for layer_cnt,enc_layer in enumerate(self.layers):
+            if layer_cnt<3: #para freeze
+                for param_name,param in enc_layer.named_parameters():
+                    param.requires_grad = False
             enc_out = enc_layer(enc_out, graph_attn_bias,valid=valid)
         # import pdb
         # pdb.set_trace()
@@ -1064,7 +1070,9 @@ class Embedding_extractor(pl.LightningModule):
 
     def configure_optimizers(self):
 
-        optimizer = torch.optim.AdamW(self.parameters(), lr=self.args.peak_lr, weight_decay=self.args.weight_decay)
+        params=self.parameters()
+        unfreezed_params=filter(lambda p:p.requites_grad,model.parameters())
+        optimizer = torch.optim.AdamW(unfreezed_params, lr=self.args.peak_lr, weight_decay=self.args.weight_decay)
         # lr_scheduler = {
         #     'scheduler': PolynomialDecayLR(
         #         optimizer,
