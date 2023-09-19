@@ -34,7 +34,7 @@ class Rem():
         # args
         # ------------ #'--accelerator', 'ddp'
         self.args=args
-        self.args.plugins = DDPPlugin(find_unused_parameters=True)
+        # self.args.plugins = DDPPlugin(find_unused_parameters=True)
         self.args.max_steps = self.args.tot_updates + 1
 
         if not self.args.test and not self.args.validate:
