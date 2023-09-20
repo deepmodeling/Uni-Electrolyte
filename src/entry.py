@@ -18,7 +18,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 import os,sys
 import pickle
 
-# from pytorch_lightning.plugins import DDPPlugin
+from pytorch_lightning.plugins import DDPPlugin
 
 def cli_main():
     # ------------

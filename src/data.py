@@ -27,7 +27,7 @@ def get_dataset(dataset_name,input_file=None,loaded_target_list=None):
         # 'num_class':
         #'loss_fn': F.binary_cross_entropy,
         'metric': 'train_loss',
-        'dataset': EmbeddingDataset(root="/root/test_graphormer_g2gt/"+dataset_name,input_file=input_file,loaded_target_list=loaded_target_list),
+        'dataset': EmbeddingDataset(root="data/"+dataset_name,input_file=input_file,loaded_target_list=loaded_target_list),
         'max_node': 1000,
     }
 

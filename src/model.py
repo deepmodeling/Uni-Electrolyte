@@ -925,8 +925,7 @@ class Embedding_extractor(pl.LightningModule):
 
         # Init the pretrained G2GT model.
         #self.checkpoint_path = args.default_root_dir + '/conf/pretrain_model/epoch=41-step=160120.ckpt'
-        # self.checkpoint_path = args.default_root_dir + '/pretrain_model/epoch=41-step=160120.ckpt'
-        self.checkpoint_path = '/root/epoch=387-epoch=epoch_val_loss=0.133.ckpt'
+        self.checkpoint_path = args.default_root_dir + '/pretrain_model/epoch=41-step=160120.ckpt'
         #self.checkpoint_path = args.default_root_dir + './epoch_41-step_160120.ckpt'
         # self.dataset_name = 'QH_binary'
         self.ptm = GraphFormer.load_from_checkpoint(
