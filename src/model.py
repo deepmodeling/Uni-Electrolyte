@@ -307,9 +307,9 @@ class GraphFormer(pl.LightningModule):
         enc_out = graph_node_feature
  
         for layer_cnt,enc_layer in enumerate(self.layers):
-            if layer_cnt<3: #para freeze
-                for param_name,param in enc_layer.named_parameters():
-                    param.requires_grad = False
+            # if layer_cnt<3: #para freeze
+            #     for param_name,param in enc_layer.named_parameters():
+            #         param.requires_grad = False
             enc_out = enc_layer(enc_out, graph_attn_bias,valid=valid)
         # import pdb
         # pdb.set_trace()
@@ -1071,8 +1071,8 @@ class Embedding_extractor(pl.LightningModule):
     def configure_optimizers(self):
 
         params=self.parameters()
-        unfreezed_params=filter(lambda p:p.requires_grad,self.parameters())
-        optimizer = torch.optim.AdamW(unfreezed_params, lr=self.args.peak_lr, weight_decay=self.args.weight_decay)
+        #unfreezed_params=filter(lambda p:p.requires_grad,self.parameters())
+        optimizer = torch.optim.AdamW(params, lr=self.args.peak_lr, weight_decay=self.args.weight_decay)
         # lr_scheduler = {
         #     'scheduler': PolynomialDecayLR(
         #         optimizer,

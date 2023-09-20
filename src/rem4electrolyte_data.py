@@ -189,6 +189,7 @@ class Rem():
       
 
         self.model = Embedding_extractor(self.args)
+
         # self.model=Embedding_extractor.load_from_checkpoint(
         #     "lightning_logs/version_0/checkpoints/epoch=156-step=10989.ckpt",
         #     args=self.args)
