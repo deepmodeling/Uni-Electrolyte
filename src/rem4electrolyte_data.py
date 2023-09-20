@@ -1,5 +1,3 @@
-
-
 import numpy as np
 from rdkit import Chem
 from rdkit.Chem import AllChem
@@ -19,7 +17,7 @@ from argparse import ArgumentParser
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 import os,sys
-from pytorch_lightning.plugins import DDPPlugin
+# from pytorch_lightning.plugins import DDPPlugin
 from entry import predict_epoch_end
 import pandas as pd
 import torch
@@ -29,13 +27,14 @@ from pytorch_lightning.loggers.tensorboard import TensorBoardLogger
 import datetime
 now = datetime.datetime.now() 
 
+
 class Rem():
     def __init__(self,args):
         # ------------
         # args
         # ------------ #'--accelerator', 'ddp'
         self.args=args
-        self.args.plugins = DDPPlugin(find_unused_parameters=True)
+        # self.args.plugins = DDPPlugin(find_unused_parameters=True)
         self.args.max_steps = self.args.tot_updates + 1
 
         if not self.args.test and not self.args.validate:
@@ -111,12 +110,12 @@ class Rem():
         from collator import collator
         from custom_dataset import EmbeddingDataset
 
-   
-        if not os.path.exists("data/%s"%(self.args.dataset_name)):
-  
-            os.mkdir("data/%s"%(self.args.dataset_name))
-            os.mkdir("data/%s/raw"%(self.args.dataset_name))
-            shutil.copy("/data/%s"%(self.args.input_filename),"data/%s/raw/%s"%(self.args.dataset_name,self.args.input_filename))
+        self.args.dataset_name = 'thuEMol'
+        if not os.path.exists("/root/test_graphormer_g2gt/%s"%(self.args.dataset_name)):
+            os.mkdir("/root/test_graphormer_g2gt/%s"%(self.args.dataset_name))
+            os.mkdir("/root/test_graphormer_g2gt/%s/raw"%(self.args.dataset_name))
+            shutil.copy("/root/test_graphormer_g2gt/%s"%(self.args.input_filename),"/root/test_graphormer_g2gt/%s/raw/%s"%(self.args.dataset_name,self.args.input_filename))
+
         all_train_dataset=get_dataset(dataset_name=self.args.dataset_name,input_file=self.args.input_filename,loaded_target_list=self.args.loaded_target_list)["dataset"]
         
         # use 20% of training data for validation
@@ -149,10 +148,10 @@ class Rem():
                                 rel_pos_max=1024,predicted_target=self.args.predicted_target),)
         print('len(valid_dataloader)', len(valid_dataloader))
 
-        if not os.path.exists("data/%s"%(self.args.iid_test_dataset_name)):
-            os.mkdir("data/%s"%(self.args.iid_test_dataset_name))
-            os.mkdir("data/%s/raw"%(self.args.iid_test_dataset_name))
-            shutil.copy("/data/%s"%(self.args.iid_test_input_filename),"data/%s/raw/%s"%(self.args.iid_test_dataset_name,self.args.iid_test_input_filename))
+        if not os.path.exists("/root/test_graphormer_g2gt/%s"%(self.args.iid_test_dataset_name)):
+            os.mkdir("/root/test_graphormer_g2gt/%s"%(self.args.iid_test_dataset_name))
+            os.mkdir("/root/test_graphormer_g2gt/%s/raw"%(self.args.iid_test_dataset_name))
+            shutil.copy("/root/test_graphormer_g2gt/%s"%(self.args.iid_test_input_filename),"/root/test_graphormer_g2gt/%s/raw/%s"%(self.args.iid_test_dataset_name,self.args.iid_test_input_filename))
         
         iid_test_dataset=get_dataset(dataset_name=self.args.iid_test_dataset_name,input_file=self.args.iid_test_input_filename,loaded_target_list=self.args.loaded_target_list)["dataset"]
         iid_test_dataloader = DataLoader(
@@ -168,23 +167,7 @@ class Rem():
         print('len(iid_test_dataloader)', len(iid_test_dataloader))
         
 
-        if not os.path.exists("data/%s"%(self.args.ood_test_dataset_name)):
-            os.mkdir("data/%s"%(self.args.ood_test_dataset_name))
-            os.mkdir("data/%s/raw"%(self.args.ood_test_dataset_name))
-            shutil.copy("/data/%s"%(self.args.ood_test_input_filename),"data/%s/raw/%s"%(self.args.ood_test_dataset_name,self.args.ood_test_input_filename))
-        
-        ood_test_dataset=get_dataset(dataset_name=self.args.ood_test_dataset_name,input_file=self.args.ood_test_input_filename,loaded_target_list=self.args.loaded_target_list)["dataset"]
-        ood_test_dataloader = DataLoader(
-            ood_test_dataset,
-            batch_size=self.args.batch_size,
-            shuffle=False,
-            num_workers=self.args.num_workers,
-            pin_memory=True,
-            persistent_workers=True,
-            collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
-                               rel_pos_max=1024,predicted_target=self.args.predicted_target),
-        )
-        print('len(ood_test_dataloader)', len(ood_test_dataloader))
+
         
       
 
@@ -222,65 +205,33 @@ class Rem():
             #limit_train_batches=20,
             #log_every_n_steps=10
             )
-        trainer.fit(model=self.model, train_dataloaders=train_dataloader,val_dataloaders=valid_dataloader,)
+        # trainer.fit(model=self.model, train_dataloaders=train_dataloader,val_dataloaders=valid_dataloader,)
         
-        trainer.test(model=self.model, dataloaders=iid_test_dataloader)
-        trainer.test(model=self.model, dataloaders=ood_test_dataloader)
+        trainer.test(model=self.model, dataloaders=iid_test_dataloader, ckpt_path=r'/root/epoch=387-epoch=epoch_val_loss=0.133.ckpt')
 
-        
+        if not os.path.exists("/root/test_graphormer_g2gt/%s" % (self.args.ood_test_dataset_name)):
+            os.mkdir("/root/test_graphormer_g2gt/%s" % (self.args.ood_test_dataset_name))
+            os.mkdir("/root/test_graphormer_g2gt/%s/raw" % (self.args.ood_test_dataset_name))
+            shutil.copy("/root/test_graphormer_g2gt/%s" % (self.args.ood_test_input_filename),
+                        "/root/test_graphormer_g2gt/%s/raw/%s" % (
+                        self.args.ood_test_dataset_name, self.args.ood_test_input_filename))
 
+        ood_test_dataset = \
+        get_dataset(dataset_name=self.args.ood_test_dataset_name, input_file=self.args.ood_test_input_filename,
+                    loaded_target_list=self.args.loaded_target_list)["dataset"]
+        ood_test_dataloader = DataLoader(
+            ood_test_dataset,
+            batch_size=self.args.batch_size,
+            shuffle=False,
+            num_workers=self.args.num_workers,
+            pin_memory=True,
+            persistent_workers=True,
+            collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
+                               rel_pos_max=1024, predicted_target=self.args.predicted_target),
+        )
+        print('len(ood_test_dataloader)', len(ood_test_dataloader))
 
-
-
-
-
-
-
-
-def main_repr():
-    """
-    pipeline task on nb-server
-    :param
-    --input_file: a csv format file path, which must contain a column called smiles
-    --input_file: a csv format file path, which contains a smiles column which corresponds
-    to input where possible, and a vector column
-
-    :return:
-    """
-    parser = ArgumentParser()
-    parser = pl.Trainer.add_argparse_args(parser)
-    parser = GraphFormer.add_model_specific_args(parser)
-    parser = GraphDataModule.add_argparse_args(parser)
-    parser.add_argument('--input_filepath', type=str)
-    parser.add_argument('--output_filepath',type=str)
-    args = parser.parse_args()
-    input_dataframe=pd.read_csv(args.input_filepath)
-    input_smiles_list=[]
-    sys.argv=sys.argv[:1]
-    for smiles in input_dataframe["SMILES"]:
-        try:
-            smiles_out=AllChem.MolToSmiles(AllChem.MolFromSmiles(smiles))
-            if smiles_out is None:
-                raise Exception
-        except:
-            continue
-        input_smiles_list.append(smiles_out)
-
-    rem = Rem()
-    rr=rem.predict_repr(input_smiles_list)
-
-    smiles_out_list=[]
-    vector_list=[]
-    for smiles in rr:
-        smiles_out_list.append(smiles)
-        vector_list.append(rr[smiles][0])
-    out_dict={"SMILES":smiles_out_list,"vector":vector_list}
-    out_df=pd.DataFrame(data=out_dict)
-    out_df.to_csv(args.output_filepath,index=False)
-    import pickle
-    with open("%s.pkl"%(args.output_filepath),"wb") as pkl_fp:
-        pickle.dump(out_dict,pkl_fp)
-
+        trainer.test(model=self.model, dataloaders=ood_test_dataloader, ckpt_path=r'/root/epoch=387-epoch=epoch_val_loss=0.133.ckpt')
 
 
 def main_finetune():
@@ -303,19 +254,21 @@ def main_finetune():
     parser.add_argument('--pooling', default='attention', type=str)
     parser.add_argument('--downstream_ffn_dim', default=768, type=int)
     parser.add_argument('--downstream_dropout', default=0, type=float)
-    #parser.add_argument('--dataset_name', type=str) #这句话不被加上也有dataset_name参数
-    parser.add_argument('--input_filename', type=str)
-    parser.add_argument("--sigmoid_inf",type=float)
-    parser.add_argument("--sigmoid_sup",type=float)
+    # parser.add_argument('--dataset_name', type=str, default='rem_electrolyte_train') #这句话不被加上也有dataset_name参数
+    parser.add_argument('--input_filename', type=str, default='1_CHO_47371_uninf_20230706_all_train.csv')
+    parser.add_argument("--sigmoid_inf",type=float, default=-5)
+    parser.add_argument("--sigmoid_sup",type=float, default=1)
     parser.add_argument("--epoch",type=int)
-    parser.add_argument("--iid_test_dataset_name",type=str)
-    parser.add_argument("--iid_test_input_filename",type=str)
-    parser.add_argument("--ood_test_dataset_name",type=str)
-    parser.add_argument("--ood_test_input_filename",type=str)
+    parser.add_argument("--iid_test_dataset_name",type=str, default='rem_electrolyte_iid')
+    parser.add_argument("--iid_test_input_filename",type=str, default='1_CHO_47371_uninf_20230706_iid_test.csv')
+    parser.add_argument("--ood_test_dataset_name",type=str, default='rem_electrolyte_ood')
+    parser.add_argument("--ood_test_input_filename", type=str, default='1_CHO_47371_uninf_20230706_ood_test.csv')
     parser.add_argument("--freeze",action="store_true")
-    parser.add_argument("--log_name_prefix",type=str)
-    parser.add_argument("--predicted_target",type=str)
-    parser.add_argument("--loaded_target_list",type=str,help="target keys needed for loaded with ',' as split sign" )
+    parser.add_argument("--log_name_prefix",type=str, default='cyc_no_freeze_no_decline')
+    parser.add_argument("--predicted_target",type=str, default='be')
+    parser.add_argument("--loaded_target_list",type=str,
+                        help="target keys needed for loaded with ',' as split sign",
+                        default='be,log_dcs,log_vs,HOMO,LUMO')
 
     args = parser.parse_args() 
     args.loaded_target_list=args.loaded_target_list.split(",")
