@@ -1,7 +1,7 @@
 import os
 
 import torch
-from uni_electrolyte.evaluator.dataset import pyG_thuEMol
+from uni_electrolyte.evaluator.dataset import thuEMol
 from uni_electrolyte.evaluator.inference import pyG_inference_test, pyG_inference_train, pyG_inference_without_label
 from uni_electrolyte.evaluator.model.spatial import ComENet
 from uni_electrolyte.evaluator.trainer import pyG_trainer
@@ -17,7 +17,7 @@ data_path = r'./input/data'
 ####################################################################################################################
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("cpu")
 
-dataset = pyG_thuEMol(root=os.path.join(data_path, 'train'))
+dataset = thuEMol(root=os.path.join(data_path, 'train'), load_target_list=targets)
 dataset.data.y = dataset.data[target]
 split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=33540, valid_size=3353, seed=42)
 train_dataset, valid_dataset, test_dataset = dataset[split_idx['train']], dataset[split_idx['valid']], dataset[
@@ -44,7 +44,7 @@ ckpt = torch.load('./output/run_info/valid_checkpoint.pt')
 model.load_state_dict(ckpt['model_state_dict'])
 model.to(device=device)
 ####################################################################################################################
-dataset = pyG_thuEMol(root=os.path.join(data_path, 'ood_test'))
+dataset = thuEMol(root=os.path.join(data_path, 'ood_test'), load_target_list=targets)
 dataset.data.y = dataset.data[target]
 split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=1, valid_size=1, seed=42)
 train_dataset, valid_dataset, test_dataset = dataset[split_idx['train']], dataset[split_idx['valid']], dataset[
@@ -55,7 +55,7 @@ evaluation = pyG_inference_test(dump_info_path=r'./output/test_info', info_file_
 _ = trainer.val(model=model, data_loader=DataLoader(test_dataset, 50, shuffle=False),
                    energy_and_force=False, p=0, evaluation=evaluation, device=device)
 ####################################################################################################################
-dataset = pyG_thuEMol(root=os.path.join(data_path, 'iid_test'))
+dataset = thuEMol(root=os.path.join(data_path, 'iid_test'), load_target_list=targets)
 dataset.data.y = dataset.data[target]
 split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=1, valid_size=1, seed=42)
 train_dataset, valid_dataset, test_dataset = dataset[split_idx['train']], dataset[split_idx['valid']], dataset[

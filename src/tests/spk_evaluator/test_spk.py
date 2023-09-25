@@ -20,7 +20,7 @@ from scipy import stats
 
 
 if __name__ == "__main__":
-    workbase = r'./test_output'
+    workbase = r'./output/test_output'
     input_data_path = r'./input/data'
 
     targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
@@ -117,7 +117,6 @@ if __name__ == "__main__":
         batch_size=100,
         num_train=1,
         num_val=1,
-        num_test=4447,
         load_properties=[target],
         transforms=[
             trn.ASENeighborList(cutoff=20.),
@@ -138,7 +137,6 @@ if __name__ == "__main__":
         batch_size=100,
         num_train=1,
         num_val=1,
-        num_test=4600,
         load_properties=[target],
         transforms=[
             trn.ASENeighborList(cutoff=20.),

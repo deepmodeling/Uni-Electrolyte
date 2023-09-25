@@ -1,7 +1,7 @@
 import os
 
 import torch
-from uni_electrolyte.evaluator.dataset import pyG_thuEMol
+from uni_electrolyte.evaluator.dataset import thuEMol
 from uni_electrolyte.evaluator.inference import pyG_inference_without_label
 from uni_electrolyte.evaluator.model.spatial import LEFTNet
 from uni_electrolyte.evaluator.trainer import pyG_trainer
@@ -23,11 +23,11 @@ model = LEFTNet(
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("cpu")
 trainer = pyG_trainer()
 ####################################################################################################################
-ckpt = torch.load('./input/valid_checkpoint.pt')
+ckpt = torch.load(r'./input/valid_checkpoint.pt')
 model.load_state_dict(ckpt['model_state_dict'])
 model.to(device=device)
 ####################################################################################################################
-dataset = pyG_thuEMol(root='./input/data/iid_test')
+dataset = thuEMol(root='./input/data/iid_test', load_target_list=targets)
 dataset.data.y = dataset.data[target]
 split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=1, valid_size=1, seed=42)
 train_dataset, valid_dataset, test_dataset = dataset[split_idx['train']], dataset[split_idx['valid']], dataset[

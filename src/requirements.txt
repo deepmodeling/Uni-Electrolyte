@@ -20,3 +20,4 @@ scipy
 networkx
 pandas
 numpy
+rdkit

@@ -37,11 +37,6 @@ class spk_thuEMol(AtomsDataModule):
     """
 
     # properties
-    binding_e = "binding_e"
-    homo = "homo"
-    lumo = "lumo"
-    dielectric_constant = "dielectric_constant"
-    viscosity = "viscosity"
 
 
     def __init__(
@@ -120,16 +115,23 @@ class spk_thuEMol(AtomsDataModule):
         if os.path.exists(r'split.npz'):
             os.remove(r'split.npz')
             os.remove(r'splitting.lock')
+        property_unit_dict = {}
+        for a_property in load_properties:
+            property_unit_dict.update({a_property: "Hartree"})
+        self.property_unit_dict = property_unit_dict
 
+    # To do: add new property
     def prepare_data(self):
-        property_unit_dict = {
-            spk_thuEMol.viscosity: "Hartree",
-            spk_thuEMol.dielectric_constant: "Hartree",
-            spk_thuEMol.binding_e: "eV",
-            spk_thuEMol.homo: "eV",
-            spk_thuEMol.lumo: "eV",
-        }
         dataset = load_dataset(datapath=self.datapath,
                                format=self.format,
-                               property_units=property_unit_dict,
+                               property_units=self.property_unit_dict,
                                )
+
+    def predict_dataloader(self) -> AtomsLoader:
+        self._predict_dataloader = AtomsLoader(
+            self.test_dataset,
+            batch_size=self.test_batch_size,
+            num_workers=self.num_test_workers,
+            pin_memory=self._pin_memory,
+        )
+        return self._predict_dataloader

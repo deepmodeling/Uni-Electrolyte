@@ -396,6 +396,20 @@ class SinglePropertyClrTask(AtomisticTask):
         self.log("test_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
         return {"test_loss": loss}
 
+    def predict_step(self, batch, batch_idx):
+        cwd_ = os.getcwd()
+        os.chdir(self.dump_info_path)
+        torch.set_grad_enabled(self.grad_enabled)
+
+        pred = self.predict_without_postprocessing(batch)
+        flatten_pred = torch.flatten(pred[self.predict_property]).detach().cpu().numpy()
+
+        if self.predict_property in ['dielectric_constant', 'viscosity']:
+            flatten_pred = pow(10, flatten_pred)
+        with open("pred", "a") as pred:
+            pred.writelines(list(map(lambda x: str(x) + "\n", flatten_pred)))
+        os.chdir(cwd_)
+
     def configure_optimizers(self):
         self.optimizer = self.optimizer_cls(
             params=self.parameters(), **self.optimizer_kwargs
@@ -433,72 +447,4 @@ class SinglePropertyClrTask(AtomisticTask):
         np.save('pred.npy', flatten_pred)
         np.save('target.npy', flatten_targets)
         os.chdir(cwd_)
-
-
-class spk_inference_without_label(AtomisticTask):
-    def __init__(
-            self,
-            model: AtomisticModel,
-            outputs: List[ModelOutput] = None,
-            optimizer_cls: Type[torch.optim.Optimizer] = torch.optim.Adam,
-            optimizer_args: Optional[Dict[str, Any]] = None,
-            scheduler_cls: Optional[Type] = None,
-            scheduler_args: Optional[Dict[str, Any]] = None,
-            scheduler_monitor: Optional[str] = None,
-            warmup_steps: int = 0,
-            predict_property: str = 'binding_e',
-            dump_info_path: str = None
-    ):
-        """
-        Args:
-            model: the neural network model
-            outputs: list of outputs an optional loss functions
-            optimizer_cls: type of torch optimizer,e.g. torch.optim.Adam
-            optimizer_args: dict of optimizer keyword arguments
-            scheduler_cls: type of torch learning rate scheduler
-            scheduler_args: dict of scheduler keyword arguments
-            scheduler_monitor: name of metric to be observed for ReduceLROnPlateau
-            warmup_steps: number of steps used to increase the learning rate from zero
-              linearly to the target learning rate at the beginning of training
-        """
-        super(spk_inference_without_label, self).__init__(
-            model=model,
-            outputs=outputs,
-            optimizer_cls=optimizer_cls,
-            optimizer_args=optimizer_args,
-            scheduler_cls=scheduler_cls,
-            scheduler_args=scheduler_args,
-            scheduler_monitor=scheduler_monitor,
-            warmup_steps=warmup_steps
-        )
-        self.model = model
-        self.optimizer_cls = optimizer_cls
-        self.optimizer_kwargs = optimizer_args
-        self.scheduler_cls = scheduler_cls
-        self.scheduler_kwargs = scheduler_args
-        self.schedule_monitor = scheduler_monitor
-        self.outputs = nn.ModuleList(outputs)
-
-        self.grad_enabled = len(self.model.required_derivatives) > 0
-        self.lr = None
-        self.warmup_steps = warmup_steps
-        self.save_hyperparameters()
-        self.predict_property = predict_property
-        self.dump_info_path = os.path.abspath(dump_info_path)
-        os.makedirs(self.dump_info_path, exist_ok=True)
-
-    def test_step(self, batch, batch_idx):
-        cwd_ = os.getcwd()
-        os.chdir(self.dump_info_path)
-        torch.set_grad_enabled(self.grad_enabled)
-
-        pred = self.predict_without_postprocessing(batch)
-        flatten_pred = torch.flatten(pred[self.predict_property]).detach().cpu().numpy()
-
-        if self.predict_property in ['dielectric_constant', 'viscosity']:
-            flatten_pred = pow(10, flatten_pred)
-        with open("pred", "a") as pred:
-            pred.writelines(list(map(lambda x: str(x) + "\n", flatten_pred)))
-        os.chdir(cwd_)
-        return None
 
