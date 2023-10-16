@@ -32,6 +32,8 @@ np.random.seed(0)
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
+IF_3D=False
+
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
@@ -208,12 +210,15 @@ class GraphFormer(pl.LightningModule):
 
 
         #3D
-        self.bias_proj = NonLinear(K, head_size)
-        self.gbf  = GaussianLayer(K,1056) #32*32+32 corresponds to the paired atomic num feature,which may be insufient
-        self.edge_proj = nn.Linear(K, hidden_dim)
+        if IF_3D:
+            self.bias_proj = NonLinear(K, head_size)
+            self.gbf  = GaussianLayer(K,1056) #32*32+32 corresponds to the paired atomic num feature,which may be insufient
+            self.edge_proj = nn.Linear(K, hidden_dim)
     def translate_encoder(self,batched_data, beam=1, perturb=None, y=None, valid = True):
         """Get output of encoder."""
         attn_bias, rel_pos, x ,_3D_pos= batched_data.attn_bias, batched_data.rel_pos, batched_data.x,batched_data.pos
+
+
         """
         attn_bias:(batch_num,atom_num+1,atom_num+1)  #+1是头部字符
         rel_pos，all_rel_pos_3d_1:(batch_num,atom_num,atom_num) ，20230905 目前这两个都是对称的拓扑距离矩阵，rel_pos比all_rel_pos_3d_1 大1
@@ -227,29 +232,28 @@ class GraphFormer(pl.LightningModule):
 
 
         #3D feature & attn_bias
-        atomic_nums=x[:,:,0] #原子序数特征
-        padding_mask=atomic_nums==0  # batch_size*atom_num mask mat
-        batch_num=atomic_nums.shape[0]
-        atom_num=atomic_nums.shape[1]
-        edge_pair_atomic_num_type = atomic_nums.view(batch_num, atom_num, 1) *32 + atomic_nums.view(batch_num, 1, atom_num)
-        delta_pos = _3D_pos.unsqueeze(1) - _3D_pos.unsqueeze(2)
-        dist = delta_pos.norm(dim=-1)
-        delta_pos /= dist.unsqueeze(-1) + 1e-5
-        gbf_feature = self.gbf(dist, edge_pair_atomic_num_type)
+        if IF_3D:
+            atomic_nums=x[:,:,0] #原子序数特征
+            padding_mask=atomic_nums==0  # batch_size*atom_num mask mat
+            batch_num=atomic_nums.shape[0]
+            atom_num=atomic_nums.shape[1]
+            edge_pair_atomic_num_type = atomic_nums.view(batch_num, atom_num, 1) *32 + atomic_nums.view(batch_num, 1, atom_num)
+            delta_pos = _3D_pos.unsqueeze(1) - _3D_pos.unsqueeze(2)
+            dist = delta_pos.norm(dim=-1)
+            delta_pos /= dist.unsqueeze(-1) + 1e-5
+            gbf_feature = self.gbf(dist, edge_pair_atomic_num_type)
 
 
-        _3D_edge_features = gbf_feature.masked_fill(padding_mask.unsqueeze(1).unsqueeze(-1), 0.0)
-        _3D_edge_features =self.edge_proj(_3D_edge_features.sum(dim=-2))
+            _3D_edge_features = gbf_feature.masked_fill(padding_mask.unsqueeze(1).unsqueeze(-1), 0.0)
+            _3D_edge_features =self.edge_proj(_3D_edge_features.sum(dim=-2))
 
-        _3d_graph_attn_bias = self.bias_proj(gbf_feature).permute(0, 3, 1, 2).contiguous()
-        _3d_graph_attn_bias.masked_fill_(padding_mask.unsqueeze(1).unsqueeze(2), float("-inf"))
+            _3d_graph_attn_bias = self.bias_proj(gbf_feature).permute(0, 3, 1, 2).contiguous()
+            _3d_graph_attn_bias.masked_fill_(padding_mask.unsqueeze(1).unsqueeze(2), float("-inf"))
 
         #实时计算graph_attention_bias矩阵矩阵:(batch_num,head_size,atom_num+1,atom_num+1)
         # graph_attn_bias
         n_graph, n_node = x.size()[:2]
         graph_attn_bias = attn_bias.clone()
- 
-
         #unsqueeze for multihead
         graph_attn_bias = graph_attn_bias.unsqueeze(1).repeat(1, self.head_size, 1, 1) # [n_graph, n_head, n_node+1, n_node+1]
 
@@ -260,7 +264,9 @@ class GraphFormer(pl.LightningModule):
         rbf_result = self.rel_pos_3d_proj(self.rbf(all_rel_pos_3d_1)).permute(0, 3, 1, 2)
         graph_attn_bias[:, :, 1:, 1:] = graph_attn_bias[:, :, 1:, 1:] + rbf_result
 
-        graph_attn_bias[:, :, 1:, 1:] = graph_attn_bias[:, :, 1:, 1:]+ _3d_graph_attn_bias  # 20230914 
+        #3D
+        if IF_3D:
+            graph_attn_bias[:, :, 1:, 1:] = graph_attn_bias[:, :, 1:, 1:]+ _3d_graph_attn_bias  # 20230914
 
 
         # reset rel pos here
@@ -298,7 +304,11 @@ class GraphFormer(pl.LightningModule):
         if self.flag and perturb is not None:
             node_feature += perturb
 
-        node_feature = node_feature + self.in_degree_encoder(in_degree) + self.out_degree_encoder(out_degree)+ _3D_edge_features  #20230914 add 3D dis mat feature
+        if IF_3D:
+            node_feature = node_feature + self.in_degree_encoder(in_degree) + self.out_degree_encoder(out_degree)+ _3D_edge_features  #20230914 add 3D dis mat feature
+        else:
+            node_feature = node_feature + self.in_degree_encoder(in_degree) + self.out_degree_encoder(out_degree)
+
         graph_token_feature = self.graph_token(batched_data.reverse)
         graph_token_feature = graph_token_feature.unsqueeze(1)
 
