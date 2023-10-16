@@ -4,34 +4,29 @@ from dp.launching.typing import BaseModel, Field, OutputDirectory,InputFilePath,
 from dp.launching.cli import SubParser,default_minimal_exception_handler,run_sp_and_exit,to_runner
 
 from strategy import SCREENING_func,SEARCH_MOL_func,RECORD_DATASET_func
-class Union_RECORD_DATASET(BaseModel):
-    type: Literal["RECORD_DATASET"]
-    mol_file: InputFilePath = Field(...,ftypes=["smi","sdf"],
-                                    description="""CSV file or sdf file，
-        the CSV file has 2 columns, "ID" and "smiles".
-        In the sdf file, each conformation has "ID" tag and "smiles" tag . Each smiles and ID could only appear once
-        and correspond to a unique conformation.""")
-    model_property_map:String=Field(...,description="""
-    json
+class RECORD_DATASET_AND_SCORING(BaseModel):
+    type: Literal["RECORD_DATASET_AND_SCORING"]
+    mol_file: InputFilePath = Field(...,ftypes=["""CSV file or sdf file, the CSV file has 2 columns, "ID" and "smiles".
+    In the sdf file, each conformation has "ID" tag and "smiles" tag . 
+    Each smiles and ID could only appear once and correspond to a unique conformation."""],)
+    model_property_dict:String=Field(..., description="""
+    json format
     exp:
     {"g2gt":["Binding_energy_eV","Dielectric_constant_of_solvents_screening_condition","Viscosity_of_solvents_mPas",
     "LUMO_eV","HOMO_eV"]}
     """)
 
-    fingerprint_list:String=Field(...,description="""
-    json
+    fingerprint_list:String=Field([],description="""
+    json format
     exp:
     ["g2gt"]
+    default []
     """)
 
 
-class Union_SCREENING(BaseModel):
-    class SetOptional(String, Enum):
-        option_i_1 = "StandardDataset"
-        option_i_2 = "yourDataset"
-
+class SCREENING(BaseModel):
     type: Literal["SCREENING"]
-    dataset_name:SetOptional=Field( description="")
+    dataset_name:String=Field("StandardDataset", description=""" "StandardDataset" or your dataset name """)
     Binding_energy_eV_screening_condition: String=Field( description="eg: 0~ , ~1 ,0~1 None")
     Dielectric_constant_of_solvents_screening_condition: String=Field( description=" eg: 0~ , ~1 ,0~1  None")
     Viscosity_of_solvents_mPas_screening_condition: String=Field( description="eg: 0~ , ~1 ,0~1  None")
@@ -39,16 +34,13 @@ class Union_SCREENING(BaseModel):
     HOMO_eV_screening_condition :String=Field( description="eg: 0~ , ~1 ,0~1  None")
 
 
-class Union_SEARCH_MOL(BaseModel):
+class SEARCH_MOL(BaseModel):
     type: Literal["SEARCH_MOL"]
-    query_mol_file: InputFilePath = Field(...,ftypes=["CSV"],description="""
-    CSV file or sdf file，
-        the CSV file has 2 columns, "ID" and "smiles".
-    """)
+    query_mol_file: InputFilePath = Field(...,ftypes=["""CSV file the CSV file has 2 columns, "ID" and "smiles"."""])
 
 
 class Options(BaseModel):
-    contact: Union[Union_RECORD_DATASET, Union_SCREENING,Union_SEARCH_MOL] = Field(discriminator="type")
+    contact: Union[RECORD_DATASET_AND_SCORING, SCREENING,SEARCH_MOL] = Field(discriminator="type")
     output_dir: OutputDirectory = Field(
         default="./output"
     )  # default will be override after online
@@ -60,8 +52,9 @@ class global_opt(Options, BaseModel):
 
 def runner(opts:  global_opt) -> int:
 
-    if opts.contact.type=="RECORD_DATASET":
-        RECORD_DATASET_func(mol_file=opts.contact.mol_file)
+    if opts.contact.type=="RECORD_DATASET_AND_SCORING":
+        RECORD_DATASET_func(mol_file=opts.contact.mol_file,model_property_dict=opts.contact.model_property_dict,
+                            fingerprint_list=opts.contact.fingerprint_list)
     elif opts.contact.type=="SCREENING":
         SCREENING_func(dataset_name=opts.contact.dataset_name,
                        Binding_energy_eV_screening_condition=opts.contact.Binding_energy_eV_screening_condition,
