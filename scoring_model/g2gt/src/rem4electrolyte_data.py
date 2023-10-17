@@ -116,7 +116,9 @@ class Rem():
 
         predict_input_csv_file_name=self.args.predict_input_csv_file_path.split("/")[-1]
         if  os.path.exists("data/%s" % (self.args.predict_dataset_name)):
-            os.rmdir("data/%s" % (self.args.predict_dataset_name))
+            if self.args.predict_dataset_name == "" or  self.args.predict_dataset_name  is None:
+                raise Exception
+            os.system("rm -rf data/%s" % (self.args.predict_dataset_name))       #os.rmdir("data/%s" % (self.args.predict_dataset_name))
         os.mkdir("data/%s" % (self.args.predict_dataset_name))
         os.mkdir("data/%s/raw" % (self.args.predict_dataset_name))
         shutil.copy(self.args.predict_input_csv_file_path,

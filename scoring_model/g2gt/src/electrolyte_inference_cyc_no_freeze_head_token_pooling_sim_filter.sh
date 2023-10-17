@@ -7,7 +7,7 @@ if [[ $1 = "be" ]]; then
     --predict_output_csv_file_path ./predict.csv \
     --log_name_prefix  inference \
     --inference \
-    --ID_name EP\ ID \
+    --ID_name EP_ID \
     --sigmoid_inf -5  --sigmoid_sup 1   
 
 
