@@ -114,21 +114,22 @@ class Rem():
         if len(self.args.loaded_target_list)!=0:  #inference 不用读入数据文件的预测值
             raise Exception
 
-
-        if not os.path.exists("data/%s" % (self.args.iid_test_dataset_name)):
-            os.mkdir("data/%s" % (self.args.iid_test_dataset_name))
-            os.mkdir("data/%s/raw" % (self.args.iid_test_dataset_name))
-            shutil.copy("/data/%s" % (self.args.iid_test_input_filename),
-                        "data/%s/raw/%s" % (self.args.iid_test_dataset_name, self.args.iid_test_input_filename))
+        predict_input_csv_file_name=self.args.predict_input_csv_file_path.split("/")[-1]
+        if  os.path.exists("data/%s" % (self.args.predict_dataset_name)):
+            os.rmdir("data/%s" % (self.args.predict_dataset_name))
+        os.mkdir("data/%s" % (self.args.predict_dataset_name))
+        os.mkdir("data/%s/raw" % (self.args.predict_dataset_name))
+        shutil.copy(self.args.predict_input_csv_file_path,
+                    "data/%s/raw/%s" % (self.args.predict_dataset_name,predict_input_csv_file_name))
         if self.args.dataset_name is not None:
             raise Exception
-        self.args.dataset_name = self.args.iid_test_dataset_name
+        self.args.dataset_name = self.args.predict_dataset_name #model.py 中没有args.dataset_name 会报错
 
-        iid_test_dataset = \
-        get_dataset(dataset_name=self.args.iid_test_dataset_name, input_file=self.args.iid_test_input_filename,
+        predict_test_dataset = \
+        get_dataset(dataset_name=self.args.predict_dataset_name, input_file=predict_input_csv_file_name,
                     loaded_target_list=self.args.loaded_target_list,ID_name=self.args.ID_name)["dataset"]
-        iid_test_dataloader = DataLoader(
-            iid_test_dataset,
+        predict_dataloader = DataLoader(
+            predict_test_dataset,
             batch_size=self.args.batch_size,
             shuffle=False,
             num_workers=self.args.num_workers,
@@ -137,7 +138,7 @@ class Rem():
             collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
                                rel_pos_max=1024, predicted_target=self.args.predicted_target),
         )
-        print('len(iid_test_dataloader)', len(iid_test_dataloader))
+        print('len(predict_dataloader)', len(predict_dataloader))
         self.model = Embedding_extractor(self.args)
 
 
@@ -163,11 +164,11 @@ class Rem():
             # log_every_n_steps=10
         )
 
-        if self.args.predict_csv_file_path is None:
+        if self.args.predict_output_csv_file_path is None:
             raise Exception
 
-        trainer.predict(model=self.model, dataloaders=iid_test_dataloader)
-        trainer.test(model=self.model, dataloaders=iid_test_dataloader)
+        trainer.predict(model=self.model, dataloaders=predict_dataloader)
+        #trainer.test(model=self.model, dataloaders=predict_dataloader)
 
 
 
@@ -364,8 +365,8 @@ def main():
     parser.add_argument("--sigmoid_inf",type=float)
     parser.add_argument("--sigmoid_sup",type=float)
     parser.add_argument("--epoch",type=int)
-    parser.add_argument("--iid_test_dataset_name",type=str,help="iid test or inference data")
-    parser.add_argument("--iid_test_input_filename",type=str,help="iid test or inference data")
+    parser.add_argument("--iid_test_dataset_name",type=str )
+    parser.add_argument("--iid_test_input_filename",type=str )
     parser.add_argument("--ood_test_dataset_name",type=str)
     parser.add_argument("--ood_test_input_filename",type=str)
     parser.add_argument("--freeze",action="store_true")
@@ -374,7 +375,9 @@ def main():
     parser.add_argument("--loaded_target_list",type=str,help="target keys needed for loaded with ',' as split sign" )
     parser.add_argument("--inference",action="store_true")
     parser.add_argument("--ID_name", type=str)
-    parser.add_argument("--predict_csv_file_path",type=str)
+    parser.add_argument("--predict_output_csv_file_path",type=str)
+    parser.add_argument("--predict_input_csv_file_path", type=str)
+    parser.add_argument("--predict_dataset_name", type=str)
 
     args = parser.parse_args() 
     

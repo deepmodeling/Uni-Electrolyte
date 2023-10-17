@@ -2,12 +2,12 @@
 
 if [[ $1 = "be" ]]; then
     python rem4electrolyte_data.py  --predicted_target be   \
-    --iid_test_dataset_name rem_electrolyte_iid_1_CHO_47371_uninf_20230706  \
-    --iid_test_input_filename 1_CHO_47371_uninf_20230706_iid_test.csv  \
+    --predict_dataset_name inference_dataset  \
+    --predict_input_csv_file_path ./input.csv  \
+    --predict_output_csv_file_path ./predict.csv \
     --log_name_prefix  inference \
     --inference \
     --ID_name EP\ ID \
-    --predict_csv_file_path ./predict.csv \
     --sigmoid_inf -5  --sigmoid_sup 1   
 
 
