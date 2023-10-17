@@ -1059,11 +1059,11 @@ class Embedding_extractor(pl.LightningModule):
         self.validation_step_outputs = []
         self.train_step_outputs = []
         self.test_loss_outputs=[]
-        self.test_outputs_dict={"smiles":[],"y_true":[],"y_pred":[],"id":[],"EP_ID":[]}
+        self.test_outputs_dict={"smiles":[],"y_true":[],"y_pred":[],"idx":[],"EP_ID":[]}
         self.test_de_log_loss_outputs=[]
         self.test_de_log_ratio_loss_outputs=[]
         self.mae_loss=nn.L1Loss()
-
+        self.predict_outputs_dict = {"smiles": [],   "y_pred": [], "idx": [], "EP_ID": []}
 
 
     def forward(self, x):
@@ -1118,7 +1118,23 @@ class Embedding_extractor(pl.LightningModule):
         x = batch
         y_pred = self(x)
       
+
+        self.predict_outputs_dict["y_pred"] += y_pred.flatten().tolist()
+        # import pdb
+        # pdb.set_trace()
+        self.predict_outputs_dict["smiles"] += list(batch.smiles)
+        self.predict_outputs_dict["EP_ID"] += list(batch.EP_ID)
+        self.predict_outputs_dict["idx"] += batch.idx.tolist()
+
         return {"pred": y_pred.detach().cpu().numpy(),'idx':batch_idx}
+
+    def on_predict_epoch_end(self):
+
+
+
+        predict_outputs_df = pd.DataFrame(self.predict_outputs_dict)
+        predict_outputs_df.to_csv(self.args.predict_csv_file_path)
+
 
     def training_step(self, batch, batch_idx):
         # training_step defines the train loop.

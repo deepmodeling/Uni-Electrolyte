@@ -163,17 +163,13 @@ class Rem():
             # log_every_n_steps=10
         )
 
-
-        trainer.test(model=self.model, dataloaders=iid_test_dataloader)
-
-
-        if not os.path.exists("lightning_logs/%s/test_output_%s.csv" % (self.args.log_name, now.strftime("%Y%m%d%H%M%S"))):
+        if self.args.predict_csv_file_path is None:
             raise Exception
-        
-        if self.args.test_output_csv_file_path is None:
-            raise Exception
-        shutil.copy("lightning_logs/%s/test_output_%s.csv" % (self.args.log_name, now.strftime("%Y%m%d%H%M%S")),
-                    self.args.test_output_csv_file_path )
+
+        trainer.predict(model=self.model, dataloaders=iid_test_dataloader)
+
+
+
 
 
 
@@ -378,7 +374,7 @@ def main():
     parser.add_argument("--loaded_target_list",type=str,help="target keys needed for loaded with ',' as split sign" )
     parser.add_argument("--inference",action="store_true")
     parser.add_argument("--ID_name", type=str)
-    parser.add_argument("--test_output_csv_file_path",type=str)
+    parser.add_argument("--predict_csv_file_path",type=str)
 
     args = parser.parse_args() 
     
