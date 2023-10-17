@@ -1128,7 +1128,7 @@ class Embedding_extractor(pl.LightningModule):
 
         return {"pred": y_pred.detach().cpu().numpy(),'idx':batch_idx}
 
-    def on_predict_epoch_end(self):
+    def on_predict_epoch_end(self,a):
 
 
 
@@ -1188,7 +1188,7 @@ class Embedding_extractor(pl.LightningModule):
         # pdb.set_trace()
         self.test_outputs_dict["smiles"]+=list(batch.smiles)
         self.test_outputs_dict["EP_ID"]+=list(batch.EP_ID)
-        self.test_outputs_dict["id"]+=batch.idx.tolist()
+        self.test_outputs_dict["idx"]+=batch.idx.tolist()
         
         return loss
 
@@ -1216,7 +1216,7 @@ class Embedding_extractor(pl.LightningModule):
         self.test_outputs_dict["y_true"]=[]
         self.test_outputs_dict["smiles"]=[]
         self.test_outputs_dict["smiles"]=[]
-        self.test_outputs_dict["id"]=[]
+        self.test_outputs_dict["idx"]=[]
         self.test_outputs_dict["EP_ID"]=[]
       
 

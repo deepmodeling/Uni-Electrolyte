@@ -167,7 +167,7 @@ class Rem():
             raise Exception
 
         trainer.predict(model=self.model, dataloaders=iid_test_dataloader)
-
+        trainer.test(model=self.model, dataloaders=iid_test_dataloader)
 
 
 
