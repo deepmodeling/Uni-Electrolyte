@@ -1133,7 +1133,7 @@ class Embedding_extractor(pl.LightningModule):
 
 
         predict_outputs_df = pd.DataFrame(self.predict_outputs_dict)
-        predict_outputs_df.to_csv(self.args.predict_csv_file_path)
+        predict_outputs_df.to_csv(self.args.predict_output_csv_file_path)
 
 
     def training_step(self, batch, batch_idx):
