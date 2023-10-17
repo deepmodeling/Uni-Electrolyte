@@ -441,7 +441,7 @@ def smiles2graph(smiles_string, bfs=True):
     
 class EmbeddingDataset(InMemoryDataset):
     def __init__(self, root = '', smiles2graph = smiles2graph,
-    transform=None, pre_transform = None, smiles2graph_wrapper = smiles2graph_wrapper,input_file=None,loaded_target_list=None):
+    transform=None, pre_transform = None, smiles2graph_wrapper = smiles2graph_wrapper,input_file=None,loaded_target_list=None,ID_name=None):
 
         self.original_root = root
         self.smiles2graph = smiles2graph
@@ -451,7 +451,7 @@ class EmbeddingDataset(InMemoryDataset):
         self.input_file = input_file
         
         self.loaded_target_list=loaded_target_list
-
+        self.ID_name=ID_name
         super(EmbeddingDataset, self).__init__(self.folder, transform, pre_transform)
 
     @property
@@ -483,7 +483,7 @@ class EmbeddingDataset(InMemoryDataset):
                 print("idx:%s is None"%(idx))
                 continue
             SMILES = mol.GetProp("smiles")
-            EP_ID = mol.GetProp("ep_id")
+            EP_ID = mol.GetProp(self.ID_name)
 
             HOMO = float( mol.GetProp("homo"))
             LUMO = float(mol.GetProp("lumo"))
@@ -574,12 +574,8 @@ class EmbeddingDataset(InMemoryDataset):
                     SMILES = df.iloc[idx]["SMILES"]
                 else:
                     SMILES=df.iloc[idx]["smiles"]
-                if "EP ID" in df.keys():
-                    EP_ID=df.iloc[idx]["EP ID"]
-                elif "idx" in df.keys():
-                    EP_ID=df.iloc[idx]["idx"]
-                else:
-                    EP_ID=idx
+
+                EP_ID=df.iloc[idx][self.ID_name]
 
                 src_graph = smiles2graph_wrapper(SMILES)
                 if True:
@@ -687,5 +683,9 @@ def preprocess_item(item, noise=False,random=True):
     
     # new 
     item.y = y
-    
+
+    if item.pos is None:#兼容没有pos 的2D  dataset 数据
+        item.pos=torch.zeros( item.rel_pos.shape[0], 3).float()
+
+
     return item

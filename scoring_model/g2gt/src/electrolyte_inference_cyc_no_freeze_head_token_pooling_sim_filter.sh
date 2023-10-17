@@ -1,15 +1,13 @@
 # bing energy
 
 if [[ $1 = "be" ]]; then
-    python rem4electrolyte_data.py  --predicted_target be  --loaded_target_list be,log_dcs,log_vs,HOMO,LUMO \
-     --dataset_name  rem_electrolyte_train_1_CHO_47371_uninf_20230706  \
-    --input_filename  1_CHO_47371_uninf_20230706_all_train.csv \
+    python rem4electrolyte_data.py  --predicted_target be   \
     --iid_test_dataset_name rem_electrolyte_iid_1_CHO_47371_uninf_20230706  \
     --iid_test_input_filename 1_CHO_47371_uninf_20230706_iid_test.csv  \
-    --ood_test_dataset_name rem_electrolyte_ood_1_CHO_47371_uninf_20230706  \
-    --ood_test_input_filename 1_CHO_47371_uninf_20230706_ood_test.csv  \
-    --log_name_prefix  rem_electrolyte_train_1_CHO_47371_uninf_20230706 \
+    --log_name_prefix  inference \
+    --inference \
     --ID_name EP\ ID \
+    --test_output_csv_file_path ./test.csv
     --sigmoid_inf -5  --sigmoid_sup 1   
 
 
@@ -22,7 +20,6 @@ elif [[ $1 = "HOMO" ]]; then
     --ood_test_dataset_name rem_electrolyte_ood_1_CHO_47371_uninf_20230706  \
     --ood_test_input_filename 1_CHO_47371_uninf_20230706_ood_test.csv  \
     --log_name_prefix  rem_electrolyte_train_1_CHO_47371_uninf_20230706 \
-    --ID_name EP\ ID \
     --sigmoid_inf -18  --sigmoid_sup 3  
 
 
@@ -35,7 +32,6 @@ elif [[ $1 = "LUMO" ]]; then
     --ood_test_dataset_name rem_electrolyte_ood_1_CHO_47371_uninf_20230706  \
     --ood_test_input_filename 1_CHO_47371_uninf_20230706_ood_test.csv  \
     --log_name_prefix  rem_electrolyte_train_1_CHO_47371_uninf_20230706 \
-    --ID_name EP\ ID \
   --sigmoid_inf -8  --sigmoid_sup 13   
  
 elif [[ $1 = "log_dcs" ]]; then
@@ -47,7 +43,6 @@ elif [[ $1 = "log_dcs" ]]; then
     --ood_test_dataset_name rem_electrolyte_ood_1_CHO_47371_uninf_20230706  \
     --ood_test_input_filename 1_CHO_47371_uninf_20230706_ood_test.csv  \
     --log_name_prefix  rem_electrolyte_train_1_CHO_47371_uninf_20230706 \
-    --ID_name EP\ ID \
   --sigmoid_inf -0.5  --sigmoid_sup 2.5 
 
 elif [[ $1 = "log_vs" ]]; then
@@ -59,7 +54,6 @@ elif [[ $1 = "log_vs" ]]; then
     --ood_test_dataset_name rem_electrolyte_ood_1_CHO_47371_uninf_20230706  \
     --ood_test_input_filename 1_CHO_47371_uninf_20230706_ood_test.csv  \
     --log_name_prefix  rem_electrolyte_train_1_CHO_47371_uninf_20230706 \
-    --ID_name EP\ ID \
   --sigmoid_inf -4  --sigmoid_sup 3 
 
 

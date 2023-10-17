@@ -100,6 +100,83 @@ class Rem():
         result = self.trainer.predict(self.model, datamodule=dm)
         return predict_epoch_end(self.args, result)
 
+
+    def inference(self):
+        # ------------
+        # data
+        # ------------
+
+        # dataloader
+        from torch.utils.data import DataLoader
+        from functools import partial
+        from collator import collator
+        from custom_dataset import EmbeddingDataset
+
+        if len(self.args.loaded_target_list)!=0:  #inference 不用读入数据文件的预测值
+            raise Exception
+
+
+        if not os.path.exists("data/%s" % (self.args.iid_test_dataset_name)):
+            os.mkdir("data/%s" % (self.args.iid_test_dataset_name))
+            os.mkdir("data/%s/raw" % (self.args.iid_test_dataset_name))
+            shutil.copy("/data/%s" % (self.args.iid_test_input_filename),
+                        "data/%s/raw/%s" % (self.args.iid_test_dataset_name, self.args.iid_test_input_filename))
+
+        iid_test_dataset = \
+        get_dataset(dataset_name=self.args.iid_test_dataset_name, input_file=self.args.iid_test_input_filename,
+                    loaded_target_list=self.args.loaded_target_list,ID_name=self.args.ID_name)["dataset"]
+        iid_test_dataloader = DataLoader(
+            iid_test_dataset,
+            batch_size=self.args.batch_size,
+            shuffle=False,
+            num_workers=self.args.num_workers,
+            pin_memory=True,
+            persistent_workers=True,
+            collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
+                               rel_pos_max=1024, predicted_target=self.args.predicted_target),
+        )
+        print('len(iid_test_dataloader)', len(iid_test_dataloader))
+
+        self.model = Embedding_extractor(self.args)
+
+
+        if self.args.predicted_target=="be" and self.args.inference==True:
+            self.model=Embedding_extractor.load_from_checkpoint(
+            "/root/Uni-Electrolyte/scoring_model/g2gt/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20230714175816/version_0/checkpoints/epoch=387-epoch=epoch_val_loss=0.133.ckpt",
+               args=self.args)
+        else:
+            raise Exception
+
+        trainer = pl.Trainer(
+            logger=TensorBoardLogger("lightning_logs", name=self.args.log_name),
+            max_epochs=self.args.epoch,
+            devices=1,
+            accelerator="auto",
+            callbacks=[
+                # EarlyStopping(monitor="epoch_val_loss", mode="min",patience=50,verbose=True),
+                LearningRateMonitor(logging_interval='step'),
+                ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}', save_top_k=3, save_last=True,
+                                monitor="epoch_val_loss", mode='min', verbose=True, auto_insert_metric_name=True),
+            ],
+            # limit_train_batches=20,
+            # log_every_n_steps=10
+        )
+
+
+        trainer.test(model=self.model, dataloaders=iid_test_dataloader)
+
+
+        if not os.path.exists("lightning_logs/%s/test_output_%s.csv" % (self.args.log_name, now.strftime("%Y%m%d%H%M%S"))):
+            raise Exception
+        try:
+            self.args.test_output_csv_file_path
+        except:
+            raise Exception
+        shutil.copy("lightning_logs/%s/test_output_%s.csv" % (self.args.log_name, now.strftime("%Y%m%d%H%M%S")),
+                    self.args.test_output_csv_file_path )
+
+
+
     def train(self):
         # ------------
         # data
@@ -117,7 +194,7 @@ class Rem():
             os.mkdir("data/%s"%(self.args.dataset_name))
             os.mkdir("data/%s/raw"%(self.args.dataset_name))
             shutil.copy("/data/%s"%(self.args.input_filename),"data/%s/raw/%s"%(self.args.dataset_name,self.args.input_filename))
-        all_train_dataset=get_dataset(dataset_name=self.args.dataset_name,input_file=self.args.input_filename,loaded_target_list=self.args.loaded_target_list)["dataset"]
+        all_train_dataset=get_dataset(dataset_name=self.args.dataset_name,input_file=self.args.input_filename,loaded_target_list=self.args.loaded_target_list,ID_name=self.args.ID_name)["dataset"]
         
         # use 20% of training data for validation
         train_set_size = int(len(all_train_dataset) * 0.9)
@@ -154,7 +231,7 @@ class Rem():
             os.mkdir("data/%s/raw"%(self.args.iid_test_dataset_name))
             shutil.copy("/data/%s"%(self.args.iid_test_input_filename),"data/%s/raw/%s"%(self.args.iid_test_dataset_name,self.args.iid_test_input_filename))
         
-        iid_test_dataset=get_dataset(dataset_name=self.args.iid_test_dataset_name,input_file=self.args.iid_test_input_filename,loaded_target_list=self.args.loaded_target_list)["dataset"]
+        iid_test_dataset=get_dataset(dataset_name=self.args.iid_test_dataset_name,input_file=self.args.iid_test_input_filename,loaded_target_list=self.args.loaded_target_list,ID_name=self.args.ID_name)["dataset"]
         iid_test_dataloader = DataLoader(
             iid_test_dataset,
             batch_size=self.args.batch_size,
@@ -173,7 +250,7 @@ class Rem():
             os.mkdir("data/%s/raw"%(self.args.ood_test_dataset_name))
             shutil.copy("/data/%s"%(self.args.ood_test_input_filename),"data/%s/raw/%s"%(self.args.ood_test_dataset_name,self.args.ood_test_input_filename))
         
-        ood_test_dataset=get_dataset(dataset_name=self.args.ood_test_dataset_name,input_file=self.args.ood_test_input_filename,loaded_target_list=self.args.loaded_target_list)["dataset"]
+        ood_test_dataset=get_dataset(dataset_name=self.args.ood_test_dataset_name,input_file=self.args.ood_test_input_filename,loaded_target_list=self.args.loaded_target_list,ID_name=self.args.ID_name)["dataset"]
         ood_test_dataloader = DataLoader(
             ood_test_dataset,
             batch_size=self.args.batch_size,
@@ -190,24 +267,7 @@ class Rem():
 
         self.model = Embedding_extractor(self.args)
 
-        # self.model=Embedding_extractor.load_from_checkpoint(
-        #     "lightning_logs/version_0/checkpoints/epoch=156-step=10989.ckpt",
-        #     args=self.args)
-        # self.model=Embedding_extractor.load_from_checkpoint(
-        #     "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_HOMO_20230706124935/version_0/checkpoints/epoch=582-epoch=epoch_val_loss=0.182.ckpt",
-        #     args=self.args)
-        # self.model=Embedding_extractor.load_from_checkpoint(
-        #     "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_LUMO_20230706131306/version_0/checkpoints/epoch=907-epoch=epoch_val_loss=0.232.ckpt",
-        #     args=self.args)
-        # self.model=Embedding_extractor.load_from_checkpoint(
-        #        "/data/rem/src/lightning_logs/cyc_no_freeze_no_decline_head_token_pooling_20230704183633/version_0/checkpoints/epoch=599-epoch=epoch_val_loss=0.164.ckpt",
-        #        args=self.args)
-        #self.model=Embedding_extractor.load_from_checkpoint(
-        #     "/data/rem/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_log_dcs_20230715131757/version_0/checkpoints/epoch=201-epoch=epoch_val_loss=0.155.ckpt",
-        #        args=self.args)
-        #self.model=Embedding_extractor.load_from_checkpoint(
-        #"/data/rem/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_log_vs_20230714180801/version_0/checkpoints/epoch=238-epoch=epoch_val_loss=0.163.ckpt",
-        #        args=self.args)
+
         
         trainer = pl.Trainer( 
             logger= TensorBoardLogger("lightning_logs", name=self.args.log_name),
@@ -234,56 +294,56 @@ class Rem():
 
 
 
+#
+#
+#
+# def main_repr():
+#     """
+#     pipeline task on nb-server
+#     :param
+#     --input_file: a csv format file path, which must contain a column called smiles
+#     --input_file: a csv format file path, which contains a smiles column which corresponds
+#     to input where possible, and a vector column
+#
+#     :return:
+#     """
+#     parser = ArgumentParser()
+#     parser = pl.Trainer.add_argparse_args(parser)
+#     parser = GraphFormer.add_model_specific_args(parser)
+#     parser = GraphDataModule.add_argparse_args(parser)
+#     parser.add_argument('--input_filepath', type=str)
+#     parser.add_argument('--output_filepath',type=str)
+#     args = parser.parse_args()
+#     input_dataframe=pd.read_csv(args.input_filepath)
+#     input_smiles_list=[]
+#     sys.argv=sys.argv[:1]
+#     for smiles in input_dataframe["SMILES"]:
+#         try:
+#             smiles_out=AllChem.MolToSmiles(AllChem.MolFromSmiles(smiles))
+#             if smiles_out is None:
+#                 raise Exception
+#         except:
+#             continue
+#         input_smiles_list.append(smiles_out)
+#
+#     rem = Rem()
+#     rr=rem.predict_repr(input_smiles_list)
+#
+#     smiles_out_list=[]
+#     vector_list=[]
+#     for smiles in rr:
+#         smiles_out_list.append(smiles)
+#         vector_list.append(rr[smiles][0])
+#     out_dict={"SMILES":smiles_out_list,"vector":vector_list}
+#     out_df=pd.DataFrame(data=out_dict)
+#     out_df.to_csv(args.output_filepath,index=False)
+#     import pickle
+#     with open("%s.pkl"%(args.output_filepath),"wb") as pkl_fp:
+#         pickle.dump(out_dict,pkl_fp)
+#
 
 
-
-def main_repr():
-    """
-    pipeline task on nb-server
-    :param
-    --input_file: a csv format file path, which must contain a column called smiles
-    --input_file: a csv format file path, which contains a smiles column which corresponds
-    to input where possible, and a vector column
-
-    :return:
-    """
-    parser = ArgumentParser()
-    parser = pl.Trainer.add_argparse_args(parser)
-    parser = GraphFormer.add_model_specific_args(parser)
-    parser = GraphDataModule.add_argparse_args(parser)
-    parser.add_argument('--input_filepath', type=str)
-    parser.add_argument('--output_filepath',type=str)
-    args = parser.parse_args()
-    input_dataframe=pd.read_csv(args.input_filepath)
-    input_smiles_list=[]
-    sys.argv=sys.argv[:1]
-    for smiles in input_dataframe["SMILES"]:
-        try:
-            smiles_out=AllChem.MolToSmiles(AllChem.MolFromSmiles(smiles))
-            if smiles_out is None:
-                raise Exception
-        except:
-            continue
-        input_smiles_list.append(smiles_out)
-
-    rem = Rem()
-    rr=rem.predict_repr(input_smiles_list)
-
-    smiles_out_list=[]
-    vector_list=[]
-    for smiles in rr:
-        smiles_out_list.append(smiles)
-        vector_list.append(rr[smiles][0])
-    out_dict={"SMILES":smiles_out_list,"vector":vector_list}
-    out_df=pd.DataFrame(data=out_dict)
-    out_df.to_csv(args.output_filepath,index=False)
-    import pickle
-    with open("%s.pkl"%(args.output_filepath),"wb") as pkl_fp:
-        pickle.dump(out_dict,pkl_fp)
-
-
-
-def main_finetune():
+def main():
     """
     """
 
@@ -308,21 +368,28 @@ def main_finetune():
     parser.add_argument("--sigmoid_inf",type=float)
     parser.add_argument("--sigmoid_sup",type=float)
     parser.add_argument("--epoch",type=int)
-    parser.add_argument("--iid_test_dataset_name",type=str)
-    parser.add_argument("--iid_test_input_filename",type=str)
+    parser.add_argument("--iid_test_dataset_name",type=str,help="iid test or inference data")
+    parser.add_argument("--iid_test_input_filename",type=str,help="iid test or inference data")
     parser.add_argument("--ood_test_dataset_name",type=str)
     parser.add_argument("--ood_test_input_filename",type=str)
     parser.add_argument("--freeze",action="store_true")
     parser.add_argument("--log_name_prefix",type=str)
     parser.add_argument("--predicted_target",type=str)
     parser.add_argument("--loaded_target_list",type=str,help="target keys needed for loaded with ',' as split sign" )
+    parser.add_argument("--inference",action="store_true")
+    parser.add_argument("--ID_name", type=str)
+    parser.add_argument("--test_output_csv_file_path",type=str)
 
     args = parser.parse_args() 
     args.loaded_target_list=args.loaded_target_list.split(",")
     args.log_name="%s_%s_%s"%(args.log_name_prefix,args.predicted_target,now.strftime("%Y%m%d%H%M%S"))
    
     rem=Rem(args)
-    rem.train()
+
+    if args.inference==True:
+        rem.inference()
+    else:
+        rem.train()
 
 
 if __name__=="__main__":
@@ -334,4 +401,4 @@ if __name__=="__main__":
     # pdb.set_trace()
     # print()
 
-    main_finetune()
+    main()
