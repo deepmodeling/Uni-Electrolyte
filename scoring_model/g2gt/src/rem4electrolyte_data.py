@@ -111,7 +111,6 @@ class Rem():
         from functools import partial
         from collator import collator
         from custom_dataset import EmbeddingDataset
-
         if len(self.args.loaded_target_list)!=0:  #inference 不用读入数据文件的预测值
             raise Exception
 
@@ -121,6 +120,9 @@ class Rem():
             os.mkdir("data/%s/raw" % (self.args.iid_test_dataset_name))
             shutil.copy("/data/%s" % (self.args.iid_test_input_filename),
                         "data/%s/raw/%s" % (self.args.iid_test_dataset_name, self.args.iid_test_input_filename))
+        if self.args.dataset_name is not None:
+            raise Exception
+        self.args.dataset_name = self.args.iid_test_dataset_name
 
         iid_test_dataset = \
         get_dataset(dataset_name=self.args.iid_test_dataset_name, input_file=self.args.iid_test_input_filename,
@@ -136,7 +138,6 @@ class Rem():
                                rel_pos_max=1024, predicted_target=self.args.predicted_target),
         )
         print('len(iid_test_dataloader)', len(iid_test_dataloader))
-
         self.model = Embedding_extractor(self.args)
 
 
@@ -168,9 +169,8 @@ class Rem():
 
         if not os.path.exists("lightning_logs/%s/test_output_%s.csv" % (self.args.log_name, now.strftime("%Y%m%d%H%M%S"))):
             raise Exception
-        try:
-            self.args.test_output_csv_file_path
-        except:
+        
+        if self.args.test_output_csv_file_path is None:
             raise Exception
         shutil.copy("lightning_logs/%s/test_output_%s.csv" % (self.args.log_name, now.strftime("%Y%m%d%H%M%S")),
                     self.args.test_output_csv_file_path )
@@ -375,13 +375,19 @@ def main():
     parser.add_argument("--freeze",action="store_true")
     parser.add_argument("--log_name_prefix",type=str)
     parser.add_argument("--predicted_target",type=str)
-    parser.add_argument("--loaded_target_list",type=str,default="",help="target keys needed for loaded with ',' as split sign" )
+    parser.add_argument("--loaded_target_list",type=str,help="target keys needed for loaded with ',' as split sign" )
     parser.add_argument("--inference",action="store_true")
     parser.add_argument("--ID_name", type=str)
     parser.add_argument("--test_output_csv_file_path",type=str)
 
     args = parser.parse_args() 
-    args.loaded_target_list=args.loaded_target_list.split(",")
+    
+    if  args.loaded_target_list is None:
+
+        args.loaded_target_list=[]
+    else:
+        args.loaded_target_list=args.loaded_target_list.split(",")
+
     args.log_name="%s_%s_%s"%(args.log_name_prefix,args.predicted_target,now.strftime("%Y%m%d%H%M%S"))
    
     rem=Rem(args)
