@@ -126,6 +126,7 @@ class Rem():
                     "data/%s/raw/%s" % (self.args.predict_dataset_name,predict_input_csv_file_name))
 
         predict_input_df=pandas.read_csv("data/%s/raw/%s" % (self.args.predict_dataset_name,predict_input_csv_file_name))
+        self.args.loaded_target_list=[self.args.predicted_target]
         if self.args.predicted_target not in predict_input_df.keys(): #不加上一个假的真实值的话，collator会报错
             predict_input_df[self.args.predicted_target]=0
             predict_input_df.to_csv("data/%s/raw/%s" % (self.args.predict_dataset_name,predict_input_csv_file_name))
