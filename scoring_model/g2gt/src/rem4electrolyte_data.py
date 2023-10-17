@@ -375,7 +375,7 @@ def main():
     parser.add_argument("--freeze",action="store_true")
     parser.add_argument("--log_name_prefix",type=str)
     parser.add_argument("--predicted_target",type=str)
-    parser.add_argument("--loaded_target_list",type=str,help="target keys needed for loaded with ',' as split sign" )
+    parser.add_argument("--loaded_target_list",type=str,default="",help="target keys needed for loaded with ',' as split sign" )
     parser.add_argument("--inference",action="store_true")
     parser.add_argument("--ID_name", type=str)
     parser.add_argument("--test_output_csv_file_path",type=str)
