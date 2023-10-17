@@ -1,6 +1,7 @@
 
 
 import numpy as np
+import pandas
 from rdkit import Chem
 from rdkit.Chem import AllChem
 
@@ -123,6 +124,11 @@ class Rem():
         os.mkdir("data/%s/raw" % (self.args.predict_dataset_name))
         shutil.copy(self.args.predict_input_csv_file_path,
                     "data/%s/raw/%s" % (self.args.predict_dataset_name,predict_input_csv_file_name))
+
+        predict_input_df=pandas.read_csv("data/%s/raw/%s" % (self.args.predict_dataset_name,predict_input_csv_file_name))
+        if self.args.predicted_target not in predict_input_df.keys(): #不加上一个假的真实值的话，collator会报错
+            predict_input_df[self.args.predicted_target]=0
+
         if self.args.dataset_name is not None:
             raise Exception
         self.args.dataset_name = self.args.predict_dataset_name #model.py 中没有args.dataset_name 会报错
