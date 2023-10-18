@@ -3,8 +3,8 @@
 if [[ $1 = "be" ]]; then
     python rem4electrolyte_data.py  --predicted_target be   \
     --predict_dataset_name inference_dataset  \
-    --predict_input_csv_file_path ./input.csv  \
-    --predict_output_csv_file_path ./predict.csv \
+    --predict_input_csv_file_path $2  \
+    --predict_output_csv_file_path $3 \
     --log_name_prefix  inference \
     --inference \
     --ID_name EP_ID \
