@@ -1,0 +1,8 @@
+{
+    "output_dir": "./output",
+    "contact": {
+        "type": "SCORING",
+        "mol_file": null,
+        "id_tag": "EP_ID"
+    }
+}
