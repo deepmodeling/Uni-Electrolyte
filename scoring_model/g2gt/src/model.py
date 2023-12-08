@@ -1118,8 +1118,10 @@ class Embedding_extractor(pl.LightningModule):
         x = batch
         y_pred = self(x)
       
-
-        self.predict_outputs_dict["y_pred"] += y_pred.flatten().tolist()
+        if self.args.predicted_target=="log_dcs" or self.args.predicted_target=="log_vs":
+            self.predict_outputs_dict["y_pred"] += torch.pow(10,y_pred.flatten()).tolist()
+        else:
+            self.predict_outputs_dict["y_pred"] += y_pred.flatten().tolist()
         # import pdb
         # pdb.set_trace()
         self.predict_outputs_dict["smiles"] += list(batch.smiles)

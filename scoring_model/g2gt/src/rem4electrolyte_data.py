@@ -116,6 +116,9 @@ class Rem():
             raise Exception
 
         predict_input_csv_file_name=self.args.predict_input_csv_file_path.split("/")[-1]
+        if not  os.path.exists("data"):
+            os.mkdir("data")
+
         if  os.path.exists("data/%s" % (self.args.predict_dataset_name)):
             if self.args.predict_dataset_name == "" or  self.args.predict_dataset_name  is None:
                 raise Exception
@@ -151,10 +154,27 @@ class Rem():
         print('len(predict_dataloader)', len(predict_dataloader))
         self.model = Embedding_extractor(self.args)
 
-
-        if self.args.predicted_target=="be" and self.args.inference==True:
+        if self.args.inference!=True:
+            raise Exception
+        if self.args.predicted_target=="be" :
             self.model=Embedding_extractor.load_from_checkpoint(
             "/root/Uni-Electrolyte/scoring_model/g2gt/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20230714175816/version_0/checkpoints/epoch=387-epoch=epoch_val_loss=0.133.ckpt",
+               args=self.args)
+        elif self.args.predicted_target=="log_vs" :
+            self.model=Embedding_extractor.load_from_checkpoint(
+            "/root/Uni-Electrolyte/scoring_model/g2gt/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_log_vs_20230714180801/version_0/checkpoints/epoch=238-epoch=epoch_val_loss=0.163.ckpt",
+               args=self.args)
+        elif self.args.predicted_target=="log_dcs" :
+            self.model=Embedding_extractor.load_from_checkpoint(
+            "/root/Uni-Electrolyte/scoring_model/g2gt/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_log_dcs_20230715131757/version_0/checkpoints/epoch=201-epoch=epoch_val_loss=0.155.ckpt",
+               args=self.args)
+        elif self.args.predicted_target=="HOMO" :
+            self.model=Embedding_extractor.load_from_checkpoint(
+            "/root/Uni-Electrolyte/scoring_model/g2gt/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_HOMO_20230714180947/version_0/checkpoints/epoch=760-epoch=epoch_val_loss=0.145.ckpt",
+               args=self.args)
+        elif self.args.predicted_target=="LUMO" :
+            self.model=Embedding_extractor.load_from_checkpoint(
+            "/root/Uni-Electrolyte/scoring_model/g2gt/src/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_LUMO_20230714180955/version_0/checkpoints/epoch=608-epoch=epoch_val_loss=0.211.ckpt",
                args=self.args)
         else:
             raise Exception
@@ -360,7 +380,7 @@ def main():
                  '--n_layer',
                  '8', '--peak_lr', '2.5e-4', '--end_lr', '1e-6', '--head_size', '24', '--weight_decay', '0.00',
                  '--edge_type',   
-                 'one_hop', '--warmup_updates', '1000', '--tot_updates', '10000', '--default_root_dir', './',
+                 'one_hop', '--warmup_updates', '1000', '--tot_updates', '10000', '--default_root_dir', '/root/Uni-Electrolyte/scoring_model/g2gt/src/',
                  '--progress_bar_refresh_rate', '1']
 
     parser = ArgumentParser()
