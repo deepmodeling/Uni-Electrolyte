@@ -25,7 +25,7 @@ class RECORD_DATASET_AND_SCORING(BaseModel):
 
 
 class SCREENING(BaseModel):
-    type: Literal["SCREENING"]
+    type: Literal["SCREENING"]   #字母大小写的问题
     dataset_name:String=Field("StandardDataset", description=""" "StandardDataset" or your dataset name """)
     Binding_energy_eV_screening_condition: String=Field( description="eg: 0~ , ~1 ,0~1 None")
     Dielectric_constant_of_solvents_screening_condition: String=Field( description=" eg: 0~ , ~1 ,0~1  None")
