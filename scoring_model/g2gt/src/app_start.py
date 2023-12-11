@@ -14,8 +14,8 @@ def SCORING_func(mol_file ,id_tag,output_dir):
     --predict_output_csv_file_path %s \
     --log_name_prefix  inference \
     --inference \
-    --ID_name EP_ID \
-    --sigmoid_inf -5  --sigmoid_sup 1    "%(target,mol_file,"%s/output_bohrium_%s.csv"%(output_dir,target)))
+    --ID_name %s \
+    --sigmoid_inf -5  --sigmoid_sup 1    "%(target,mol_file,"%s/output_bohrium_%s.csv"%(output_dir,target),id_tag))
 
 class SCORING(BaseModel):
     type: Literal["SCORING"]
