@@ -1,8 +1,0 @@
-{
-    "output_dir": "./output",
-    "contact": {
-        "type": "SCORING",
-        "mol_file": "./generated_schemas/input.csv",
-        "id_tag": "EP_ID"
-    }
-}
