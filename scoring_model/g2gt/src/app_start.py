@@ -51,7 +51,7 @@ def SCORING_func(mol_file ,id_tag,output_dir):
     del total_output_dataframe_dict["log_vs_pred"]
 
     total_output_dataframe=pd.DataFrame(total_output_dataframe_dict)
-    total_output_dataframe.to_csv( f"{output_dir}/output_bohrium_.csv", index=False)
+    total_output_dataframe.to_csv( f"{output_dir}/output_bohrium_total.csv", index=False)
 
 class SCORING(BaseModel):
     type: Literal["SCORING"]
