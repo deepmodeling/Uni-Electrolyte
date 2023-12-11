@@ -1135,7 +1135,7 @@ class Embedding_extractor(pl.LightningModule):
 
 
         predict_outputs_df = pd.DataFrame(self.predict_outputs_dict)
-        predict_outputs_df.to_csv(self.args.predict_output_csv_file_path)
+        predict_outputs_df.to_csv(self.args.predict_output_csv_file_path, index=False)
 
 
     def training_step(self, batch, batch_idx):
@@ -1210,7 +1210,7 @@ class Embedding_extractor(pl.LightningModule):
         test_outputs_df=pd.DataFrame(self.test_outputs_dict)
         import datetime
         now = datetime.datetime.now() 
-        test_outputs_df.to_csv("lightning_logs/%s/test_output_%s.csv"%(self.args.log_name,now.strftime("%Y%m%d%H%M%S")))
+        test_outputs_df.to_csv("lightning_logs/%s/test_output_%s.csv"%(self.args.log_name,now.strftime("%Y%m%d%H%M%S")), index=False)
         self.test_loss_outputs.clear()
         self.test_de_log_loss_outputs.clear()
         #不重置这个字典可以使生成的csv有全部test集的测试结果

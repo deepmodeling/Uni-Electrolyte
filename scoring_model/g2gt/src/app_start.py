@@ -3,19 +3,48 @@ import os
 from pathlib import Path
 from dp.launching.typing import BaseModel, Field, OutputDirectory,InputFilePath, Int,  Union, String, Literal, Field, Enum
 from dp.launching.cli import SubParser,default_minimal_exception_handler,run_sp_and_exit,to_runner
-
+import pandas as pd
 def SCORING_func(mol_file ,id_tag,output_dir):
-    target = "be"
-    os.system("mkdir -p %s"%(output_dir))
-    os.system("export PYTHONPATH=\"$PYTHONPATH: /root/Uni-Electrolyte/scoring_model/g2gt/src \" && \
-    python  /root/Uni-Electrolyte/scoring_model/g2gt/src/rem4electrolyte_data.py    --predicted_target %s   \
-    --predict_dataset_name inference_dataset  \
-    --predict_input_csv_file_path %s  \
-    --predict_output_csv_file_path %s \
-    --log_name_prefix  inference \
-    --inference \
-    --ID_name %s \
-    --sigmoid_inf -5  --sigmoid_sup 1    "%(target,mol_file,"%s/output_bohrium_%s.csv"%(output_dir,target),id_tag))
+    os.system("mkdir -p %s" % (output_dir))
+
+    for target in ["be","log_dcs","log_vs","HOMO","LUMO"]:
+        os.system(f"export PYTHONPATH=\"$PYTHONPATH: /root/Uni-Electrolyte/scoring_model/g2gt/src \" && \
+        python  /root/Uni-Electrolyte/scoring_model/g2gt/src/rem4electrolyte_data.py    --predicted_target {target}   \
+        --predict_dataset_name inference_dataset_{target}  \
+        --predict_input_csv_file_path {mol_file}  \
+        --predict_output_csv_file_path {output_dir}/output_bohrium_{target}.csv \
+        --log_name_prefix  inference \
+        --inference \
+        --ID_name {id_tag} \
+        --sigmoid_inf -5  --sigmoid_sup 1    ")
+
+
+    total_tmp_dict={}
+    for target in ["be", "log_dcs", "log_vs", "HOMO", "LUMO"]:
+        df=pd.read_csv( f"{output_dir}/output_bohrium_{target}.csv")
+        for index, row in df.iterrows():
+            ID = row['ID']
+            smiles = row['smiles']
+            y_pred = row['y_pred']
+            if ID not in total_tmp_dict:
+                total_tmp_dict[ID]={}
+            if "smiles" not in  total_tmp_dict[ID]:
+                total_tmp_dict[ID]["smiles"]=smiles
+            elif smiles != total_tmp_dict[ID]["smiles"]:
+                smiles2=total_tmp_dict[ID]["smiles"]
+                raise Exception(f"ID:{ID} smiles not match smiles1:{smiles},smiles2:{smiles2}")
+            total_tmp_dict[ID]["%s_pred"%(target)]=y_pred
+
+    total_output_dataframe_dict = {id_tag: [],  "smiles": []}
+    for target in ["be", "log_dcs", "log_vs", "HOMO", "LUMO"]:
+        total_output_dataframe_dict["%s_pred" % (target)]= []
+    for ID in total_tmp_dict:
+        total_output_dataframe_dict[id_tag].append(ID)
+        total_output_dataframe_dict["smiles"].append(total_tmp_dict[ID]["smiles"])
+        for target in ["be", "log_dcs", "log_vs", "HOMO", "LUMO"]:
+            total_output_dataframe_dict["%s_pred" % (target)].append(total_tmp_dict[ID]["%s_pred" % (target)])
+    total_output_dataframe=pd.DataFrame(total_output_dataframe_dict)
+    total_output_dataframe.to_csv( f"{output_dir}/output_bohrium_.csv", index=False)
 
 class SCORING(BaseModel):
     type: Literal["SCORING"]
