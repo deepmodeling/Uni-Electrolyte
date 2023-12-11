@@ -7,7 +7,8 @@ import pandas as pd
 def SCORING_func(mol_file ,id_tag,output_dir):
     os.system("mkdir -p %s" % (output_dir))
 
-    for target in ["be","log_dcs","log_vs","HOMO","LUMO"]:
+    for target,sigmoid_inf,sigmoid_sup in [("be",-5,1),("log_dcs",-0.5,2.5),("log_vs",-4,3),("HOMO",-18,3),("LUMO",-8,13)]:
+
         os.system(f"export PYTHONPATH=\"$PYTHONPATH: /root/Uni-Electrolyte/scoring_model/g2gt/src \" && \
         python  /root/Uni-Electrolyte/scoring_model/g2gt/src/rem4electrolyte_data.py    --predicted_target {target}   \
         --predict_dataset_name inference_dataset_{target}  \
@@ -16,7 +17,7 @@ def SCORING_func(mol_file ,id_tag,output_dir):
         --log_name_prefix  inference \
         --inference \
         --ID_name {id_tag} \
-        --sigmoid_inf -5  --sigmoid_sup 1    ")
+        --sigmoid_inf {sigmoid_inf}  --sigmoid_sup {sigmoid_sup}    ")
 
 
     total_tmp_dict={}
@@ -43,6 +44,12 @@ def SCORING_func(mol_file ,id_tag,output_dir):
         total_output_dataframe_dict["smiles"].append(total_tmp_dict[ID]["smiles"])
         for target in ["be", "log_dcs", "log_vs", "HOMO", "LUMO"]:
             total_output_dataframe_dict["%s_pred" % (target)].append(total_tmp_dict[ID]["%s_pred" % (target)])
+    #rename:
+    total_output_dataframe_dict["dcs_pred"]=total_output_dataframe_dict["log_dcs_pred"]
+    del total_output_dataframe_dict["log_dcs_pred"]
+    total_output_dataframe_dict["vs_pred"] = total_output_dataframe_dict["log_vs_pred"]
+    del total_output_dataframe_dict["log_vs_pred"]
+
     total_output_dataframe=pd.DataFrame(total_output_dataframe_dict)
     total_output_dataframe.to_csv( f"{output_dir}/output_bohrium_.csv", index=False)
 
