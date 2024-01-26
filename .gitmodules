@@ -1,0 +1,3 @@
+[submodule "interfacial_reaction_prediction/HiPRGen"]
+	path = interfacial_reaction_prediction/HiPRGen
+	url = https://github.com/BlauGroup/HiPRGen.git
