@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.23.0](https://github.com/Franklalalala/uni_electrolyte_beta/compare/v1.22.0...v1.23.0) (2024-01-26)
+
+
+### Features
+
+* add parallel gen pipeline ([4e27f51](https://github.com/Franklalalala/uni_electrolyte_beta/commit/4e27f51f427b67660c18f2289f857f0a02c32122))
+
+## [1.22.0](https://github.com/Franklalalala/uni_electrolyte_beta/compare/v1.21.0...v1.22.0) (2024-01-10)
+
+
+### Features
+
+* generator class & useful data transform ([a155995](https://github.com/Franklalalala/uni_electrolyte_beta/commit/a1559954622c6359ad5fb5dba53a8f82b63b60dc))
+
+## [1.21.0](https://github.com/Franklalalala/uni_electrolyte_beta/compare/v1.20.0...v1.21.0) (2024-01-04)
+
+
+### Features
+
+* screen db & some chore ([6f2574b](https://github.com/Franklalalala/uni_electrolyte_beta/commit/6f2574b8c785dd6c0fe011c2728591cb331f6251))
+
 ## [1.20.0](https://github.com/Franklalalala/uni_electrolyte_beta/compare/v1.19.0...v1.20.0) (2023-12-11)
 
 

@@ -1,4 +1,5 @@
 # Copyright AISI
+import json
 import contextlib
 import csv
 import io
@@ -46,6 +47,22 @@ def atom_2_mol(an_atoms: ase.atoms.Atoms):
     return mol
 
 
+def atom_2_smile(an_atoms: ase.atoms.Atoms):
+    a_mol = atom_2_mol(an_atoms)
+    a_mol = Chem.RemoveHs(a_mol)
+    a_smile = Chem.MolToSmiles(a_mol, isomericSmiles=False)
+    return a_smile
+
+
+def smile_2_atom(smile: str, maxAttempts: int=1000000):
+    a_mol = Chem.MolFromSmiles(smile)
+    a_mol_with_H = Chem.AddHs(a_mol)
+    AllChem.EmbedMolecule(a_mol_with_H, useRandomCoords=True, maxAttempts=maxAttempts)
+    AllChem.MMFFOptimizeMolecule(a_mol_with_H)
+    an_atoms = mol_2_atom(mol=a_mol_with_H)
+    return an_atoms
+
+
 def edit_ase_db(db_path, properties: list):
     with connect(db_path) as db:
         meta = db.metadata
@@ -59,6 +76,40 @@ def edit_ase_db(db_path, properties: list):
         if "atomrefs" not in meta.keys():
             meta["atomrefs"] = {}
         db.metadata = meta
+
+
+def has_benzene_ring(smiles):
+    # 解析SMILES表示法
+    mol = Chem.MolFromSmiles(smiles)
+    if mol is not None:
+        # 生成分子的拓扑图
+        Chem.AssignStereochemistry(mol, force=True, cleanIt=True)
+        Chem.AssignAtomChiralTagsFromStructure(mol, -1)
+        # 检查分子中是否包含苯环
+        ssr = Chem.GetSymmSSSR(mol)
+        for ring in ssr:
+            if len(ring) == 6:
+                # 检查环的原子是否都是碳原子
+                if all(mol.GetAtomWithIdx(atom).GetAtomicNum() == 6 for atom in ring):
+                    if all(mol.GetAtomWithIdx(atom).GetIsAromatic() for atom in ring):
+                        return True
+    return False
+
+
+def has_OO_or_OH_bond(smiles):
+    mol = Chem.MolFromSmiles(smiles)
+    mol = Chem.AddHs(mol)
+    flag_OO, flag_OH = False, False
+    for bond in mol.GetBonds():
+        atom1 = bond.GetBeginAtom()
+        atom2 = bond.GetEndAtom()
+        if atom1.GetAtomicNum() == 8 and atom2.GetAtomicNum() == 8:
+            flag_OO = True  # 存在氧原子之间的键
+        if (atom1.GetAtomicNum() == 8 and atom2.GetAtomicNum() == 1) or \
+           (atom1.GetAtomicNum() == 1 and atom2.GetAtomicNum() == 8):
+            flag_OH = True  # 存在氧原子和氢原子之间的键
+    return flag_OO, flag_OH
+
 
 def cas_to_smiles(cas_id):
     import pubchempy as pcp
@@ -79,6 +130,7 @@ def get_substructure_cas(smiles, return_first: bool = True):
                 return match.group(1)
                 cas_rns.append(match.group(1))
     return cas_rns
+
 
 def xyz_2_db(xyz_path: str, db_path: str, properties: list, has_identity: bool = None):
     with connect(db_path) as db_w:
@@ -164,7 +216,7 @@ def change_db_prop_from_csv(csv_path: str, db_path: str, properties: list, csv_i
     os.remove('dummy_csv.db')
 
 
-def smile_2_db(smile_path: str, db_path: str, fail_smile_path: str, properties: list):
+def smile_2_db(smile_path: str, db_path: str, fail_smile_path: str, properties: list, maxAttempts: int=1000000):
     print('Each row corresponds to a smile by default.')
     real_count = 0
     fail_count = 0
@@ -175,11 +227,7 @@ def smile_2_db(smile_path: str, db_path: str, fail_smile_path: str, properties: 
                 print('An empty line is detected.')
                 continue
             try:
-                a_mol = Chem.MolFromSmiles(a_smile)
-                a_mol_with_H = Chem.AddHs(a_mol)
-                AllChem.EmbedMolecule(a_mol_with_H, useRandomCoords=True, maxAttempts=1000000)
-                AllChem.MMFFOptimizeMolecule(a_mol_with_H)
-                an_atoms = mol_2_atom(mol=a_mol_with_H)
+                an_atoms = smile_2_atom(smile=a_smile, maxAttempts=maxAttempts)
                 data = {}
                 for property in properties:
                     data.update({property: [0]})
@@ -188,11 +236,11 @@ def smile_2_db(smile_path: str, db_path: str, fail_smile_path: str, properties: 
             except Exception as e:
                 print(e)
                 fail_count = fail_count + 1
-                print(f'real: {real_count}')
-                print(f'fail: {fail_count}')
                 with open(fail_smile_path, 'a') as f_f:
                     f_f.write(a_smile)
                     f_f.write('\n')
+    print(f'real: {real_count}')
+    print(f'fail: {fail_count}')
     edit_ase_db(db_path=db_path, properties=properties)
 
 
@@ -237,11 +285,7 @@ def csv_2_db(csv_path: str, db_path: str, fail_smile_path: str, properties: list
                 continue
             a_smile = row[smile_idx]
             try:
-                a_mol = Chem.MolFromSmiles(a_smile)
-                a_mol_with_H = Chem.AddHs(a_mol)
-                AllChem.EmbedMolecule(a_mol_with_H, useRandomCoords=True, maxAttempts=1000000)
-                AllChem.MMFFOptimizeMolecule(a_mol_with_H)
-                an_atoms = mol_2_atom(mol=a_mol_with_H)
+                an_atoms = smile_2_atom(smile=a_smile)
                 data = {}
                 for property in properties:
                     data.update({property: [float(row[property_idx_dict[property]])]})
@@ -624,10 +668,12 @@ def clc_info(workbase: str, raw_db_path: str, err_str: str, chk_db_path: str = N
             if custom_line_3:
                 f_w.write(f'\n{custom_line_3}')
             f_w.write('\n########################################\n')
+        count_info.update({custom_line_1: new_count})
         return new_count
 
     cwd_ = os.getcwd()
     os.chdir(workbase)
+    count_info = {}
     with open('info.txt', 'w') as f_w:
         a_count = _clc_info_unit(db_path=raw_db_path, custom_line_1='Successfully generated molecules:')
         a_count = _clc_info_unit(a_count=a_count, db_path='passed_topo.db',
@@ -644,6 +690,8 @@ def clc_info(workbase: str, raw_db_path: str, err_str: str, chk_db_path: str = N
         a_count = _clc_info_unit(a_count=a_count, db_path='synthesizable.db',
                                  custom_line_1='Synthesizable molecules:',
                                  custom_line_2=f'RAScore (threshold={str(rascore_threshold)}) filted molecules:')
+    with open("info.json", "w") as f:
+        json.dump(count_info, f, indent=4)
     os.chdir(cwd_)
 
 
@@ -681,3 +729,50 @@ def clean_db_pipeline(raw_db_path: str, output_dir: str,
                             filted_dist_pic_path=os.path.join(output_dir, 'synthesizable_ra_score_dist.png'))
     clc_info(workbase=output_dir, raw_db_path=raw_db_path, err_str=err_str,
              chk_db_path=chk_db_path, rascore_threshold=rascore_threshold)
+
+
+def get_total_num_from_json(abs_raw_path: str, info_line: str, n_jobs: int):
+    total_num = 0
+    for a_sub_job in range(n_jobs):
+        os.chdir(abs_raw_path)
+        os.chdir(str(a_sub_job))
+        os.chdir('generated_molecules')
+        with open(r"info.json") as f:
+            data = json.load(f)
+        total_num = total_num + data[info_line]
+    return total_num
+
+
+def merge_all_db(abs_raw_path: str, abs_cooked_path: str, db_name: str, n_jobs: int, properties: list):
+    uni_inchi_set = set()
+    cooked_db = os.path.join(abs_cooked_path, db_name)
+    for a_sub_job in range(n_jobs):
+        os.chdir(abs_raw_path)
+        os.chdir(str(a_sub_job))
+        os.chdir('generated_molecules')
+        with connect(db_name) as old_db, connect(cooked_db) as new_db:
+            for a_row in old_db.select():
+                an_inchi = a_row.inchi
+                if an_inchi in uni_inchi_set:
+                    continue
+                uni_inchi_set.add(an_inchi)
+                an_atoms = a_row.toatoms()
+                new_db.write(atoms=an_atoms, smile=a_row.smile, inchi=a_row.inchi, data=a_row.data)
+    edit_ase_db(db_path=cooked_db, properties=properties)
+    with connect(cooked_db) as new_db:
+        merged_num = new_db.count()
+    return merged_num
+
+
+def get_props_npy_from_db(db_path: str, dump_folder_path: str, properties: list):
+    cwd_ = os.getcwd()
+    db_path = os.path.abspath(db_path)
+    os.chdir(dump_folder_path)
+    for a_prop in properties:
+        info_list = []
+        with connect(db_path) as db:
+            for a_row in db.select():
+                info_list.append(a_row.data[a_prop][0])
+        info_arr = np.array(info_list)
+        np.save(arr=info_arr, file=f'{a_prop}.npy')
+    os.chdir(cwd_)

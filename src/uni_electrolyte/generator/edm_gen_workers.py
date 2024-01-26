@@ -10,12 +10,14 @@ from learn_edm.qm9.utils import compute_mean_mad
 from learn_edm.qm9.visualizer import save_xyz_file
 from torch.distributions.categorical import Categorical
 from tqdm import trange
+import random
+
 
 __all__ = ['edm_conditional_sample']
 
 def edm_conditional_sample(train_workbase: str,
                            out_db_path: str, target_info: dict, diffusion_steps: int,
-                           n_sweeps=100, n_frames=100, fix_noise: bool=False, fixed_natoms=None):
+                           n_sweeps=100, n_frames=100, fix_noise: bool=False, fixed_natoms=None, custom_natoms_list=None):
     if fix_noise:
         print('Caution: fix_noise is ture, meaning samples in the same sweep will use the same noise.')
     else:
@@ -34,8 +36,7 @@ def edm_conditional_sample(train_workbase: str,
                                                                property_norms=property_norms,
                                                                is_update=True)
     model.T = diffusion_steps
-    output_temp_dir = './temp'
-
+    output_temp_dir = './sample'
 
     n_nodes_dist_train_dict = dataset_info['n_nodes']
     n_nodes_list = list(n_nodes_dist_train_dict.keys())
@@ -51,7 +52,11 @@ def edm_conditional_sample(train_workbase: str,
                 nodesxsample = torch.tensor([fixed_natoms]*(n_frames ** num_conditions))
             else:
                 index_sample = torch_nodes_dist.sample((n_frames ** num_conditions,))
-                nodesxsample = torch.tensor([n_nodes_list[i] for i in index_sample])
+                if custom_natoms_list:
+                    nodesxsample = torch.tensor([custom_natoms_list[i] for i in index_sample])
+                    random.shuffle(custom_natoms_list)
+                else:
+                    nodesxsample = torch.tensor([n_nodes_list[i] for i in index_sample])
 
             # print(nodesxsample)
             one_hot, charges, x, node_mask = sample_sweep_conditional(args=args, device=device,
@@ -64,6 +69,6 @@ def edm_conditional_sample(train_workbase: str,
             for a_file in os.listdir(output_temp_dir):
                 an_atoms = read(os.path.join(output_temp_dir, a_file))
                 db.write(an_atoms)
-            shutil.rmtree(output_temp_dir)
+            # shutil.rmtree(output_temp_dir)
 
 

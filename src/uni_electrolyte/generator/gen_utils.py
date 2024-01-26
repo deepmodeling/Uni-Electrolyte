@@ -1,4 +1,5 @@
 import os
+from typing import Union
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -8,9 +9,67 @@ from ase.db import connect
 from rdkit import Chem
 from rdkit import DataStructs
 from rdkit.Chem import MACCSkeys
+from scipy.stats import norm
 from uni_electrolyte.evaluator.inference.pyG_entry import decorated_property_names_reverse
 
-__all__ = ["get_reversed_infer_target_list", "simple_2D_plot", "simple_kde_plot", "get_sim_list", "simple_plot_sim", 'simple_get_model']
+__all__ = ["get_reversed_infer_target_list", "simple_2D_plot", "simple_kde_plot", "get_sim_list", "simple_plot_sim",
+           "three_props_plot", 'simple_get_model', 'simple_get_samples',
+           'DotModeParams', 'HomoLumoTargetInfo', 'IntervalModeParams', 'RangeParams', 'get_homo_lumo_mesh']
+
+
+class DotModeParams:
+    def __init__(self, homo: float, lumo: float, n_molecules: int):
+        self.homo = homo
+        self.lumo = lumo
+        self.n_molecules = n_molecules
+
+
+class RangeParams:
+    def __init__(self, min: float, max: float):
+        self.min = min
+        self.max = max
+
+    def range(self):
+        return {'min': self.min, 'max': self.max}
+
+
+class IntervalModeParams:
+    def __init__(self, n_samples_per_dot: int, n_dot_per_interval: int, homo: RangeParams, lumo: RangeParams):
+        self.n_samples_per_dot = n_samples_per_dot
+        self.n_dot_per_interval = n_dot_per_interval
+        self.homo = homo.range()
+        self.lumo = lumo.range()
+
+
+class HomoLumoTargetInfo:
+    def __init__(self, params: Union[DotModeParams, IntervalModeParams], mode: str = 'dot'):
+        self.mode = mode
+        self.params = params
+        self.validate()
+
+    def validate(self):
+        if self.mode == 'dot' and not isinstance(self.params, DotModeParams):
+            raise ValueError("For 'dot' mode, 'params' must be an instance of DotModeParams.")
+        elif self.mode == 'interval' and not isinstance(self.params, IntervalModeParams):
+            raise ValueError("For 'interval' mode, 'params' must be an instance of IntervalModeParams.")
+        elif self.mode not in ['dot', 'interval']:
+            raise ValueError("Invalid 'mode'. Supported values are 'dot' and 'interval.'")
+
+
+def get_homo_lumo_mesh(mesh_target_info: IntervalModeParams):
+    n_dot_per_interval = mesh_target_info.n_dot_per_interval
+    n_samples_per_dot = mesh_target_info.n_samples_per_dot
+    print(f'Number of total condition dots are: {n_dot_per_interval ** 2}')
+    print(f'Number of total generated molecules are: {n_samples_per_dot * n_dot_per_interval ** 2}')
+    condition_dots_container = []
+    condition_dots = np.linspace(mesh_target_info.homo['min'], mesh_target_info.homo['max'],
+                                 n_dot_per_interval, endpoint=True)
+    condition_dots_container.append(condition_dots)
+    condition_dots = np.linspace(mesh_target_info.lumo['min'], mesh_target_info.lumo['max'],
+                                 n_dot_per_interval, endpoint=True)
+    condition_dots_container.append(condition_dots)
+    homo_lumo_mesh = np.array(np.meshgrid(*condition_dots_container)).T.reshape(-1, len(condition_dots_container))
+    return homo_lumo_mesh
 
 
 def get_reversed_infer_target_list(infer_target_list: list):
@@ -30,7 +89,7 @@ def simple_2D_plot(leftnet_result_dir, target_info: dict = None):
     fig, ax = plt.subplots()
 
     sns.set_style("white")
-    sns.kdeplot(x=df.HOMO, y=df.LUMO, cmap="Blues", shade=True)
+    sns.kdeplot(x=df.HOMO, y=df.LUMO, cmap="Blues", fill=True)
     if target_info['mode'] == 'dot':
         plt.scatter(x=target_info['homo'], y=target_info['lumo'], marker='x', label='Target')
     else:
@@ -41,12 +100,14 @@ def simple_2D_plot(leftnet_result_dir, target_info: dict = None):
         ymin = target_info['lumo']['min']
         ymax = target_info['lumo']['max']
 
-        rectangle = Rectangle((xmin, ymin), xmax - xmin, ymax - ymin, fill=False, linestyle='--', edgecolor='gray', label='Target interval')
+        rectangle = Rectangle((xmin, ymin), xmax - xmin, ymax - ymin, fill=False, linestyle='--', edgecolor='gray',
+                              label='Target interval')
         ax.add_patch(rectangle)
 
     plt.legend(loc='best')
     plt.xlabel('HOMO(eV)')
     plt.ylabel('LUMO(eV)')
+
     plt.savefig('./leftnet_evaluation_heatmap.png', dpi=400, bbox_inches='tight')
     plt.close()
     os.chdir(cwd_)
@@ -70,6 +131,31 @@ def simple_kde_plot(leftnet_result_dir, binding_e, chk_db_path):
     plt.legend(loc='best')
     plt.xlabel('Binding energy (eV)')
     plt.savefig('./leftnet_evaluation_kde.png', dpi=400, bbox_inches='tight')
+    os.chdir(cwd_)
+
+
+def three_props_plot(leftnet_result_dir: str):
+    cwd_ = os.getcwd()
+    os.chdir(leftnet_result_dir)
+
+    sa = np.load('sa.npy')
+    sp = np.load('sp.npy')
+    rs = np.load('rs.npy')
+
+    # Create a single figure
+    fig, ax = plt.subplots()
+    # Plot KDE for Property 1
+    sns.kdeplot(sa, ax=ax, color='blue', label='SA')
+    # Plot KDE for Property 2
+    sns.kdeplot(sp, ax=ax, color='green', label='SP')
+    # Plot KDE for Property 3
+    sns.kdeplot(rs, ax=ax, color='red', label='RS')
+    ax.set_xlabel('LEFTNet Prediction')
+    ax.set_ylabel('Density')
+    ax.set_title('Distribution of Properties')
+    ax.legend()
+
+    plt.savefig('leftnet_3props_dist.png', dpi=400, bbox_inches='tight')
     os.chdir(cwd_)
 
 
@@ -113,7 +199,8 @@ def simple_plot_sim(target_smile: str, gen_db_path: str, dump_path: str,
 def simple_get_model(mode: str):
     from uni_electrolyte.evaluator.model.spatial.leftnet_gen_version import LEFTNet
     from schnetpack_gschnet.task import ConditionalGenerativeSchNetTask
-    from schnetpack_gschnet.model import ConditionalGenerativeSchNet, ConditioningModule, ScalarConditionEmbedding, VectorialConditionEmbedding, CompositionEmbedding
+    from schnetpack_gschnet.model import ConditionalGenerativeSchNet, ConditioningModule, ScalarConditionEmbedding, \
+        VectorialConditionEmbedding, CompositionEmbedding
     import schnetpack as spk
     from schnetpack.transform import CastTo64
     from torch.optim.lr_scheduler import CyclicLR
@@ -232,7 +319,7 @@ def simple_get_model(mode: str):
         conditioning=real_conditions,
         type_prediction_n_hidden=[206, 156, 106, 56],
         distance_prediction_n_hidden=[264, 273, 282, 291],
-        input_modules=[pairwise_distance], # new
+        input_modules=[pairwise_distance],  # new
         postprocessors=[CastTo64()]
     )
     ###################################################################
@@ -256,6 +343,14 @@ def simple_get_model(mode: str):
         scheduler_monitor='val_loss'
     )
     return task
+
+
+def simple_get_samples(mean: int, stddev: int, lower_bound: int, upper_bound: int, n_samples: int):
+    integer_values = np.arange(lower_bound, upper_bound + 1)
+    pdf_values = norm.pdf(integer_values, loc=mean, scale=stddev)
+    probabilities = pdf_values / np.sum(pdf_values)
+    samples = np.random.choice(integer_values, size=n_samples, p=probabilities)
+    return samples.astype(int).tolist()
 
 
 if __name__ == "__main__":

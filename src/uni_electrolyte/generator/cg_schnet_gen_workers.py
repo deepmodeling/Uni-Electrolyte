@@ -59,10 +59,18 @@ def comp_be_gen(composition: str, binding_e: float,
             'remove_workdir': True
         }
     )
-    if is_cgleftnet:
-        model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_path, model_name='be_formular')
+    if os.path.isfile(gen_ckpt_path):
+        if not is_cgleftnet:
+            model = torch.load(gen_ckpt_path)['hyper_parameters']['model']
+        else:
+            gen_ckpt_folder, _ = os.path.split(gen_ckpt_path)
+            os.rename(src=gen_ckpt_path, dst=os.path.join(gen_ckpt_folder, 'be_formular.pt'))
+            model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_folder, model_name='be_formular')
     else:
-        model = torch.load(os.path.join(gen_ckpt_path, 'be_formular.ckpt'))['hyper_parameters']['model']
+        if is_cgleftnet:
+            model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_path, model_name='be_formular')
+        else:
+            model = torch.load(os.path.join(gen_ckpt_path, 'be_formular.ckpt'))['hyper_parameters']['model']
     generate(config=a_dict, model=model)
 
 
@@ -109,10 +117,18 @@ def fp_gen(target_smile: str,
             'remove_workdir': True
         }
     )
-    if is_cgleftnet:
-        model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_path, model_name='fp')
+    if os.path.isfile(gen_ckpt_path):
+        if not is_cgleftnet:
+            model = torch.load(gen_ckpt_path)['hyper_parameters']['model']
+        else:
+            gen_ckpt_folder, _ = os.path.split(gen_ckpt_path)
+            os.rename(src=gen_ckpt_path, dst=os.path.join(gen_ckpt_folder, 'fp.pt'))
+            model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_folder, model_name='fp')
     else:
-        model = torch.load(os.path.join(gen_ckpt_path, 'fp.ckpt'))['hyper_parameters']['model']
+        if is_cgleftnet:
+            model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_path, model_name='fp')
+        else:
+            model = torch.load(os.path.join(gen_ckpt_path, 'fp.ckpt'))['hyper_parameters']['model']
     generate(config=a_dict, model=model)
 
 
@@ -157,12 +173,19 @@ def homo_lumo_gen(homo: float, lumo: float,
             'remove_workdir': True
         }
     )
-    if is_cgleftnet:
-        model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_path, model_name='homo_lumo')
+    if os.path.isfile(gen_ckpt_path):
+        if not is_cgleftnet:
+            model = torch.load(gen_ckpt_path)['hyper_parameters']['model']
+        else:
+            gen_ckpt_folder, _ = os.path.split(gen_ckpt_path)
+            os.rename(src=gen_ckpt_path, dst=os.path.join(gen_ckpt_folder, 'homo_lumo.pt'))
+            model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_folder, model_name='homo_lumo')
     else:
-        model = torch.load(os.path.join(gen_ckpt_path, 'homo_lumo.ckpt'))['hyper_parameters']['model']
+        if is_cgleftnet:
+            model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_path, model_name='homo_lumo')
+        else:
+            model = torch.load(os.path.join(gen_ckpt_path, 'homo_lumo.ckpt'))['hyper_parameters']['model']
     generate(config=a_dict, model=model)
-
 
 def three_props_gen(sp: float, rs: float, sa: float,
                     gen_ckpt_path: str, batch_size: int = 5, workbase: str = None,
@@ -204,8 +227,16 @@ def three_props_gen(sp: float, rs: float, sa: float,
             'remove_workdir': True
         }
     )
-    if is_cgleftnet:
-        model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_path, model_name='sp_rs_sa')
+    if os.path.isfile(gen_ckpt_path):
+        if not is_cgleftnet:
+            model = torch.load(gen_ckpt_path)['hyper_parameters']['model']
+        else:
+            gen_ckpt_folder, _ = os.path.split(gen_ckpt_path)
+            os.rename(src=gen_ckpt_path, dst=os.path.join(gen_ckpt_folder, 'sp_rs_sa.pt'))
+            model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_folder, model_name='sp_rs_sa')
     else:
-        model = torch.load(os.path.join(gen_ckpt_path, 'sp_rs_sa.ckpt'))['hyper_parameters']['model']
+        if is_cgleftnet:
+            model = get_cgleftnet_model(gen_ckpt_path=gen_ckpt_path, model_name='sp_rs_sa')
+        else:
+            model = torch.load(os.path.join(gen_ckpt_path, 'sp_rs_sa.ckpt'))['hyper_parameters']['model']
     generate(config=a_dict, model=model)
