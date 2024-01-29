@@ -1179,8 +1179,8 @@ class Embedding_extractor(pl.LightningModule):
         de_log_loss=self.mae_loss(torch.pow(10,y_pred),torch.pow(10,batch.y))
         de_log_ratio_loss=torch.mean(torch.abs(torch.pow(10,y_pred)/torch.pow(10,batch.y)-1))
         # Logging to TensorBoard (if installed) by default
-        self.log("batch_test_loss", loss,prog_bar=True)
-        self.log("batch_test_de_log_loss", de_log_loss )
+        self.log("batch_test_mae_loss", loss,prog_bar=True)
+        self.log("batch_test_de_log_mae_loss", de_log_loss )
         self.log("batch_de_log_ratio_loss",de_log_ratio_loss)
         
         self.test_loss_outputs.append(loss)
@@ -1200,10 +1200,10 @@ class Embedding_extractor(pl.LightningModule):
     def on_test_epoch_end(self):
        
         all_loss = torch.stack(self.test_loss_outputs)
-        self.log('epoch_test_loss', torch.mean(all_loss), prog_bar=True)
+        self.log('epoch_test_mae_loss', torch.mean(all_loss), prog_bar=True)
 
         all_de_log_loss=torch.stack(self.test_de_log_loss_outputs)
-        self.log('epoch_test_de_log_loss', torch.mean(all_de_log_loss), prog_bar=True)
+        self.log('epoch_test_de_log_mae_loss', torch.mean(all_de_log_loss), prog_bar=True)
      
         all_de_log_ratio_loss=torch.stack(self.test_de_log_ratio_loss_outputs)
         self.log('epoch_test_de_log_ratio_loss', torch.mean(all_de_log_ratio_loss), prog_bar=True)
