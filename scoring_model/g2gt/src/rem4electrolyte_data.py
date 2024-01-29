@@ -325,8 +325,8 @@ class Rem():
             if fold == 0:
                 continue
             test_output_df_tmp = pd.read_csv(test_outputs_csv_path_list[fold])
-            test_output_df_tmp = test_output_df_tmp.rename(columns={'y_pred': 'y_pred2'})[[self.args.ID_name, "y_pred2"]]
-            test_output_df=pd.merge(test_output_df, test_output_df_tmp, on="EP_ID")
+            test_output_df_tmp = test_output_df_tmp.rename(columns={'y_pred': 'y_pred2'})[["ID", "y_pred2"]]
+            test_output_df=pd.merge(test_output_df, test_output_df_tmp, on="ID")
             test_output_df["y_pred"] = test_output_df["y_pred2"] + test_output_df["y_pred"]
             del test_output_df["y_pred2"]
         test_output_df["y_pred"]/=fold_num
