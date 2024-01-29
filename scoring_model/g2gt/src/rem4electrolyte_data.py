@@ -227,31 +227,7 @@ class Rem():
         train_set_size = int(len(all_train_dataset) * 0.9)
         valid_set_size = len(all_train_dataset) - train_set_size
 
-        # split the train set into two
-        seed = torch.Generator().manual_seed(self.args.seed)
-        train_dataset, valid_dataset = data.random_split(all_train_dataset, [train_set_size, valid_set_size], generator=seed)
-        
-        train_dataloader = DataLoader(
-            train_dataset,
-            batch_size=self.args.batch_size,
-            shuffle=False,
-            num_workers=self.args.num_workers,
-            pin_memory=True,
-            persistent_workers=True,
-            collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
-                               rel_pos_max=1024,predicted_target=self.args.predicted_target),)
-        print('len(train_dataloader)', len(train_dataloader))
 
-        valid_dataloader = DataLoader(
-            valid_dataset,
-            batch_size=self.args.batch_size,
-            shuffle=False,
-            num_workers=self.args.num_workers,
-            pin_memory=True,
-            persistent_workers=True,
-            collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
-                                rel_pos_max=1024,predicted_target=self.args.predicted_target),)
-        print('len(valid_dataloader)', len(valid_dataloader))
 
         if not os.path.exists("data/%s"%(self.args.iid_test_dataset_name)):
             os.mkdir("data/%s"%(self.args.iid_test_dataset_name))
@@ -309,7 +285,36 @@ class Rem():
         fold_num=5
         test_outputs_csv_path_list = []
         for fold in range(fold_num):
+            print("--------------model%s-----------------------" % (fold))
             self.model = Embedding_extractor(self.args)
+
+            # split the train set into two
+            seed = torch.Generator().manual_seed(self.args.seed+fold)
+            train_dataset, valid_dataset = data.random_split(all_train_dataset, [train_set_size, valid_set_size],
+                                                             generator=seed)
+
+            train_dataloader = DataLoader(
+                train_dataset,
+                batch_size=self.args.batch_size,
+                shuffle=False,
+                num_workers=self.args.num_workers,
+                pin_memory=True,
+                persistent_workers=True,
+                collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
+                                   rel_pos_max=1024, predicted_target=self.args.predicted_target), )
+            print('len(train_dataloader)', len(train_dataloader))
+
+            valid_dataloader = DataLoader(
+                valid_dataset,
+                batch_size=self.args.batch_size,
+                shuffle=False,
+                num_workers=self.args.num_workers,
+                pin_memory=True,
+                persistent_workers=True,
+                collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
+                                   rel_pos_max=1024, predicted_target=self.args.predicted_target), )
+            print('len(valid_dataloader)', len(valid_dataloader))
+
             trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader, )
             trainer.test(model=self.model, dataloaders=iid_test_dataloader)
             trainer.test(model=self.model, dataloaders=ood_test_dataloader)
