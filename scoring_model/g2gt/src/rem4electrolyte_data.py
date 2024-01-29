@@ -324,15 +324,26 @@ class Rem():
             test_output_df=pd.merge(test_output_df, test_output_df_tmp, on="EP_ID")
             test_output_df["y_pred"] = test_output_df["y_pred2"] + test_output_df["y_pred"]
             del test_output_df["y_pred2"]
+        test_output_df["y_pred"]/=fold_num
+        test_output_df.to_csv("./lightning_logs/%s/merged_test_result.csv"%(self.args.log_name))
+
 
         import torch.nn as nn
         mae_loss_fn = nn.L1Loss(reduction="mean")
         mae = mae_loss_fn(test_output_df["y_pred"],test_output_df["y_true"])
         de_log_mae= mae_loss_fn(torch.pow(10, test_output_df["y_pred"]), torch.pow(10, test_output_df["y_true"]))
         de_log_ratio = torch.mean(torch.abs(torch.pow(10, test_output_df["y_pred"]) / torch.pow(10, test_output_df["y_true"]) - 1))
+
         print('mae', mae)
         print("de_log_mae",de_log_mae)
         print("de_log_ratio",de_log_ratio)
+
+        with open("./lightning_logs/%s/merging.log"%(self.args.log_name)) as fp:
+            print('mae', mae,file=fp)
+            print("de_log_mae", de_log_mae,file=fp)
+            print("de_log_ratio", de_log_ratio,file=fp)
+
+
 #
 #
 #
