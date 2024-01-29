@@ -289,10 +289,6 @@ class Rem():
                                rel_pos_max=1024,predicted_target=self.args.predicted_target),
         )
         print('len(ood_test_dataloader)', len(ood_test_dataloader))
-        
-      
-
-        self.model = Embedding_extractor(self.args)
 
 
         
@@ -309,18 +305,34 @@ class Rem():
             #limit_train_batches=20,
             #log_every_n_steps=10
             )
-        trainer.fit(model=self.model, train_dataloaders=train_dataloader,val_dataloaders=valid_dataloader,)
-        
-        trainer.test(model=self.model, dataloaders=iid_test_dataloader)
-        trainer.test(model=self.model, dataloaders=ood_test_dataloader)
 
-        
+        fold_num=5
+        test_outputs_csv_path_list = []
+        for fold in range(fold_num):
+            self.model = Embedding_extractor(self.args)
+            trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader, )
+            trainer.test(model=self.model, dataloaders=iid_test_dataloader)
+            trainer.test(model=self.model, dataloaders=ood_test_dataloader)
+            test_outputs_csv_path_list.append(self.model.test_outputs_csv_path)
 
+        test_output_df = pd.read_csv(test_outputs_csv_path_list[0])
+        for fold in range(fold_num):
+            if fold == 0:
+                continue
+            test_output_df_tmp = pd.read_csv(test_outputs_csv_path_list[fold])
+            test_output_df_tmp = test_output_df_tmp.rename(columns={'y_pred': 'y_pred2'})[[self.args.ID_name, "y_pred2"]]
+            test_output_df=pd.merge(test_output_df, test_output_df_tmp, on="EP_ID")
+            test_output_df["y_pred"] = test_output_df["y_pred2"] + test_output_df["y_pred"]
+            del test_output_df["y_pred2"]
 
-
-
-
-
+        import torch.nn as nn
+        mae_loss_fn = nn.L1Loss(reduction="mean")
+        mae = mae_loss_fn(test_output_df["y_pred"],test_output_df["y_true"])
+        de_log_mae= mae_loss_fn(torch.pow(10, test_output_df["y_pred"]), torch.pow(10, test_output_df["y_true"]))
+        de_log_ratio = torch.mean(torch.abs(torch.pow(10, test_output_df["y_pred"]) / torch.pow(10, test_output_df["y_true"]) - 1))
+        print('mae', mae)
+        print("de_log_mae",de_log_mae)
+        print("de_log_ratio",de_log_ratio)
 #
 #
 #

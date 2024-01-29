@@ -1065,6 +1065,9 @@ class Embedding_extractor(pl.LightningModule):
         self.mae_loss=nn.L1Loss()
         self.predict_outputs_dict = {"smiles": [],   "y_pred": [], "idx": [], "ID": []}
 
+        import datetime
+        now = datetime.datetime.now()
+        self.test_outputs_csv_path="lightning_logs/%s/test_output_%s.csv"%(self.args.log_name,now.strftime("%Y%m%d%H%M%S"))
 
     def forward(self, x):
 
@@ -1208,12 +1211,11 @@ class Embedding_extractor(pl.LightningModule):
 
 
         test_outputs_df=pd.DataFrame(self.test_outputs_dict)
-        import datetime
-        now = datetime.datetime.now() 
-        test_outputs_df.to_csv("lightning_logs/%s/test_output_%s.csv"%(self.args.log_name,now.strftime("%Y%m%d%H%M%S")), index=False)
+
+        test_outputs_df.to_csv(self.test_outputs_csv_path, index=False)
         self.test_loss_outputs.clear()
         self.test_de_log_loss_outputs.clear()
-        #不重置这个字典可以使生成的csv有全部test集的测试结果
+        #不重置这个字典可以使生成的csv有全部test集(iid ood)的测试结果
         self.test_outputs_dict["y_pred"]=[]
         self.test_outputs_dict["y_true"]=[]
         self.test_outputs_dict["smiles"]=[]
