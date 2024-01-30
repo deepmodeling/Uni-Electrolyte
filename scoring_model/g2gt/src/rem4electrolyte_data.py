@@ -294,7 +294,8 @@ class Rem():
 
             self.model = Embedding_extractor(self.args)
             # split the train set into two
-            seed = torch.Generator().manual_seed(self.args.seed+fold*100)
+            seed_int=self.args.seed+fold*100
+            seed = torch.Generator().manual_seed(seed_int)
             train_dataset, valid_dataset = data.random_split(all_train_dataset, [train_set_size, valid_set_size],
                                                              generator=seed)
 
@@ -327,11 +328,11 @@ class Rem():
             trainer.save_checkpoint(model_path)
 
 
-            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_iid_%s.csv" % (self.args.log_name, fold)
+            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_iid_%s_%s.csv" % (self.args.log_name, fold,seed_int)
             trainer.test(model=self.model, dataloaders=iid_test_dataloader,ckpt_path=model_path)
             test_outputs_iid_csv_path_list.append(self.model.test_outputs_csv_path)
 
-            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_ood_%s.csv" % (self.args.log_name,fold)
+            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_ood_%s_%s.csv" % (self.args.log_name,fold,seed_int)
             trainer.test(model=self.model, dataloaders=ood_test_dataloader,ckpt_path=model_path)
             test_outputs_ood_csv_path_list.append(self.model.test_outputs_csv_path)
 
