@@ -22,6 +22,7 @@ from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 import os,sys
 from pytorch_lightning.plugins import DDPPlugin
 from entry import predict_epoch_end
+import torch.nn as nn
 import pandas as pd
 import torch
 import torch.utils.data as data
@@ -283,13 +284,14 @@ class Rem():
             )
 
         fold_num=5
-        test_outputs_csv_path_list = []
+        test_outputs_iid_csv_path_list = []
+        test_outputs_ood_csv_path_list = []
         for fold in range(fold_num):
             print("--------------model%s-----------------------" % (fold))
             self.model = Embedding_extractor(self.args)
 
             # split the train set into two
-            seed = torch.Generator().manual_seed(self.args.seed+fold)
+            seed = torch.Generator().manual_seed(self.args.seed+fold*100)
             train_dataset, valid_dataset = data.random_split(all_train_dataset, [train_set_size, valid_set_size],
                                                              generator=seed)
 
@@ -316,39 +318,48 @@ class Rem():
             print('len(valid_dataloader)', len(valid_dataloader))
 
             trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader, )
+
+
+
+            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_iid_%s.csv" % (self.args.log_name, fold_num)
             trainer.test(model=self.model, dataloaders=iid_test_dataloader)
+            test_outputs_iid_csv_path_list.append(self.model.test_outputs_csv_path)
+
+            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_ood_%s.csv" % (self.args.log_name,fold_num)
             trainer.test(model=self.model, dataloaders=ood_test_dataloader)
-            test_outputs_csv_path_list.append(self.model.test_outputs_csv_path)
+            test_outputs_ood_csv_path_list.append(self.model.test_outputs_csv_path)
+        output_process_merge_csv(test_outputs_iid_csv_path_list, self.args.log_name, "iid")
+        output_process_merge_csv(test_outputs_ood_csv_path_list, self.args.log_name, "ood")
 
-        test_output_df = pd.read_csv(test_outputs_csv_path_list[0])
-        for fold in range(fold_num):
-            if fold == 0:
-                continue
-            test_output_df_tmp = pd.read_csv(test_outputs_csv_path_list[fold])
-            test_output_df_tmp = test_output_df_tmp.rename(columns={'y_pred': 'y_pred2'})[["ID", "y_pred2"]]
-            test_output_df=pd.merge(test_output_df, test_output_df_tmp, on="ID")
-            test_output_df["y_pred"] = test_output_df["y_pred2"] + test_output_df["y_pred"]
-            del test_output_df["y_pred2"]
-        test_output_df["y_pred"]/=fold_num
-        test_output_df.to_csv("./lightning_logs/%s/merged_test_result.csv"%(self.args.log_name))
+def output_process_merge_csv(test_outputs_csv_path_list, log_name,tag):
+    test_output_df = pd.read_csv(test_outputs_csv_path_list[0])
+    for fold in range(len(test_outputs_csv_path_list)):
+        if fold == 0:
+            continue
+        test_output_df_tmp = pd.read_csv(test_outputs_csv_path_list[fold])
+        test_output_df_tmp = test_output_df_tmp.rename(columns={'y_pred': 'y_pred2'})[["ID", "y_pred2"]]
+        test_output_df = pd.merge(test_output_df, test_output_df_tmp, on="ID")
+        test_output_df["y_pred"] = test_output_df["y_pred2"] + test_output_df["y_pred"]
+        del test_output_df["y_pred2"]
+    test_output_df["y_pred"] /= len(test_outputs_csv_path_list)
+    test_output_df.to_csv("./lightning_logs/%s/merged_test_result_%s.csv" % (log_name,tag))
 
 
-        import torch.nn as nn
-        mae_loss_fn = nn.L1Loss(reduction="mean")
-        y_pred=torch.tensor(test_output_df["y_pred"])
-        y_true=torch.tensor(test_output_df["y_true"])
-        mae = mae_loss_fn(y_pred,y_true)
-        de_log_mae= mae_loss_fn(torch.pow(10, y_pred), torch.pow(10, y_true))
-        de_log_ratio = torch.mean(torch.abs(torch.pow(10,y_pred) / torch.pow(10, y_true) - 1))
+    mae_loss_fn = nn.L1Loss(reduction="mean")
+    y_pred = torch.tensor(test_output_df["y_pred"])
+    y_true = torch.tensor(test_output_df["y_true"])
+    mae = mae_loss_fn(y_pred, y_true)
+    de_log_mae = mae_loss_fn(torch.pow(10, y_pred), torch.pow(10, y_true))
+    de_log_ratio = torch.mean(torch.abs(torch.pow(10, y_pred) / torch.pow(10, y_true) - 1))
 
-        print('mae', mae)
-        print("de_log_mae",de_log_mae)
-        print("de_log_ratio",de_log_ratio)
+    print('%s:mae', tag,mae)
+    print("%s:de_log_mae",tag, de_log_mae)
+    print("%s:de_log_ratio",tag, de_log_ratio)
 
-        with open("./lightning_logs/%s/merging.log"%(self.args.log_name),"w") as fp:
-            print('mae', mae,file=fp)
-            print("de_log_mae", de_log_mae,file=fp)
-            print("de_log_ratio", de_log_ratio,file=fp)
+    with open("./lightning_logs/%s/merging_%s.log" % (log_name,tag), "w") as fp:
+        print('%s:mae',tag, mae, file=fp)
+        print("%s:de_log_mae",tag, de_log_mae, file=fp)
+        print("%s:de_log_ratio", tag,de_log_ratio, file=fp)
 
 
 #
