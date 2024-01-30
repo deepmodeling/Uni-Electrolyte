@@ -269,25 +269,15 @@ class Rem():
 
 
         
-        trainer = pl.Trainer( 
-            logger= TensorBoardLogger("lightning_logs", name=self.args.log_name),
-            max_epochs=self.args.epoch,
-            devices=1,
-            accelerator="auto",
-            callbacks=[
-                #EarlyStopping(monitor="epoch_val_loss", mode="min",patience=50,verbose=True),
-                LearningRateMonitor(logging_interval='step'),
-                ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}',save_top_k=3,save_last=True,monitor="epoch_val_loss",mode='min',verbose=True,auto_insert_metric_name=True),
-            ],
-            #limit_train_batches=20,
-            #log_every_n_steps=10
-            )
+
 
         fold_num=5
         test_outputs_iid_csv_path_list = []
         test_outputs_ood_csv_path_list = []
+        ori_log_name=self.args.log_name
         for fold in range(fold_num):
             print("--------------model%s-----------------------" % (fold))
+            self.args.log_name=ori_log_name+"_" + fold
             self.model = Embedding_extractor(self.args)
 
             # split the train set into two
@@ -316,6 +306,21 @@ class Rem():
                 collate_fn=partial(collator, max_node=9999, multi_hop_max_dist=5,
                                    rel_pos_max=1024, predicted_target=self.args.predicted_target), )
             print('len(valid_dataloader)', len(valid_dataloader))
+
+            trainer = pl.Trainer(
+                logger=TensorBoardLogger("lightning_logs", name=self.args.log_name),
+                max_epochs=self.args.epoch,
+                devices=1,
+                accelerator="auto",
+                callbacks=[
+                    # EarlyStopping(monitor="epoch_val_loss", mode="min",patience=50,verbose=True),
+                    LearningRateMonitor(logging_interval='step'),
+                    ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}', save_top_k=3, save_last=True,
+                                    monitor="epoch_val_loss", mode='min', verbose=True, auto_insert_metric_name=True),
+                ],
+                # limit_train_batches=20,
+                # log_every_n_steps=10
+            )
 
             trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader, )
 
