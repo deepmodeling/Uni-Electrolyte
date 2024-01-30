@@ -352,14 +352,14 @@ def output_process_merge_csv(test_outputs_csv_path_list, log_name,tag):
     de_log_mae = mae_loss_fn(torch.pow(10, y_pred), torch.pow(10, y_true))
     de_log_ratio = torch.mean(torch.abs(torch.pow(10, y_pred) / torch.pow(10, y_true) - 1))
 
-    print('%s:mae', tag,mae)
-    print("%s:de_log_mae",tag, de_log_mae)
-    print("%s:de_log_ratio",tag, de_log_ratio)
+    print('%s:mae %s'% (tag,mae))
+    print("%s:de_log_mae %s"%(tag, de_log_mae))
+    print("%s:de_log_ratio %s"%(tag, de_log_ratio))
 
     with open("./lightning_logs/%s/merging_%s.log" % (log_name,tag), "w") as fp:
-        print('%s:mae',tag, mae, file=fp)
-        print("%s:de_log_mae",tag, de_log_mae, file=fp)
-        print("%s:de_log_ratio", tag,de_log_ratio, file=fp)
+        print('%s:mae %s'%(tag, mae), file=fp)
+        print("%s:de_log_mae %s"%(tag, de_log_mae), file=fp)
+        print("%s:de_log_ratio %s"%( tag,de_log_ratio), file=fp)
 
 
 #
