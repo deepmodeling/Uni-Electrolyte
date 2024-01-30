@@ -323,15 +323,16 @@ class Rem():
 
 
             trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader )
-
+            model_path="lightning_logs/%s/model_%s.ckpt" % (self.args.log_name,fold_num)
+            trainer.save_checkpoint(model_path)
 
 
             self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_iid_%s.csv" % (self.args.log_name, fold_num)
-            trainer.test(model=self.model, dataloaders=iid_test_dataloader,ckpt_path="last")
+            trainer.test(model=self.model, dataloaders=iid_test_dataloader,ckpt_path=model_path)
             test_outputs_iid_csv_path_list.append(self.model.test_outputs_csv_path)
 
             self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_ood_%s.csv" % (self.args.log_name,fold_num)
-            trainer.test(model=self.model, dataloaders=ood_test_dataloader,ckpt_path="last")
+            trainer.test(model=self.model, dataloaders=ood_test_dataloader,ckpt_path=model_path)
             test_outputs_ood_csv_path_list.append(self.model.test_outputs_csv_path)
 
 
