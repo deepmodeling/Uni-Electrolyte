@@ -285,14 +285,14 @@ class Rem():
         fold_num=5
         test_outputs_iid_csv_path_list = []
         test_outputs_ood_csv_path_list = []
-        self.model = Embedding_extractor(self.args)
-        self.model.save_checkpoint("lightning_logs/%s/origin_model.ckpt" % (self.args.log_name))
+        #self.model = Embedding_extractor(self.args)
+        #self.model.save_checkpoint("lightning_logs/%s/origin_model.ckpt" % (self.args.log_name))
         #ori_log_name=self.args.log_name
         for fold in range(fold_num):
             print("--------------model%s-----------------------" % (fold))
             #self.args.log_name=ori_log_name+"_" + fold
 
-
+            self.model = Embedding_extractor(self.args)
             # split the train set into two
             seed = torch.Generator().manual_seed(self.args.seed+fold*100)
             train_dataset, valid_dataset = data.random_split(all_train_dataset, [train_set_size, valid_set_size],
@@ -322,7 +322,7 @@ class Rem():
 
 
 
-            trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader,ckpt_path="lightning_logs/%s/origin_model.ckpt" % (self.args.log_name) )
+            trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader )
 
 
 
