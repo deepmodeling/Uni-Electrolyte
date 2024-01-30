@@ -267,18 +267,31 @@ class Rem():
         )
         print('len(ood_test_dataloader)', len(ood_test_dataloader))
 
-
-        
-
+        trainer = pl.Trainer(
+            logger=TensorBoardLogger("lightning_logs", name=self.args.log_name),
+            max_epochs=self.args.epoch,
+            devices=1,
+            accelerator="auto",
+            callbacks=[
+                # EarlyStopping(monitor="epoch_val_loss", mode="min",patience=50,verbose=True),
+                LearningRateMonitor(logging_interval='step'),
+                ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}', save_top_k=3, save_last=True,
+                                monitor="epoch_val_loss", mode='min', verbose=True, auto_insert_metric_name=True),
+            ],
+            # limit_train_batches=20,
+            # log_every_n_steps=10
+        )
 
         fold_num=5
         test_outputs_iid_csv_path_list = []
         test_outputs_ood_csv_path_list = []
-        ori_log_name=self.args.log_name
+        self.model = Embedding_extractor(self.args)
+        self.model.save_checkpoint("lightning_logs/%s/origin_model.ckpt" % (self.args.log_name))
+        #ori_log_name=self.args.log_name
         for fold in range(fold_num):
             print("--------------model%s-----------------------" % (fold))
-            self.args.log_name=ori_log_name+"_" + fold
-            self.model = Embedding_extractor(self.args)
+            #self.args.log_name=ori_log_name+"_" + fold
+
 
             # split the train set into two
             seed = torch.Generator().manual_seed(self.args.seed+fold*100)
@@ -307,32 +320,21 @@ class Rem():
                                    rel_pos_max=1024, predicted_target=self.args.predicted_target), )
             print('len(valid_dataloader)', len(valid_dataloader))
 
-            trainer = pl.Trainer(
-                logger=TensorBoardLogger("lightning_logs", name=self.args.log_name),
-                max_epochs=self.args.epoch,
-                devices=1,
-                accelerator="auto",
-                callbacks=[
-                    # EarlyStopping(monitor="epoch_val_loss", mode="min",patience=50,verbose=True),
-                    LearningRateMonitor(logging_interval='step'),
-                    ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}', save_top_k=3, save_last=True,
-                                    monitor="epoch_val_loss", mode='min', verbose=True, auto_insert_metric_name=True),
-                ],
-                # limit_train_batches=20,
-                # log_every_n_steps=10
-            )
 
-            trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader, )
+
+            trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader,ckpt_path="lightning_logs/%s/origin_model.ckpt" % (self.args.log_name) )
 
 
 
             self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_iid_%s.csv" % (self.args.log_name, fold_num)
-            trainer.test(model=self.model, dataloaders=iid_test_dataloader)
+            trainer.test(model=self.model, dataloaders=iid_test_dataloader,ckpt_path="last")
             test_outputs_iid_csv_path_list.append(self.model.test_outputs_csv_path)
 
             self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_ood_%s.csv" % (self.args.log_name,fold_num)
-            trainer.test(model=self.model, dataloaders=ood_test_dataloader)
+            trainer.test(model=self.model, dataloaders=ood_test_dataloader,ckpt_path="last")
             test_outputs_ood_csv_path_list.append(self.model.test_outputs_csv_path)
+
+
         output_process_merge_csv(test_outputs_iid_csv_path_list, self.args.log_name, "iid")
         output_process_merge_csv(test_outputs_ood_csv_path_list, self.args.log_name, "ood")
 
