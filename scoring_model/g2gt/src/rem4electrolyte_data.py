@@ -204,7 +204,87 @@ class Rem():
 
 
 
+    def generate_scaffolds(self,
+                           dataset,
+                           log_every_n: int = 1000) :
+        """Returns all scaffolds from the dataset.
 
+        Parameters
+        ----------
+        dataset: Dataset
+            Dataset to be split.
+        log_every_n: int, optional (default 1000)
+            Controls the logger by dictating how often logger outputs
+            will be produced.
+
+        Returns
+        -------
+        scaffold_sets: List[List[int]]
+            List of indices of each scaffold in the dataset.
+        """
+
+        def _generate_scaffold(smiles: str, include_chirality: bool = False) -> str:
+            """Compute the Bemis-Murcko scaffold for a SMILES string.
+
+            Bemis-Murcko scaffolds are described in DOI: 10.1021/jm9602928.
+            They are essentially that part of the molecule consisting of
+            rings and the linker atoms between them.
+
+            Paramters
+            ---------
+            smiles: str
+                SMILES
+            include_chirality: bool, default False
+                Whether to include chirality in scaffolds or not.
+
+            Returns
+            -------
+            str
+                The MurckScaffold SMILES from the original SMILES
+
+            References
+            ----------
+            .. [1] Bemis, Guy W., and Mark A. Murcko. "The properties of known drugs.
+                1. Molecular frameworks." Journal of medicinal chemistry 39.15 (1996): 2887-2893.
+
+            Note
+            ----
+            This function requires RDKit to be installed.
+            """
+            try:
+                from rdkit import Chem
+                from rdkit.Chem.Scaffolds.MurckoScaffold import MurckoScaffoldSmiles
+            except ModuleNotFoundError:
+                raise ImportError("This function requires RDKit to be installed.")
+
+            mol = Chem.MolFromSmiles(smiles)
+            scaffold = MurckoScaffoldSmiles(mol=mol, includeChirality=include_chirality)
+            return scaffold
+
+        scaffolds = {}
+        data_len = len(dataset)
+
+        for ind, smiles in enumerate(dataset):
+
+            scaffold = _generate_scaffold(smiles)
+            if scaffold not in scaffolds:
+                scaffolds[scaffold] = [ind]
+            else:
+                scaffolds[scaffold].append(ind)
+
+        # Sort from largest to smallest scaffold sets
+        scaffolds = {key: sorted(value) for key, value in scaffolds.items()}
+        scaffold_sets = [
+            scaffold_set
+            for (scaffold,
+                 scaffold_set) in sorted(scaffolds.items(),
+                                         key=lambda x: (len(x[1]), x[1][0]),
+                                         reverse=True)
+        ]
+        index_list=[]
+        for scaffold_set in scaffold_sets:
+            index_list+=scaffold_set
+        return index_list
     def train(self):
         # ------------
         # data
@@ -267,9 +347,10 @@ class Rem():
         )
         print('len(ood_test_dataloader)', len(ood_test_dataloader))
 
+        fold_num = 5
         trainer = pl.Trainer(
             logger=TensorBoardLogger("lightning_logs", name=self.args.log_name),
-            max_epochs=self.args.epoch,
+            max_epochs=self.args.epoch*fold_num,
             devices=1,
             accelerator="auto",
             callbacks=[
@@ -282,7 +363,6 @@ class Rem():
             # log_every_n_steps=10
         )
 
-        fold_num=5
         test_outputs_iid_csv_path_list = []
         test_outputs_ood_csv_path_list = []
         #self.model = Embedding_extractor(self.args)
