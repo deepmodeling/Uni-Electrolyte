@@ -191,8 +191,7 @@ class Rem():
                 LearningRateMonitor(logging_interval='step'),
                 ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}', save_top_k=3, save_last=True,
                                 monitor="epoch_val_loss", mode='min', verbose=True, auto_insert_metric_name=True),
-                ModelCheckpoint(filename='best', save_top_k=1,
-                                monitor="epoch_val_loss", mode='min', verbose=True),
+
             ],
             # limit_train_batches=20,
             # log_every_n_steps=10
@@ -361,6 +360,8 @@ class Rem():
                 LearningRateMonitor(logging_interval='step'),
                 ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}', save_top_k=3, save_last=True,
                                 monitor="epoch_val_loss", mode='min', verbose=True, auto_insert_metric_name=True),
+                ModelCheckpoint(filename='best', save_top_k=1,
+                                monitor="epoch_val_loss", mode='min', verbose=True),
             ],
             # limit_train_batches=20,
             # log_every_n_steps=10
