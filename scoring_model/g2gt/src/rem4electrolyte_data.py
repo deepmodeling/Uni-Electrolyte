@@ -265,9 +265,9 @@ class Rem():
         scaffolds = {}
         data_len = len(dataset)
 
-        for ind, smiles in enumerate(dataset):
+        for ind, tmp_data in enumerate(dataset):
 
-            scaffold = _generate_scaffold(smiles)
+            scaffold = _generate_scaffold(tmp_data.smiles)
             if scaffold not in scaffolds:
                 scaffolds[scaffold] = [ind]
             else:
@@ -372,7 +372,7 @@ class Rem():
 
         fold_num = 5
         if True:
-            fold_idx = self.args.fold_idx
+            fold_idx =
             print("--------------model%s-----------------------" % (fold_idx))
             #self.args.log_name=ori_log_name+"_" + fold
 
@@ -382,8 +382,8 @@ class Rem():
             # seed = torch.Generator().manual_seed(seed_int)
             # train_dataset, valid_dataset = data.random_split(all_train_dataset, [train_set_size, valid_set_size],
             #                                                  generator=seed)
-            import pdb
-            pdb.set_trace()
+            # import pdb
+            # pdb.set_trace()
             scaffold_rerank_index_list = self.generate_scaffolds(all_train_dataset)
             # 创建交叉验证分割器
             # 计算每个子列表的长度
