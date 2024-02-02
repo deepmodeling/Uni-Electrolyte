@@ -363,6 +363,37 @@ class Rem():
             # log_every_n_steps=10
         )
 
+        if True:#参数融合实验
+            model_ckpt_path_list=[
+                "/personal/Bohrium_task_g2g/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20240130225946/version_0/checkpoints/last.ckpt",
+                "/personal/Bohrium_task_g2g/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20240130225536/version_0/checkpoints/last.ckpt",
+                "/personal/Bohrium_task_g2g/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20240130224549/version_0/checkpoints/last.ckpt",
+                "/personal/Bohrium_task_g2g/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20240129145146/version_0/checkpoints/last.ckpt"]
+            state_dicts = []
+
+            for checkpoint_file in model_ckpt_path_list:
+                # 加载 Checkpoint 文件
+                checkpoint = torch.load(checkpoint_file, map_location=torch.device("cpu"))
+
+                # 获取模型参数的状态字典
+                state_dict = checkpoint['state_dict']
+                state_dicts.append(state_dict)
+            # 融合参数
+            merged_state_dict = {}
+            for key in state_dicts[0].keys():
+                # 计算参数平均值
+                merged_state_dict[key] = torch.stack([state_dict[key] for state_dict in state_dicts], dim=0).mean(dim=0)
+
+            # 将融合后的参数加载到模型中
+            self.model = Embedding_extractor(self.args)
+            self.model.load_state_dict(merged_state_dict)
+            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_iid_%s_%s.csv" % (self.args.log_name, "merge", "")
+            trainer.test(model=self.model, dataloaders=iid_test_dataloader)
+            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_ood_%s_%s.csv" % (
+            self.args.log_name, "merge", "")
+            trainer.test(model=self.model, dataloaders=ood_test_dataloader)
+            exit()
+
         test_outputs_iid_csv_path_list = []
         test_outputs_ood_csv_path_list = []
         #self.model = Embedding_extractor(self.args)
