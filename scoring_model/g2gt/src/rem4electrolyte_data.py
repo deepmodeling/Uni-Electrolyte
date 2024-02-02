@@ -427,7 +427,7 @@ class Rem():
 
 
             trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader )
-            model_path="lightning_logs/%s/version_0/checkpoint/best.ckpt" % (self.args.log_name)
+            model_path="lightning_logs/%s/version_0/checkpoints/best.ckpt" % (self.args.log_name)
 
 
             self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_iid_%s.csv" % (self.args.log_name, fold_idx)
