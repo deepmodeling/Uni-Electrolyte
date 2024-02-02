@@ -25,7 +25,7 @@ from entry import predict_epoch_end
 import torch.nn as nn
 import pandas as pd
 import torch
-import torch.utils.data as data
+from torch.utils.data import Dataset,Subset
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.loggers.tensorboard import TensorBoardLogger
 import datetime
@@ -364,37 +364,6 @@ class Rem():
             # log_every_n_steps=10
         )
 
-        if False:#参数融合实验
-            model_ckpt_path_list=[
-                "/personal/Bohrium_task_g2g/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20240130225946/version_0/checkpoints/last.ckpt",
-                "/personal/Bohrium_task_g2g/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20240130225536/version_0/checkpoints/last.ckpt",
-                "/personal/Bohrium_task_g2g/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20240130224549/version_0/checkpoints/last.ckpt",
-                "/personal/Bohrium_task_g2g/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20240129145146/version_0/checkpoints/last.ckpt"]
-            state_dicts = []
-
-            for checkpoint_file in model_ckpt_path_list:
-                # 加载 Checkpoint 文件
-                checkpoint = torch.load(checkpoint_file, map_location=torch.device("cpu"))
-
-                # 获取模型参数的状态字典
-                state_dict = checkpoint['state_dict']
-                state_dicts.append(state_dict)
-            # 融合参数
-            merged_state_dict = {}
-            for key in state_dicts[0].keys():
-                # 计算参数平均值
-                merged_state_dict[key] = torch.stack([state_dict[key] for state_dict in state_dicts], dim=0).mean(dim=0)
-
-            # 将融合后的参数加载到模型中
-            self.model = Embedding_extractor(self.args)
-            self.model.load_state_dict(merged_state_dict)
-            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_iid_%s_%s.csv" % (self.args.log_name, "merge", "")
-            trainer.test(model=self.model, dataloaders=iid_test_dataloader)
-            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_ood_%s_%s.csv" % (
-            self.args.log_name, "merge", "")
-            trainer.test(model=self.model, dataloaders=ood_test_dataloader)
-            exit()
-
         test_outputs_iid_csv_path_list = []
         test_outputs_ood_csv_path_list = []
         #self.model = Embedding_extractor(self.args)
@@ -402,23 +371,8 @@ class Rem():
         #ori_log_name=self.args.log_name
 
         fold_num = 5
-        scaffold_rerank_index_list = self.generate_scaffolds(all_train_dataset)
-        # 创建交叉验证分割器
-        # 计算每个子列表的长度
-        chunk_size = len(scaffold_rerank_index_list) // fold_num
-
-        # 使用列表切片将列表分成5个子列表
-        sublists = [scaffold_rerank_index_list[i:i + chunk_size] for i in range(0, len(scaffold_rerank_index_list), chunk_size)]
-
-        fold_idx=self.args.fold_idx
-        val_indices=sublists[fold_idx]
-        train_indices=[]
-        for idx,sublist in enumerate(sublists):
-            if idx==fold_idx:
-                continue
-            train_indices+=sublist
         if True:
-
+            fold_idx = self.args.fold_idx
             print("--------------model%s-----------------------" % (fold_idx))
             #self.args.log_name=ori_log_name+"_" + fold
 
@@ -430,6 +384,22 @@ class Rem():
             #                                                  generator=seed)
             import pdb
             pdb.set_trace()
+            scaffold_rerank_index_list = self.generate_scaffolds(all_train_dataset)
+            # 创建交叉验证分割器
+            # 计算每个子列表的长度
+            chunk_size = len(scaffold_rerank_index_list) // fold_num
+            # 使用列表切片将列表分成5个子列表
+            sublists = [scaffold_rerank_index_list[i:i + chunk_size] for i in
+                        range(0, len(scaffold_rerank_index_list), chunk_size)]
+            val_indices = sublists[fold_idx]
+            train_indices = []
+            for idx, sublist in enumerate(sublists):
+                if idx == fold_idx:
+                    continue
+                train_indices += sublist
+            train_dataset=Subset(all_train_dataset, train_indices)
+            valid_dataset=Subset(all_train_dataset, val_indices)
+
             train_dataloader = DataLoader(
                 train_dataset,
                 batch_size=self.args.batch_size,
@@ -455,7 +425,7 @@ class Rem():
 
 
             trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader )
-            model_path="lightning_logs/%s/model_%s.ckpt" % (self.args.log_name,fold)
+            model_path="lightning_logs/%s/model_%s.ckpt" % (self.args.log_name,fold_idx)
             trainer.save_checkpoint(model_path)
 
 
