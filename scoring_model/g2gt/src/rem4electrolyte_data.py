@@ -29,6 +29,7 @@ import torch.utils.data as data
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from pytorch_lightning.loggers.tensorboard import TensorBoardLogger
 import datetime
+from sklearn.model_selection import KFold
 now = datetime.datetime.now() 
 
 class Rem():
@@ -347,10 +348,10 @@ class Rem():
         )
         print('len(ood_test_dataloader)', len(ood_test_dataloader))
 
-        fold_num = 5
+
         trainer = pl.Trainer(
             logger=TensorBoardLogger("lightning_logs", name=self.args.log_name),
-            max_epochs=self.args.epoch*fold_num,
+            max_epochs=self.args.epoch,
             devices=1,
             accelerator="auto",
             callbacks=[
@@ -363,7 +364,7 @@ class Rem():
             # log_every_n_steps=10
         )
 
-        if True:#参数融合实验
+        if False:#参数融合实验
             model_ckpt_path_list=[
                 "/personal/Bohrium_task_g2g/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20240130225946/version_0/checkpoints/last.ckpt",
                 "/personal/Bohrium_task_g2g/lightning_logs/rem_electrolyte_train_1_CHO_47371_uninf_20230706_be_20240130225536/version_0/checkpoints/last.ckpt",
@@ -399,17 +400,36 @@ class Rem():
         #self.model = Embedding_extractor(self.args)
         #self.model.save_checkpoint("lightning_logs/%s/origin_model.ckpt" % (self.args.log_name))
         #ori_log_name=self.args.log_name
-        for fold in range(fold_num):
-            print("--------------model%s-----------------------" % (fold))
+
+        fold_num = 5
+        scaffold_rerank_index_list = self.generate_scaffolds(all_train_dataset)
+        # 创建交叉验证分割器
+        # 计算每个子列表的长度
+        chunk_size = len(scaffold_rerank_index_list) // fold_num
+
+        # 使用列表切片将列表分成5个子列表
+        sublists = [scaffold_rerank_index_list[i:i + chunk_size] for i in range(0, len(scaffold_rerank_index_list), chunk_size)]
+
+        fold_idx=self.args.fold_idx
+        val_indices=sublists[fold_idx]
+        train_indices=[]
+        for idx,sublist in enumerate(sublists):
+            if idx==fold_idx:
+                continue
+            train_indices+=sublist
+        if True:
+
+            print("--------------model%s-----------------------" % (fold_idx))
             #self.args.log_name=ori_log_name+"_" + fold
 
             self.model = Embedding_extractor(self.args)
             # split the train set into two
-            seed_int=self.args.seed+fold*100
-            seed = torch.Generator().manual_seed(seed_int)
-            train_dataset, valid_dataset = data.random_split(all_train_dataset, [train_set_size, valid_set_size],
-                                                             generator=seed)
-
+            # seed_int=self.args.seed+fold_idx*100
+            # seed = torch.Generator().manual_seed(seed_int)
+            # train_dataset, valid_dataset = data.random_split(all_train_dataset, [train_set_size, valid_set_size],
+            #                                                  generator=seed)
+            import pdb
+            pdb.set_trace()
             train_dataloader = DataLoader(
                 train_dataset,
                 batch_size=self.args.batch_size,
@@ -439,11 +459,11 @@ class Rem():
             trainer.save_checkpoint(model_path)
 
 
-            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_iid_%s_%s.csv" % (self.args.log_name, fold,seed_int)
+            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_iid_%s.csv" % (self.args.log_name, fold_idx)
             trainer.test(model=self.model, dataloaders=iid_test_dataloader,ckpt_path=model_path)
             test_outputs_iid_csv_path_list.append(self.model.test_outputs_csv_path)
 
-            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_ood_%s_%s.csv" % (self.args.log_name,fold,seed_int)
+            self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_ood_%s.csv" % (self.args.log_name,fold_idx)
             trainer.test(model=self.model, dataloaders=ood_test_dataloader,ckpt_path=model_path)
             test_outputs_ood_csv_path_list.append(self.model.test_outputs_csv_path)
 
