@@ -451,7 +451,7 @@ class Rem():
             self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_ood_%s.csv" % (self.args.log_name,fold_idx)
             trainer.test(model=self.model, dataloaders=ood_test_dataloader,ckpt_path=model_path)
             test_outputs_ood_csv_path_list.append(self.model.test_outputs_csv_path)
-            del trainer
+
 
         output_process_merge_csv(test_outputs_iid_csv_path_list, self.args.log_name, "iid")
         output_process_merge_csv(test_outputs_ood_csv_path_list, self.args.log_name, "ood")
@@ -540,7 +540,7 @@ def main():
     """
     """
 
-    sys.argv += ['--num_workers', '11', '--seed', '0','--epoch' ,"1" ,  '--batch_size',
+    sys.argv += ['--num_workers', '11', '--seed', '0','--epoch' ,"2" ,  '--batch_size',
                  '512', '--gpus', '1', '--ffn_dim', '2048', '--hidden_dim',
                  '768', '--dropout_rate', '0.1', '--intput_dropout_rate', '0.1', '--attention_dropout_rate', '0.1',
                  '--n_layer',
