@@ -359,6 +359,8 @@ class Rem():
                 LearningRateMonitor(logging_interval='step'),
                 ModelCheckpoint(filename='{epoch}-{epoch_val_loss:.3f}', save_top_k=3, save_last=True,
                                 monitor="epoch_val_loss", mode='min', verbose=True, auto_insert_metric_name=True),
+                ModelCheckpoint(filename='best', save_top_k=1,
+                                monitor="epoch_val_loss", mode='min', verbose=True),
             ],
             # limit_train_batches=20,
             # log_every_n_steps=10
@@ -426,8 +428,8 @@ class Rem():
 
 
             trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader )
-            model_path="lightning_logs/%s/model_%s.ckpt" % (self.args.log_name,self.args.seed)
-            trainer.save_checkpoint(model_path)
+            model_path="lightning_logs/version_0/checkpoints/best.ckpt" % (self.args.log_name)
+            #trainer.save_checkpoint(model_path)
 
 
             self.model.test_outputs_csv_path = "lightning_logs/%s/test_output_iid_%s.csv" % (self.args.log_name, self.args.seed)
