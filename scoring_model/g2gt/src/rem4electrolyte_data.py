@@ -428,7 +428,7 @@ class Rem():
 
 
             trainer.fit(model=self.model, train_dataloaders=train_dataloader, val_dataloaders=valid_dataloader )
-            model_path="lightning_logs/version_0/checkpoints/best.ckpt" % (self.args.log_name)
+            model_path="lightning_logs/%s/version_0/checkpoints/best.ckpt" % (self.args.log_name)
             #trainer.save_checkpoint(model_path)
 
 
