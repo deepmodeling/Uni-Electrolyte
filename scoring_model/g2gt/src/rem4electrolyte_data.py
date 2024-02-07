@@ -528,7 +528,7 @@ def main():
     """
     """
 
-    sys.argv += ['--num_workers', '11','--epoch' ,"2" ,  '--batch_size',
+    sys.argv += ['--num_workers', '11',  '--batch_size',
                  '512', '--gpus', '1', '--ffn_dim', '2048', '--hidden_dim',
                  '768', '--dropout_rate', '0.1', '--intput_dropout_rate', '0.1', '--attention_dropout_rate', '0.1',
                  '--n_layer',
