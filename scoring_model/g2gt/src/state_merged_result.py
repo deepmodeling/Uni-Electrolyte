@@ -1,6 +1,22 @@
 import pandas as pd
 import torch
 import torch.nn as nn
+
+def show_mae(path="./rem_test_iid_log_vs.csv"):
+    import pandas as pd
+    import torch
+    import torch.nn as nn
+    mae_loss_fn = nn.L1Loss(reduction="mean")
+    test_output_df_tmp = pd.read_csv(path)
+    y_pred = torch.tensor(test_output_df_tmp["y_pred"])
+    y_true = torch.tensor(test_output_df_tmp["y_true"])
+    mae = mae_loss_fn(y_pred, y_true)
+    de_log_mae = mae_loss_fn(torch.pow(10, y_pred), torch.pow(10, y_true))
+    de_log_ratio = torch.mean(torch.abs(torch.pow(10, y_pred) / torch.pow(10, y_true) - 1))
+    print('mae %s' % (mae))
+    print("de_log_mae %s" % ( de_log_mae))
+    print("de_log_ratio %s" % (de_log_ratio))
+
 def output_process_merge_csv(test_outputs_csv_path_list,tag):
     mae_loss_fn = nn.L1Loss(reduction="mean")
 
