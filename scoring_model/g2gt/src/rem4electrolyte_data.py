@@ -441,8 +441,6 @@ class Rem():
             test_outputs_ood_csv_path_list.append(self.model.test_outputs_csv_path)
 
 
-        output_process_merge_csv(test_outputs_iid_csv_path_list, self.args.log_name, "iid")
-        output_process_merge_csv(test_outputs_ood_csv_path_list, self.args.log_name, "ood")
 
 def output_process_merge_csv(test_outputs_csv_path_list, log_name,tag):
     test_output_df = pd.read_csv(test_outputs_csv_path_list[0])
