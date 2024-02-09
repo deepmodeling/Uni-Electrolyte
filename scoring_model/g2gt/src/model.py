@@ -1058,10 +1058,10 @@ class Embedding_extractor(pl.LightningModule):
 
         self.validation_step_outputs = []
         self.train_step_outputs = []
-        self.test_loss_outputs=[]
+        #self.test_loss_outputs=[]
         self.test_outputs_dict={"smiles":[],"y_true":[],"y_pred":[],"idx":[],"ID":[]}
-        self.test_de_log_loss_outputs=[]
-        self.test_de_log_ratio_loss_outputs=[]
+        # self.test_de_log_loss_outputs=[]
+        # self.test_de_log_ratio_loss_outputs=[]
         self.mae_loss=nn.L1Loss()
         self.predict_outputs_dict = {"smiles": [],   "y_pred": [], "idx": [], "ID": []}
 
@@ -1149,7 +1149,12 @@ class Embedding_extractor(pl.LightningModule):
         y_pred = self(batch)
         # import pdb
         # pdb.set_trace()
-        loss = self.mae_loss(y_pred,batch.y)
+        if self.args.predicted_target in ["be","HOMO","LUMO"]:
+            loss = self.mae_loss(y_pred,batch.y)
+        elif self.args.predicted_target in ["log_vs","log_dcs"]:
+            loss=torch.mean(torch.abs(torch.pow(10,y_pred)/torch.pow(10,batch.y)-1))
+        else:
+            raise Exception
         # Logging to TensorBoard (if installed) by default
         self.log("batch_train_loss", loss,prog_bar=True)
         self.train_step_outputs.append(loss)
@@ -1163,7 +1168,13 @@ class Embedding_extractor(pl.LightningModule):
         y_pred = self(batch)
         # import pdb
         # pdb.set_trace()
-        loss = self.mae_loss(y_pred,batch.y)
+        if self.args.predicted_target in ["be","HOMO","LUMO"]:
+            loss = self.mae_loss(y_pred,batch.y)
+        elif self.args.predicted_target in ["log_vs","log_dcs"]:
+            loss=torch.mean(torch.abs(torch.pow(10,y_pred)/torch.pow(10,batch.y)-1))
+        else:
+            raise Exception
+
         # Logging to TensorBoard (if installed) by default
         self.log("batch_val_loss", loss,prog_bar=True)
         self.validation_step_outputs.append(loss)
@@ -1183,9 +1194,9 @@ class Embedding_extractor(pl.LightningModule):
         self.log("batch_test_de_log_mae_loss", de_log_loss )
         self.log("batch_de_log_ratio_loss",de_log_ratio_loss)
         
-        self.test_loss_outputs.append(loss)
-        self.test_de_log_loss_outputs.append(de_log_loss)
-        self.test_de_log_ratio_loss_outputs.append(de_log_ratio_loss)
+        # self.test_loss_outputs.append(loss)
+        # self.test_de_log_loss_outputs.append(de_log_loss)
+        # self.test_de_log_ratio_loss_outputs.append(de_log_ratio_loss)
 
         self.test_outputs_dict["y_pred"]+=y_pred.flatten().tolist()
         self.test_outputs_dict["y_true"]+=batch.y.flatten().tolist()
@@ -1198,23 +1209,28 @@ class Embedding_extractor(pl.LightningModule):
         return loss
 
     def on_test_epoch_end(self):
-       
-        all_loss = torch.stack(self.test_loss_outputs)
-        self.log('epoch_test_mae_loss', torch.mean(all_loss), prog_bar=True)
+        with torch.no_grad():
+            y_pred=torch.tensor(self.test_outputs_dict["y_pred"])
+            y_true=torch.tensor(self.test_outputs_dict["y_true"])
+            mae=self.mae_loss(y_pred, y_true)
+            de_log_mae = self.mae_loss(torch.pow(10, y_pred), torch.pow(10, y_true))
+            de_log_ratio = torch.mean(torch.abs(torch.pow(10, y_pred) / torch.pow(10, y_true) - 1))
+        #all_loss = torch.stack(self.test_loss_outputs)
+        self.log('epoch_test_mae_loss',mae, prog_bar=True)
 
-        all_de_log_loss=torch.stack(self.test_de_log_loss_outputs)
-        self.log('epoch_test_de_log_mae_loss', torch.mean(all_de_log_loss), prog_bar=True)
+        #all_de_log_loss=torch.stack(self.test_de_log_loss_outputs)
+        self.log('epoch_test_de_log_mae_loss', de_log_mae, prog_bar=True)
      
-        all_de_log_ratio_loss=torch.stack(self.test_de_log_ratio_loss_outputs)
-        self.log('epoch_test_de_log_ratio_loss', torch.mean(all_de_log_ratio_loss), prog_bar=True)
+        #all_de_log_ratio_loss=torch.stack(self.test_de_log_ratio_loss_outputs)
+        self.log('epoch_test_de_log_ratio_loss', de_log_ratio, prog_bar=True)
      
 
 
         test_outputs_df=pd.DataFrame(self.test_outputs_dict)
 
         test_outputs_df.to_csv(self.test_outputs_csv_path, index=False)
-        self.test_loss_outputs.clear()
-        self.test_de_log_loss_outputs.clear()
+        # self.test_loss_outputs.clear()
+        # self.test_de_log_loss_outputs.clear()
         #不重置这个字典可以使生成的csv有全部test集(iid ood)的测试结果
         self.test_outputs_dict["y_pred"]=[]
         self.test_outputs_dict["y_true"]=[]
