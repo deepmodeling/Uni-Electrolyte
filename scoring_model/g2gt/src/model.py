@@ -1141,6 +1141,8 @@ class Embedding_extractor(pl.LightningModule):
         predict_outputs_df.to_csv(self.args.predict_output_csv_file_path, index=False)
 
 
+
+
     def training_step(self, batch, batch_idx):
         # training_step defines the train loop.
         # it is independent of forward
@@ -1186,13 +1188,19 @@ class Embedding_extractor(pl.LightningModule):
         # pdb.set_trace()
         y_pred = self(batch) 
         
-        loss =self.mae_loss(y_pred,batch.y)
-        de_log_loss=self.mae_loss(torch.pow(10,y_pred),torch.pow(10,batch.y))
-        de_log_ratio_loss=torch.mean(torch.abs(torch.pow(10,y_pred)/torch.pow(10,batch.y)-1))
+        if self.args.predicted_target in ["be","HOMO","LUMO"]:
+            loss = self.mae_loss(y_pred,batch.y)
+        elif self.args.predicted_target in ["log_vs","log_dcs"]:
+            loss=torch.mean(torch.abs(torch.pow(10,y_pred)/torch.pow(10,batch.y)-1))
+        else:
+            raise Exception
+
+        # de_log_loss=self.mae_loss(torch.pow(10,y_pred),torch.pow(10,batch.y))
+        # de_log_ratio_loss=torch.mean(torch.abs(torch.pow(10,y_pred)/torch.pow(10,batch.y)-1))
         # Logging to TensorBoard (if installed) by default
-        self.log("batch_test_mae_loss", loss,prog_bar=True)
-        self.log("batch_test_de_log_mae_loss", de_log_loss )
-        self.log("batch_de_log_ratio_loss",de_log_ratio_loss)
+        # self.log("batch_test_mae_loss", loss,prog_bar=True)
+        # self.log("batch_test_de_log_mae_loss", de_log_loss )
+        # self.log("batch_de_log_ratio_loss",de_log_ratio_loss)
         
         # self.test_loss_outputs.append(loss)
         # self.test_de_log_loss_outputs.append(de_log_loss)
