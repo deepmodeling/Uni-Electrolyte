@@ -83,6 +83,7 @@ def output_condiction_picture(rxn_smiles):
     height_each_img = 300
     width_mol = 300
     pil_img_list = []
+    font_file="DejaVuSans.ttf" # "arial.ttf" for win
 
     # 反应的picture
     rxn = AllChem.ReactionFromSmarts(rxn_smiles, useSmiles=True)
@@ -97,7 +98,7 @@ def output_condiction_picture(rxn_smiles):
         draw.rectangle([(0, 0), sth_img.size], fill=(255, 255, 255))
         text = sth
         position = (50,250)  # 文字的起始位置 (x, y)
-        font = ImageFont.truetype("arial.ttf", 24)  # 使用指定字体和大小
+        font = ImageFont.truetype(font_file, 24)  # 使用指定字体和大小
         color = (0, 0, 0)  # 文字颜色，RGB 格式
         draw.text(position, text, font=font, fill=color)
         condition_part_img_list.append(sth_img)
@@ -121,7 +122,7 @@ def output_condiction_picture(rxn_smiles):
         draw.rectangle([(0, 0), temperature_img.size], fill=(255, 255, 255))
         text = "%s degrees Celsius" % (int(temperature))
         position = (0,100)  # 文字的起始位置 (x, y)
-        font = ImageFont.truetype("arial.ttf", 24)  # 使用指定字体和大小
+        font = ImageFont.truetype(font_file, 24)  # 使用指定字体和大小
         color = (0, 0, 0)  # 文字颜色，RGB 格式
         draw.text(position, text, font=font, fill=color)
         condition_part_img_list.append(temperature_img)
@@ -138,7 +139,7 @@ def output_condiction_picture(rxn_smiles):
                         text+="\n"
                     text+=char
                 position = (0,0)  # 文字的起始位置 (x, y)
-                font = ImageFont.truetype("arial.ttf", 24)  # 使用指定字体和大小
+                font = ImageFont.truetype(font_file, 24)  # 使用指定字体和大小
                 color = (0,0,0)  # 文字颜色，RGB 格式
                 draw.text(position, text, font=font, fill=color)
             else:
@@ -160,7 +161,7 @@ def output_condiction_picture(rxn_smiles):
     # 在画布上拼接图片
     for img_idx, img in enumerate(pil_img_list):
         result.paste(img, (0, height_each_img * img_idx))
-    result.show()
+    #result.show()
     return result
 
 
