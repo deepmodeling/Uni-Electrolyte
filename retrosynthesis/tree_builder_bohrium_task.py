@@ -1,6 +1,6 @@
 import makeit.global_config as gc
 from makeit.retrosynthetic.tree_builder import TreeBuilder
-from makeit.synthetic.context.neuralnetwork import  NNContextRecommender
+from makeit.synthetic.context.neuralnetwork import  NeuralNetContextRecommender
 from argparse import ArgumentParser
 import os
 import pandas as pd
@@ -31,7 +31,7 @@ st = time.time()
 treeBuilder = TreeBuilder(celery=celery, mincount=25, mincount_chiral=10)
 print("treeBuilder spend", time.time() - st)
 
-cont = NNContextRecommender()
+cont = NeuralNetContextRecommender()
 cont.load_nn_model(model_path=gc.CONTEXT_REC['model_path'], info_path=gc.CONTEXT_REC['info_path'])
 
 
