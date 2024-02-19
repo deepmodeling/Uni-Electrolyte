@@ -157,12 +157,12 @@ def output_condiction_picture(rxn_smiles):
     # 创建一个空白画布，用于拼接图片
     result_width = width  # 图片拼接在一起
     result_height = height_each_img * len(pil_img_list)
-    result = Image.new(pil_img_list[0].mode, (result_width, result_height))  #
+    condition_img_result = Image.new(pil_img_list[0].mode, (result_width, result_height))  #
     # 在画布上拼接图片
     for img_idx, img in enumerate(pil_img_list):
-        result.paste(img, (0, height_each_img * img_idx))
+        condition_img_result.paste(img, (0, height_each_img * img_idx))
     #result.show()
-    return result
+    return condition_img_result,condition_result
 
 
 q = deque()
@@ -185,8 +185,8 @@ for molID in result_dict:
             continue
         elif len(rxn_smiles_list) == 1:
             #condition prediction
-            condition_img=output_condiction_picture(rxn_smiles_list[0])
             os.system("mkdir %s/molecule_%s/pathway_%s_%s_condition" % (output_dir, molID, molID, path_id))
+            condition_img,condition_result=output_condiction_picture(rxn_smiles_list[0])
             condition_img.save("%s/molecule_%s/pathway_%s_%s_condition/rxn_0_condition.png" % (output_dir, molID, molID, path_id))
 
             rxn = AllChem.ReactionFromSmarts(rxn_smiles_list[0], useSmiles=True)
@@ -206,6 +206,7 @@ for molID in result_dict:
             width = 800
             height = 300
             width_mol = 200
+            os.system("mkdir %s/molecule_%s/pathway_%s_%s_condition" % (output_dir, molID, molID, path_id))
             for rxn_idx, rxn_smiles in enumerate(reversed(rxn_smiles_list)):
                 rxn = AllChem.ReactionFromSmarts(rxn_smiles, useSmiles=True)
                 img = Draw.ReactionToImage(rxn, subImgSize=(width_mol, height))  # 每个分子的尺寸 反应箭头也按一个分子算
@@ -221,8 +222,7 @@ for molID in result_dict:
                 pil_img_list.append(img)
 
                 # condition prediction
-                condition_img = output_condiction_picture(rxn_smiles)
-                os.system("mkdir %s/molecule_%s/pathway_%s_%s_condition" % (output_dir, molID, molID, path_id))
+                condition_img,condition_result = output_condiction_picture(rxn_smiles)
                 condition_img.save(
                     "%s/molecule_%s/pathway_%s_%s_condition/rxn_%s_condition.png" % (output_dir, molID, molID, path_id,rxn_idx))
 
