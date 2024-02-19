@@ -1,6 +1,6 @@
 import makeit.global_config as gc
 from makeit.retrosynthetic.tree_builder import TreeBuilder
-from makeit.synthetic.neuralnetwork import  NNContextRecommender
+from makeit.synthetic.context.neuralnetwork import  NNContextRecommender
 from argparse import ArgumentParser
 import os
 import pandas as pd
