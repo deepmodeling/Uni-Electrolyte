@@ -32,7 +32,7 @@ treeBuilder = TreeBuilder(celery=celery, mincount=25, mincount_chiral=10)
 print("treeBuilder spend", time.time() - st)
 
 cont = NeuralNetContextRecommender()
-cont.load_nn_model(model_path=gc.CONTEXT_REC['model_path'], info_path=gc.CONTEXT_REC['info_path'])
+cont.load_nn_model(model_path=gc.NEURALNET_CONTEXT_REC['model_path'], info_path=gc.NEURALNET_CONTEXT_REC['info_path'], weights_path=gc.NEURALNET_CONTEXT_REC['weights_path'])
 
 
 result_dict = {}
