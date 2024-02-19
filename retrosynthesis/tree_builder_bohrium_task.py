@@ -187,7 +187,7 @@ for molID in result_dict:
             #condition prediction
             condition_img=output_condiction_picture(rxn_smiles_list[0])
             os.system("mkdir %s/molecule_%s/pathway_%s_%s_condition" % (output_dir, molID, molID, path_id))
-            condition_img.save(" %s/molecule_%s/pathway_%s_%s_condition/rxn_0_condition.png" % (output_dir, molID, molID, path_id))
+            condition_img.save("%s/molecule_%s/pathway_%s_%s_condition/rxn_0_condition.png" % (output_dir, molID, molID, path_id))
 
             rxn = AllChem.ReactionFromSmarts(rxn_smiles_list[0], useSmiles=True)
             img = Draw.ReactionToImage(rxn, subImgSize=(800, 300))
@@ -224,7 +224,7 @@ for molID in result_dict:
                 condition_img = output_condiction_picture(rxn_smiles)
                 os.system("mkdir %s/molecule_%s/pathway_%s_%s_condition" % (output_dir, molID, molID, path_id))
                 condition_img.save(
-                    " %s/molecule_%s/pathway_%s_%s_condition/rxn_%s_condition.png" % (output_dir, molID, molID, path_id,rxn_idx))
+                    "%s/molecule_%s/pathway_%s_%s_condition/rxn_%s_condition.png" % (output_dir, molID, molID, path_id,rxn_idx))
 
             # 创建一个空白画布，用于拼接图片
             result_width = width  # 图片拼接在一起
