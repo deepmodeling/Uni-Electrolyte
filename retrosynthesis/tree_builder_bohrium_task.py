@@ -110,7 +110,7 @@ def output_condiction_picture(rxn_smiles):
     pil_img_list.append(condition_img)
 
     # 拼接条件picture
-    condition_result = cont.get_n_conditions(rxn_smiles_list[0], 10, with_smiles=False)[0]
+    condition_result = cont.get_n_conditions(rxn_smiles_list[0], 10, with_smiles=False)
     # condition_result=json.loads("""
     # [[102.30387878417969, "C1COCCO1", "CCN(CC)CC", "Reaxys Name (1,1'-bis(diphenylphosphino)ferrocene)palladium(II) dichloride", NaN, NaN], [104.92787170410156, "C1COCCO1", "CCN(CC)CC", "Cl[Pd](Cl)([P](c1ccccc1)(c1ccccc1)c1ccccc1)[P](c1ccccc1)(c1ccccc1)c1ccccc1", NaN, NaN], [99.1409912109375, "Cc1ccccc1", "CCN(CC)CC", "Cl[Pd](Cl)([P](c1ccccc1)(c1ccccc1)c1ccccc1)[P](c1ccccc1)(c1ccccc1)c1ccccc1", NaN, NaN], [76.38555908203125, "C1CCOC1", "CCN(CC)CC", "Cl[Pd](Cl)([P](c1ccccc1)(c1ccccc1)c1ccccc1)[P](c1ccccc1)(c1ccccc1)c1ccccc1", NaN, NaN], [95.92562103271484, "Cc1ccccc1", "CCN(CC)CC", "Reaxys Name (1,1'-bis(diphenylphosphino)ferrocene)palladium(II) dichloride", NaN, NaN], [75.68882751464844, "C1CCOC1", "CCN(CC)CC", "Reaxys Name (1,1'-bis(diphenylphosphino)ferrocene)palladium(II) dichloride", NaN, NaN], [93.39191436767578, "C1COCCO1", "", "Reaxys Name (1,1'-bis(diphenylphosphino)ferrocene)palladium(II) dichloride", NaN, NaN], [97.8741226196289, "C1COCCO1", "CC(=O)[O-].[K+]", "Reaxys Name (1,1'-bis(diphenylphosphino)ferrocene)palladium(II) dichloride", NaN, NaN], [95.84452819824219, "C1COCCO1", "[MgH2]", "Cl[Pd](Cl)([P](c1ccccc1)(c1ccccc1)c1ccccc1)[P](c1ccccc1)(c1ccccc1)c1ccccc1", NaN, NaN], [67.86063385009766, "C1CCOC1", "[MgH2]", "Cl[Pd](Cl)([P](c1ccccc1)(c1ccccc1)c1ccccc1)[P](c1ccccc1)(c1ccccc1)c1ccccc1", NaN, NaN]]""")
     for condition_list in condition_result:
