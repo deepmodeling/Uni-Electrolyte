@@ -1,6 +1,6 @@
 3. g2gt接入UniElectrolyte  
   1. 镜像：
     1. registry.dp.tech/dptech/prod-17396/electrolyte-rem:<newest>
-    2. 代码库在镜像中的入口位置：/root/Uni-Electrolyte/scoring_model/g2gt/src/app_start.py
+    2. 代码库在镜像中的入口位置：/root/Uni-Electrolyte/molecular_design/g2gt/src/app_start.py
   2. 代码库：https://github.com/deepmodeling/Uni-Electrolyte：yinshiqiu 
-  3. 测试入口：:/data/Bohrium_task_Uni-Electrolyte_inference# python /root/Uni-Electrolyte/scoring_model/g2gt/src/app_start.py --json-config ./app_param.json
+  3. 测试入口：:/persional/Bohrium_task_Uni-Electrolyte_inference# python /root/Uni-Electrolyte/molecular_design/g2gt/src/app_start.py --json-config ./app_param.json
