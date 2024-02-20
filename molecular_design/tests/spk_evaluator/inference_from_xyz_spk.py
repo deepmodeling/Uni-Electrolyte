@@ -22,7 +22,7 @@ from ase.db import connect
 
 if __name__ == "__main__":
     workbase = r'./output/inference_from_xyz'
-    input_xyz_path = r'./input/data/dummy.xyz'
+    input_xyz_path = r'input/data/dummy.xyz'
 
     targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
     target = targets[0]
@@ -125,4 +125,4 @@ if __name__ == "__main__":
 
     thu_test_Data.prepare_data()
     thu_test_Data.setup()
-    trainer.predict(model=task, datamodule=thu_test_Data, ckpt_path='./input/last.ckpt', return_predictions=False)
+    trainer.predict(model=task, datamodule=thu_test_Data, ckpt_path='input/last.ckpt', return_predictions=False)

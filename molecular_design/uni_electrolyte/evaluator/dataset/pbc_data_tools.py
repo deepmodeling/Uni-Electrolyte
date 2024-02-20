@@ -20,7 +20,7 @@ def cif_2_db(cif_root: str, db_path: str):
     cwd_ = os.getcwd()
     os.chdir(cif_root)
     with connect(db_path) as db:
-        for a_file in os.listdir('./'):
+        for a_file in os.listdir('/'):
             identity = os.path.splitext(a_file)[0]
             with open(a_file, 'r') as f_r:
                 for an_atoms in read_cif(f_r, index=slice(None, None, None)):
@@ -33,7 +33,7 @@ def pdb_2_db(pdb_root: str, db_path: str):
     cwd_ = os.getcwd()
     os.chdir(pdb_root)
     with connect(db_path) as db:
-        for a_file in os.listdir('./'):
+        for a_file in os.listdir('/'):
             identity = os.path.splitext(a_file)[0]
             with open(a_file, 'r') as f_r:
                 for an_atoms in read_proteindatabank(f_r, index=slice(None, None, None)):

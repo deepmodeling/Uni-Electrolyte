@@ -13,7 +13,7 @@ target = targets[0]
 
 model = ComENet()
 
-data_path = r'./input/data'
+data_path = r'input/data'
 ####################################################################################################################
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("cpu")
 
@@ -31,8 +31,8 @@ trainer = pyG_trainer()
 trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
                model=model, loss_func=loss_func, evaluation=evaluation,
                batch_size=100, val_batch_size=100, epochs=2,
-               save_dir='./output/run_info',
-               log_dir='./output/run_info',
+               save_dir='output/run_info',
+               log_dir='output/run_info',
                optimizer_args={'max_lr': 5e-4,
                                'base_lr': 1e-5,
                                'step_size_up': 10,
@@ -40,7 +40,7 @@ trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_d
                                'mode': "exp_range"})
 
 ####################################################################################################################
-ckpt = torch.load('./output/run_info/valid_checkpoint.pt')
+ckpt = torch.load('output/run_info/valid_checkpoint.pt')
 model.load_state_dict(ckpt['model_state_dict'])
 model.to(device=device)
 ####################################################################################################################
@@ -51,7 +51,7 @@ train_dataset, valid_dataset, test_dataset = dataset[split_idx['train']], datase
     split_idx['test']]
 print('train, validaion, test:', len(train_dataset), len(valid_dataset), len(test_dataset))
 ####################################################################################################################
-evaluation = pyG_inference_test(dump_info_path=r'./output/test_info', info_file_flag='ood_test', property=target)
+evaluation = pyG_inference_test(dump_info_path=r'output/test_info', info_file_flag='ood_test', property=target)
 _ = trainer.val(model=model, data_loader=DataLoader(test_dataset, 50, shuffle=False),
                    energy_and_force=False, p=0, evaluation=evaluation, device=device)
 ####################################################################################################################
@@ -62,7 +62,7 @@ train_dataset, valid_dataset, test_dataset = dataset[split_idx['train']], datase
     split_idx['test']]
 print('train, validaion, test:', len(train_dataset), len(valid_dataset), len(test_dataset))
 ####################################################################################################################
-evaluation = pyG_inference_test(dump_info_path=r'./output/test_info', info_file_flag='iid_test', property=target)
+evaluation = pyG_inference_test(dump_info_path=r'output/test_info', info_file_flag='iid_test', property=target)
 _ = trainer.val(model=model, data_loader=DataLoader(test_dataset, 50, shuffle=False),
                    energy_and_force=False, p=0, evaluation=evaluation, device=device)
 ####################################################################################################################

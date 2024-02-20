@@ -20,28 +20,28 @@ from scipy import stats
 
 
 if __name__ == "__main__":
-    workbase = r'./output/test_output'
-    input_data_path = r'./input/data'
+    workbase = r'./output/train_test_output'
+    input_data_path = r'input/data'
 
     targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
     target = targets[0]
 
-    # thuEMolData = spk_thuEMol(
-    #     datapath=os.path.join(input_data_path, 'train.db'),
-    #     batch_size=100,
-    #     num_train=335,
-    #     num_val=335,
-    #     # num_test=0,
-    #     load_properties=[target],
-    #     transforms=[
-    #         trn.ASENeighborList(cutoff=20.),
-    #         trn.CastTo32()
-    #     ],
-    #     pin_memory=False,
-    #     num_workers=2
-    # )
-    # thuEMolData.prepare_data()
-    # thuEMolData.setup()
+    thuEMolData = spk_thuEMol(
+        datapath=os.path.join(input_data_path, 'train.db'),
+        batch_size=100,
+        num_train=335,
+        num_val=335,
+        # num_test=0,
+        load_properties=[target],
+        transforms=[
+            trn.ASENeighborList(cutoff=20.),
+            trn.CastTo32()
+        ],
+        pin_memory=False,
+        num_workers=2
+    )
+    thuEMolData.prepare_data()
+    thuEMolData.setup()
     ##################################################################################################
     cutoff = 20
     n_atom_basis = 128
@@ -108,7 +108,7 @@ if __name__ == "__main__":
         max_epochs=1,  # for testing, we restrict the number of epochs
     )
 
-    # trainer.fit(task, datamodule=thuEMolData)
+    trainer.fit(task, datamodule=thuEMolData)
     ##################################################################################################
     ##################################################################################################
     ##################################################################################################
@@ -127,7 +127,7 @@ if __name__ == "__main__":
     )
     thu_test_Data.prepare_data()
     thu_test_Data.setup()
-    trainer.test(model=task, datamodule=thu_test_Data, ckpt_path='./input/last.ckpt')
+    trainer.test(model=task, datamodule=thu_test_Data, ckpt_path='best')
     task.parse_test_result(info_file_flag = 'ood')
     ##################################################################################################
     ##################################################################################################
@@ -147,7 +147,7 @@ if __name__ == "__main__":
     )
     thu_test_Data.prepare_data()
     thu_test_Data.setup()
-    trainer.test(model=task, datamodule=thu_test_Data, ckpt_path='./input/last.ckpt')
+    trainer.test(model=task, datamodule=thu_test_Data, ckpt_path='best')
     task.parse_test_result(info_file_flag = 'iid')
     ##################################################################################################
     ##################################################################################################

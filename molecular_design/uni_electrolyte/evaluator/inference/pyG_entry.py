@@ -222,11 +222,11 @@ def pyg_infer_with_dpdispatcher(machine_info, cmdline):
 
     resources = Resources.load_from_dict(resource_dict)
 
-    local_files = os.listdir('./')
+    local_files = os.listdir('/')
 
     task1 = Task(
         command=cmdline,
-        task_work_path='./',
+        task_work_path='/',
         forward_files=local_files,
         backward_files=['output/*', 'out.txt'], outlog='out.txt')
 

@@ -4,7 +4,7 @@
 *.so
 *.cfg
 !.isort.cfg
-!setup.cfg
+!molecular_design/setup.cfg
 *.orig
 *.log
 *.pot
@@ -42,9 +42,9 @@ coverage.xml
 build/*
 dist/*
 sdist/*
-docs/api/*
-docs/_rst/*
-docs/_build/*
+molecular_design/docs/api/*
+molecular_design/docs/_rst/*
+molecular_design/docs/_build/*
 cover/*
 MANIFEST
 
@@ -54,10 +54,10 @@ MANIFEST
 .python-version
 
 
-scoring_model/g2gt/src/__pycache__
+molecular_design/g2gt/src/__pycache__
 .pyc
-scoring_model/g2gt/src/data
+molecular_design/g2gt/src/data
 .vscode/
-scoring_model/g2gt/src/.ipynb_checkpoints/
-scoring_model/g2gt/src/lightning_logs/
-scoring_model/g2gt/src/results
+molecular_design/g2gt/src/.ipynb_checkpoints/
+molecular_design/g2gt/src/lightning_logs/
+molecular_design/g2gt/src/results
