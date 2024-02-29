@@ -15,8 +15,12 @@ from PIL import Image, ImageDraw, ImageFont
 parser = ArgumentParser()
 parser.add_argument('--input_csv_file', type=str)
 parser.add_argument('--output_dir', type=str)
-parser.add_argument("--predicting_reaction_condition", type=bool)
+parser.add_argument("--predicting_reaction_condition", type=str)
 args = parser.parse_args()
+if args.predicting_reaction_condition=="True":
+    args.predicting_reaction_condition=True
+else:
+    args.predicting_reaction_condition=False
 
 input_df = pd.read_csv(args.input_csv_file)
 #ID_tag=args.ID_tag
