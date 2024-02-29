@@ -29,7 +29,7 @@ class global_opt(Options, BaseModel):
 
 
 def runner(opts:  global_opt) -> int:
-    retrosynthesis_func(mol_file=opts.mol_file, predict_reaction_condition=opts.predicting_reaction_condition, output_dir=opts.output_dir)
+    retrosynthesis_func(mol_file=opts.mol_file, predicting_reaction_condition=opts.predicting_reaction_condition, output_dir=opts.output_dir)
 
 
 def to_parser():
