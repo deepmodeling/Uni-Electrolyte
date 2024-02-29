@@ -15,11 +15,11 @@ from PIL import Image, ImageDraw, ImageFont
 parser = ArgumentParser()
 parser.add_argument('--input_csv_file', type=str)
 parser.add_argument('--output_dir', type=str)
-parser.add_argument("--ID_tag", type=str)
+parser.add_argument("--predicting_reaction_condition", type=bool)
 args = parser.parse_args()
 
 input_df = pd.read_csv(args.input_csv_file)
-ID_tag=args.ID_tag
+#ID_tag=args.ID_tag
 output_dir = args.output_dir
 # if os.path.exists(output_dir):
 #     os.system("rm -rf %s" % (output_dir))
@@ -37,21 +37,21 @@ cont.load_nn_model(model_path=gc.NEURALNET_CONTEXT_REC['model_path'], info_path=
 
 result_dict = {}
 os.system("mkdir %s/tmp"%(output_dir))
-for k, v in input_df.iterrows():
+for idx, v in input_df.iterrows():
     try:
         smiles = v["smiles"]
     except:
         smiles=v["SMILES"]
-    ID = v[ID_tag]
-    result_dict[ID] = {"smiles": smiles}
+
+    result_dict[idx] = {"smiles": smiles}
     status, paths = treeBuilder.get_buyable_paths(smiles, max_depth=4, template_prioritization=gc.relevance,
                                                   precursor_prioritization=gc.relevanceheuristic, nproc=2,
                                                   expansion_time=60, max_trees=5, max_ppg=10,
                                                   max_branching=25, apply_fast_filter=True, filter_threshold=0.75,
                                                   min_chemical_history_dict={'as_reactant': 5, 'as_product': 1,
                                                                              'logic': 'none'})
-    result_dict[ID]["paths"] = paths
-    result_dict[ID]["status"] = status
+    result_dict[idx]["paths"] = paths
+    result_dict[idx]["status"] = status
     # if len(paths) < 3:
     #     result_dict[ID]["paths"] = paths
     # else:
@@ -166,9 +166,9 @@ def output_condiction_picture(rxn_smiles):
 
 
 q = deque()
-for molID in result_dict:
-    os.system("mkdir %s/molecule_%s"%(output_dir,molID))
-    for path_id, path_dict in enumerate(result_dict[molID]["paths"]): #广度遍历tree
+for mol_idx in result_dict:
+    os.system("mkdir %s/molecule_%s" % (output_dir, mol_idx))
+    for path_id, path_dict in enumerate(result_dict[mol_idx]["paths"]): #广度遍历tree
 
         head = path_dict
         q.append(head)
@@ -184,14 +184,15 @@ for molID in result_dict:
         if len(rxn_smiles_list) == 0:
             continue
         elif len(rxn_smiles_list) == 1:
-            #condition prediction
-            os.system("mkdir %s/molecule_%s/pathway_%s_%s_condition" % (output_dir, molID, molID, path_id))
-            condition_img,condition_result=output_condiction_picture(rxn_smiles_list[0])
-            condition_img.save("%s/molecule_%s/pathway_%s_%s_condition/rxn_0_condition.png" % (output_dir, molID, molID, path_id))
+            if args.predicting_reaction_condition:
+                #condition prediction
+                os.system("mkdir %s/molecule_%s/pathway_%s_%s_condition" % (output_dir, mol_idx, mol_idx, path_id))
+                condition_img,condition_result=output_condiction_picture(rxn_smiles_list[0])
+                condition_img.save("%s/molecule_%s/pathway_%s_%s_condition/rxn_0_condition.png" % (output_dir, mol_idx, mol_idx, path_id))
 
             rxn = AllChem.ReactionFromSmarts(rxn_smiles_list[0], useSmiles=True)
             img = Draw.ReactionToImage(rxn, subImgSize=(800, 300))
-            img.save('%s/molecule_%s/pathway_%s_%s.png' % (output_dir,molID, molID, path_id))
+            img.save('%s/molecule_%s/pathway_%s_%s.png' % (output_dir, mol_idx, mol_idx, path_id))
             # img.show()
             # exit()
             # d2d = Draw.MolDraw2DCairo(800, 300)
@@ -206,12 +207,13 @@ for molID in result_dict:
             width = 800
             height = 300
             width_mol = 200
-            os.system("mkdir %s/molecule_%s/pathway_%s_%s_condition" % (output_dir, molID, molID, path_id))
+            if args.predicting_reaction_condition:
+                os.system("mkdir %s/molecule_%s/pathway_%s_%s_condition" % (output_dir, mol_idx, mol_idx, path_id))
             for rxn_idx, rxn_smiles in enumerate(reversed(rxn_smiles_list)):
                 rxn = AllChem.ReactionFromSmarts(rxn_smiles, useSmiles=True)
                 img = Draw.ReactionToImage(rxn, subImgSize=(width_mol, height))  # 每个分子的尺寸 反应箭头也按一个分子算
                 img = img.resize((width, height))
-                img.save("%s/tmp/tmp_%s_%s_%s.png" % (output_dir, molID, path_id, rxn_idx))
+                img.save("%s/tmp/tmp_%s_%s_%s.png" % (output_dir, mol_idx, path_id, rxn_idx))
                 # d2d = Draw.MolDraw2DCairo(800, 300)
                 # d2d.DrawReaction(rxn)
                 # png = d2d.GetDrawingText()
@@ -222,9 +224,10 @@ for molID in result_dict:
                 pil_img_list.append(img)
 
                 # condition prediction
-                condition_img,condition_result = output_condiction_picture(rxn_smiles)
-                condition_img.save(
-                    "%s/molecule_%s/pathway_%s_%s_condition/rxn_%s_condition.png" % (output_dir, molID, molID, path_id,rxn_idx))
+                if args.predicting_reaction_condition:
+                    condition_img,condition_result = output_condiction_picture(rxn_smiles)
+                    condition_img.save(
+                        "%s/molecule_%s/pathway_%s_%s_condition/rxn_%s_condition.png" % (output_dir, mol_idx, mol_idx, path_id, rxn_idx))
 
             # 创建一个空白画布，用于拼接图片
             result_width = width  # 图片拼接在一起
@@ -236,4 +239,4 @@ for molID in result_dict:
                 result.paste(img, (0, height * img_idx))
 
             # 保存拼接后的图片
-            result.save('%s/molecule_%s/pathway_%s_%s.png' % (output_dir,molID, molID, path_id))
+            result.save('%s/molecule_%s/pathway_%s_%s.png' % (output_dir, mol_idx, mol_idx, path_id))
