@@ -1,3 +1,5 @@
+import sys
+
 import makeit.global_config as gc
 from makeit.retrosynthetic.tree_builder import TreeBuilder
 from makeit.synthetic.context.neuralnetwork import  NeuralNetContextRecommender
@@ -5,6 +7,7 @@ from argparse import ArgumentParser
 import os
 import pandas as pd
 import json
+import traceback
 import time
 from collections import deque
 import rdkit
@@ -48,12 +51,17 @@ for idx, v in input_df.iterrows():
         smiles=v["SMILES"]
 
     result_dict[idx] = {"smiles": smiles}
-    status, paths = treeBuilder.get_buyable_paths(smiles, max_depth=4, template_prioritization=gc.relevance,
+    try:
+        status, paths = treeBuilder.get_buyable_paths(smiles, max_depth=4, template_prioritization=gc.relevance,
                                                   precursor_prioritization=gc.relevanceheuristic, nproc=2,
                                                   expansion_time=60, max_trees=5, max_ppg=10,
                                                   max_branching=25, apply_fast_filter=True, filter_threshold=0.75,
                                                   min_chemical_history_dict={'as_reactant': 5, 'as_product': 1,
                                                                              'logic': 'none'})
+    except:
+        print(smiles,file=sys.stderr)
+        print(traceback.format_exc(),file=sys.stderr)
+
     result_dict[idx]["paths"] = paths
     result_dict[idx]["status"] = status
     # if len(paths) < 3:
