@@ -62,6 +62,7 @@ for idx, v in input_df.iterrows():
         print(smiles,file=sys.stderr)
         print(traceback.format_exc(),file=sys.stderr)
         continue
+    print("%s %s complete"%(idx,smiles),file=sys.stderr)
 
     result_dict[idx]["paths"] = paths
     result_dict[idx]["status"] = status
