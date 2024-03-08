@@ -29,7 +29,7 @@ class pyG_inference_test:
         y_true_flatten = torch.flatten(y_true).detach().cpu().numpy()
 
         if self.property in ['viscosity', 'dielectric_constant']:
-            # y_true_flatten = pow(10, y_true_flatten)
+            y_true_flatten = pow(10, y_true_flatten)
             y_pred_flatten = pow(10, y_pred_flatten)
 
         with open("pred", "w") as pred:
