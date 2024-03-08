@@ -23,7 +23,7 @@ model = LEFTNet(
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("cpu")
 trainer = pyG_trainer()
 ####################################################################################################################
-ckpt = torch.load(r'input/valid_checkpoint.pt')
+ckpt = torch.load(r'old_data/input/valid_checkpoint.pt')
 model.load_state_dict(ckpt['model_state_dict'])
 model.to(device=device)
 ####################################################################################################################
@@ -34,7 +34,7 @@ train_dataset, valid_dataset, test_dataset = dataset[split_idx['train']], datase
     split_idx['test']]
 print('train, validaion, test:', len(train_dataset), len(valid_dataset), len(test_dataset))
 ####################################################################################################################
-evaluation = pyG_inference_without_label(dump_info_path=r'output/inference_without_label_test', property=target)
+evaluation = pyG_inference_without_label(dump_info_path=r'old_data/output/inference_without_label_test', property=target)
 info = trainer.val(model=model, data_loader=DataLoader(test_dataset, 50, shuffle=False),
                    energy_and_force=False, p=0, evaluation=evaluation, device=device)
 ####################################################################################################################
