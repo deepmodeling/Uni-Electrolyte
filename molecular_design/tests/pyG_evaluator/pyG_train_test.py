@@ -1,10 +1,10 @@
 import os
 
 import torch
-from uni_electrolyte.evaluator.dataset import thuEMol
-from uni_electrolyte.evaluator.inference import pyG_inference_test, pyG_inference_train, pyG_inference_without_label
-from uni_electrolyte.evaluator.model.spatial import LEFTNet
-from uni_electrolyte.evaluator.trainer import pyG_trainer
+from ...uni_electrolyte.evaluator.dataset import thuEMol
+from ...uni_electrolyte.evaluator.inference import pyG_inference_test, pyG_inference_train, pyG_inference_without_label
+from ...uni_electrolyte.evaluator.model.spatial import LEFTNet
+from ...uni_electrolyte.evaluator.trainer import pyG_trainer
 from torch_geometric.data import DataLoader
 
 
