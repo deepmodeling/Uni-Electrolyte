@@ -9,7 +9,7 @@ from torch_geometric.data import DataLoader
 
 
 targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
-target = targets[1]
+target = targets[2]
 model = LEFTNet(
     num_layers=6,
     hidden_channels=128,
@@ -19,7 +19,7 @@ model = LEFTNet(
 )
 
 data_root_path="202312_data"
-data_path = f'{data_root_path}/input/data'
+data_path = f'{data_root_path}/input/'
 ####################################################################################################################
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("cpu")
 
@@ -38,7 +38,7 @@ trainer = pyG_trainer()
 
 trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
                model=model, loss_func=loss_func, evaluation=evaluation,
-               batch_size=100, val_batch_size=100, epochs=2000,
+               batch_size=100, val_batch_size=100, epochs=2,
                save_dir='./output/run_info',
                log_dir='./output/run_info',
                 optimizer_args={'max_lr': 5e-4,
