@@ -54,9 +54,10 @@ model.to(device=device)
 ####################################################################################################################
 dataset = thuEMol(root=os.path.join(data_path, 'iid_test'), load_target_list=targets)
 dataset.data.y = dataset.data[target]
-split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=0, valid_size=0, seed=42)
-test_dataset = dataset[split_idx['test']]
-print('Dataset size:', len(test_dataset))
+test_dataset=dataset
+# split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=0, valid_size=0, seed=42)
+# test_dataset = dataset[split_idx['test']]
+# print('Dataset size:', len(test_dataset))
 ####################################################################################################################
 evaluation = pyG_inference_test(dump_info_path=r'./output/test_info/iid_test', info_file_flag=target, property=target)
 _ = trainer.val(model=model, data_loader=DataLoader(test_dataset, 50, shuffle=False),
@@ -64,9 +65,10 @@ _ = trainer.val(model=model, data_loader=DataLoader(test_dataset, 50, shuffle=Fa
 ####################################################################################################################
 dataset = thuEMol(root=os.path.join(data_path, 'ood_test'), load_target_list=targets)
 dataset.data.y = dataset.data[target]
-split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=0, valid_size=0, seed=42)
-test_dataset = dataset[split_idx['test']]
-print('Dataset size:', len(test_dataset))
+test_dataset=dataset
+# split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=0, valid_size=0, seed=42)
+# test_dataset = dataset[split_idx['test']]
+# print('Dataset size:', len(test_dataset))
 ####################################################################################################################
 evaluation = pyG_inference_test(dump_info_path=r'./output/test_info/ood_test', info_file_flag=target, property=target)
 _ = trainer.val(model=model, data_loader=DataLoader(test_dataset, 50, shuffle=False),
