@@ -1,6 +1,7 @@
 import os
 
 import torch
+#export PYTHONPATH=$PYTHONPATH:/root/yinshiqiu/Uni-Electrolyte/molecular_design   to search the uni_electrolyte package
 from uni_electrolyte.evaluator.dataset import thuEMol
 from uni_electrolyte.evaluator.inference import pyG_inference_test, pyG_inference_train, pyG_inference_without_label
 from uni_electrolyte.evaluator.model.spatial import LEFTNet
