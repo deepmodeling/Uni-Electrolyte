@@ -14,6 +14,30 @@ from .visualize import plot_heatmap, plot_rank, plot_rel, rename_file
 from scipy import stats
 from sklearn.metrics import r2_score
 
+def reversed_ratio_fun(pred_list,true_list):
+    # reverse_ratio
+    pair_list = list(zip(pred_list,true_list))
+    pair_list.sort(key=lambda x: x[1])
+    r_num = 0
+    for i, pair1 in enumerate(pair_list):
+        for j, pair2 in enumerate(pair_list):
+            if j > i:
+                if pair2[0] < pair1[0]:
+                    r_num += 1
+    total_pair_num = len(pair_list) * (len(pair_list) - 1) / 2
+    reversed_ratio = r_num / total_pair_num
+
+    return reversed_ratio
+
+def value_precision_recall(pred_list, true_list, value):
+    TP=np.sum(np.logical_and(pred_list<value ,true_list<value))
+    P=np.sum(pred_list<value )
+    T=np.sum(true_list<value)
+    precision=TP/P
+    recall=TP/T
+    return precision,recall,T
+
+
 class pyG_inference_test:
     def __init__(self, dump_info_path: str, info_file_flag: str, property: str):
         os.makedirs(dump_info_path, exist_ok=True)
@@ -31,6 +55,7 @@ class pyG_inference_test:
         if self.property in ['viscosity', 'dielectric_constant']:
             y_true_flatten = pow(10, y_true_flatten)
             y_pred_flatten = pow(10, y_pred_flatten)
+            #
 
         with open("pred", "w") as pred:
             pred.writelines(list(map(lambda x: str(x) + "\n", y_pred_flatten)))
@@ -43,8 +68,17 @@ class pyG_inference_test:
         r = round(r, 3)
         mae_e = np.mean(np.abs(y_true_flatten - y_pred_flatten))
         mae_e = round(mae_e, 3)
+
+        mae_ratio = np.average(np.abs(y_pred_flatten /y_true_flatten - 1))
+        mae_ratio=round(mae_ratio,3)
+        spearmanr_v=round(stats.spearmanr( y_pred_flatten,y_true_flatten)[0])
+        reversed_ratio=round(reversed_ratio_fun(y_pred_flatten,y_true_flatten))
+
         print(f'{self.info_file_flag} mae: {str(mae_e)}\n')
         print(f'{self.info_file_flag} corr: {str(r)}\n')
+        print(f'{self.info_file_flag} mae: {str(mae_ratio)}\n')
+        print(f'{self.info_file_flag} mae: {str(spearmanr_v)}\n')
+        print(f'{self.info_file_flag} mae: {str(reversed_ratio)}\n')
         plot_rel(label=y_true_flatten, prediction=y_pred_flatten, flag=self.info_file_flag, mae=mae_e, r2=r)
         plot_heatmap(label=y_true_flatten, prediction=y_pred_flatten, flag=self.info_file_flag, mae=mae_e, r2=r)
         plot_rank(label=y_true_flatten, prediction=y_pred_flatten, flag=self.info_file_flag, use_r2_score=use_r2_score)
