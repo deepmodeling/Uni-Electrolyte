@@ -4,20 +4,21 @@ import torch
 #export PYTHONPATH=$PYTHONPATH:/root/yinshiqiu/Uni-Electrolyte/molecular_design   to search the uni_electrolyte package
 from uni_electrolyte.evaluator.dataset import thuEMol
 from uni_electrolyte.evaluator.inference import pyG_inference_test, pyG_inference_train, pyG_inference_without_label
-from uni_electrolyte.evaluator.model.spatial import LEFTNet
+from uni_electrolyte.evaluator.model.spatial import LEFTNet,OA_REACTDIFF_LEFTNet
 from uni_electrolyte.evaluator.trainer import pyG_trainer
 from torch_geometric.data import DataLoader
 
 
 targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
 target = targets[2]
-model = LEFTNet(
-    num_layers=6,
-    hidden_channels=128,
-    # hidden_channels=256,
-    num_radial=96,
-    cutoff=8
-)
+# model = LEFTNet(
+#     num_layers=6,
+#     hidden_channels=128,
+#     # hidden_channels=256,
+#     num_radial=96,
+#     cutoff=8
+# )
+model=torch.load("./model_file/oareactdiff_leftnet.pt")
 
 data_root_path="202312_data"
 data_path = f'{data_root_path}/input/'

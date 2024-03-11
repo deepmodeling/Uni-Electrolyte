@@ -8,6 +8,7 @@ from torch import nn, Tensor
 
 from torch_geometric.nn.conv import MessagePassing
 from torch_scatter import scatter, scatter_mean
+from torch_geometric.nn import radius_graph
 
 from oa_reactdiff.model.util_funcs import unsorted_segment_sum
 from oa_reactdiff.model.core import MLP
@@ -723,7 +724,10 @@ class LEFTNet(torch.nn.Module):
 
     def forward(
         self,
-        h: Tensor,
+        data
+    ):
+        """
+                h: Tensor,
         pos: Tensor,
         edge_index: Tensor,
         edge_attr: Optional[Tensor] = None,
@@ -731,9 +735,18 @@ class LEFTNet(torch.nn.Module):
         edge_mask: Optional[Tensor] = None,
         update_coords_mask: Optional[Tensor] = None,
         subgraph_mask: Optional[Tensor] = None,
-    ):
+        """
         # if self.pos_require_grad:
         #     pos.requires_grad_()
+        pos = data.pos
+        batch = data.batch
+        z = data.z.long()
+        edge_index = radius_graph(pos, r=self.cutoff, batch=batch, max_num_neighbors=1000)
+        h=z#todo
+        import pdb
+        pdb.set_trace()
+        pos -= scatter(pos, batch, dim=0)[batch]
+
 
         if not self.object_aware:
             subgraph_mask = None
