@@ -737,13 +737,38 @@ class LEFTNet(torch.nn.Module):
         """
         # if self.pos_require_grad:
         #     pos.requires_grad_()
-        pos = data.pos
-        batch = data.batch
-        z = data.z.long()
-        edge_index = radius_graph(pos, r=self.cutoff, batch=batch, max_num_neighbors=1000)
-        h=z#todo
+
+        ATOM_MAPPING = {
+            1: 0,
+            6: 1,
+            7: 2,
+            8: 3,
+            9: 4,
+        }
+        n_element = len(list(ATOM_MAPPING.keys()))
         import pdb
         pdb.set_trace()
+
+        pos = data.pos.to(torch.float64)
+        batch = data.batch
+
+        z = data.z.long()
+        _h_list = []
+        for atom_num in z:
+            one_hot_v = [0] * n_element
+            one_hot_v[ATOM_MAPPING[atom_num]] = 1
+            _h = torch.tensor(one_hot_v + [0, 0, 0], device=pos.device, dtype=torch.float64)
+            _h_list.append(_h)
+        h = torch.cat(_h_list)
+
+        edge_index = radius_graph(pos, r=self.cutoff, batch=batch, max_num_neighbors=1000)
+
+
+
+
+
+        #原版的leftnet z shape: len(data.batch) 内容是原子号  oareactdiff版的是 len(data.batch)*8  其中，前5位是原子号one_hot 第6位是charge可为0 最后两位是扩散模型用的 见egnn_dynamics.EGNNDynamics.forward
+
 
         if not self.object_aware:
             subgraph_mask = None
