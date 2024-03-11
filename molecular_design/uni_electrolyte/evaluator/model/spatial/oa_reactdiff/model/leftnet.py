@@ -752,7 +752,8 @@ class LEFTNet(torch.nn.Module):
         pos = data.pos.to(torch.float64)
         batch = data.batch
 
-        z = data.z.long()
+        z = data.z.long().detach().tolist()
+
         _h_list = []
         for atom_num in z:
             one_hot_v = [0] * n_element
