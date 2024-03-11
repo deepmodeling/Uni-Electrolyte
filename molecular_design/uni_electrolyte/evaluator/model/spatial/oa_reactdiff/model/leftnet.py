@@ -760,7 +760,7 @@ class LEFTNet(torch.nn.Module):
             one_hot_v[ATOM_MAPPING[atom_num]] = 1
             _h = torch.tensor(one_hot_v + [0, 0, 0], device=pos.device, dtype=torch.float64)
             _h_list.append(_h)
-        h = torch.cat(_h_list)
+        h = torch.stack(_h_list)
 
         edge_index = radius_graph(pos, r=self.cutoff, batch=batch, max_num_neighbors=1000)
 
