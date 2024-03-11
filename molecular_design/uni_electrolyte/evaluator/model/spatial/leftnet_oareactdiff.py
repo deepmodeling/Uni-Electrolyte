@@ -10,8 +10,8 @@ from torch_geometric.nn.conv import MessagePassing
 from torch_scatter import scatter, scatter_mean
 from torch_geometric.nn import radius_graph
 
-from oa_reactdiff.model.util_funcs import unsorted_segment_sum
-from oa_reactdiff.model.core import MLP
+from .oa_reactdiff.model.util_funcs import unsorted_segment_sum
+from .oa_reactdiff.model.core import MLP
 
 EPS = 1e-6
 
