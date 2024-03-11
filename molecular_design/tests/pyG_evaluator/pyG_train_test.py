@@ -7,7 +7,8 @@ from uni_electrolyte.evaluator.inference import pyG_inference_test, pyG_inferenc
 from uni_electrolyte.evaluator.model.spatial import LEFTNet,OA_REACTDIFF_LEFTNet
 from uni_electrolyte.evaluator.trainer import pyG_trainer
 from torch_geometric.data import DataLoader
-
+from uni_electrolyte.evaluator.model.oa_reactdiff.trainer.pl_trainer import DDPMModule
+device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("cpu")
 
 targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
 target = targets[2]
@@ -18,12 +19,19 @@ target = targets[2]
 #     num_radial=96,
 #     cutoff=8
 # )
-model=torch.load("./model_file/oareactdiff_leftnet.pt")
+ddpm_trainer = DDPMModule.load_from_checkpoint(
+    checkpoint_path="./model_file/pretrained-ts1x-diff.ckpt",
+    map_location=device,
+)
+model=model=ddpm_trainer.ddpm.dynamics.model
+model = model.to(device)
+import pdb
+pdb.set_trace()
 
 data_root_path="202312_data"
 data_path = f'{data_root_path}/input/'
 ####################################################################################################################
-device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("cpu")
+
 
 dataset = thuEMol(root=os.path.join(data_path, 'train'), load_target_list=targets)
 dataset.data.y = dataset.data[target]
