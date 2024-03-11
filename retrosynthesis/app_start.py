@@ -12,7 +12,8 @@ def retrosynthesis_func(mol_file, predicting_reaction_condition, output_dir):
     /root/Uni-Electrolyte/retrosynthesis/tree_builder_bohrium_task.py  --input_csv_file {mol_file}  \
     --output_dir {output_dir}  --predicting_reaction_condition {predicting_reaction_condition} ")
 
-
+    if not os.path.exists(f"{output_dir}/finish"):
+        raise Exception("task failed")
 
 
 class Options(BaseModel):
