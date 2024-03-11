@@ -255,6 +255,6 @@ for mol_idx in result_dict:
             # 保存拼接后的图片
             result.save('%s/molecule_%s/pathway_%s_%s.png' % (output_dir, mol_idx, mol_idx, path_id))
 
-with open(f"{output_dir}/finish","w") as fp:
+with open("%s/finish"%(output_dir),"w") as fp:
     print("OK",file=fp)
 
