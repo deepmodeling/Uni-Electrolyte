@@ -785,8 +785,8 @@ class LEFTNet(torch.nn.Module):
 
         all_edge_masks = inner_subgraph_mask
 
-        import pdb
-        pdb.set_trace()
+        # import pdb
+        # pdb.set_trace()
         subgraph_mask=None #一个分子作为输入
         if subgraph_mask is not None:
             all_edge_masks = all_edge_masks * subgraph_mask

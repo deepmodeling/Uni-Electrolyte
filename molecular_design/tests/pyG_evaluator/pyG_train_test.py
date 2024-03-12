@@ -25,8 +25,8 @@ ddpm_trainer = DDPMModule.load_from_checkpoint(
 )
 model=ddpm_trainer.ddpm.dynamics.model
 model = model.to(device)
-import pdb
-pdb.set_trace()
+# import pdb
+# pdb.set_trace()
 
 data_root_path="202312_data"
 data_path = f'{data_root_path}/input/'
