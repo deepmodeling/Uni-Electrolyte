@@ -911,6 +911,13 @@ class LEFTNet(torch.nn.Module):
                 )
                 gradient = gradient + basis_mix / self.num_layers
 
+        s = self.last_layer(s)
+        s = scatter(s, batch, dim=0, reduce="sum")
+        return s
+        # if self.use_sigmoid:
+        #     s = torch.sigmoid((s - 0.5) * 5)
+
+
         if self.for_conf:
             return s
 

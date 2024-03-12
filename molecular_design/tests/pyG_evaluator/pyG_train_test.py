@@ -23,7 +23,7 @@ ddpm_trainer = DDPMModule.load_from_checkpoint(
     checkpoint_path="./model_file/pretrained-ts1x-diff.ckpt",
     map_location=device,
 )
-model=model=ddpm_trainer.ddpm.dynamics.model
+model=ddpm_trainer.ddpm.dynamics.model
 model = model.to(device)
 import pdb
 pdb.set_trace()
