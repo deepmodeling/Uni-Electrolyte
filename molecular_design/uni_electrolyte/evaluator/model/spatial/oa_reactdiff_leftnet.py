@@ -7,11 +7,13 @@ EPS = 1e-6
 
 class OA_REACTDIFF_LEFTNet(torch.nn.Module):
     def __init__(self,device):
+        super(OA_REACTDIFF_LEFTNet, self).__init__()
         ddpm_trainer = DDPMModule.load_from_checkpoint(
             checkpoint_path="./model_file/pretrained-ts1x-diff.ckpt",
             map_location=device,
         )
         self.model = ddpm_trainer.ddpm.dynamics.model
+        self.cutoff=self.model.cutoff
         # self.last_last_layer = nn.Sequential(
         #     nn.Linear(hidden_channels, int(hidden_channels / 2)),
         #     nn.ReLU(),

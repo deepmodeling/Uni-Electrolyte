@@ -21,7 +21,7 @@ target = targets[2]
 # )
 import pdb
 pdb.set_trace()
-model=OA_REACTDIFF_LEFTNet()
+model=OA_REACTDIFF_LEFTNet(device)
 model = model.to(device)
 # import pdb
 # pdb.set_trace()
