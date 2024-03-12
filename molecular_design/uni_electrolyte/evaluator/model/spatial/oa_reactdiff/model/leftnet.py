@@ -872,8 +872,8 @@ class LEFTNet(torch.nn.Module):
                     + dynamic_coff[:, 2:3] * z1
                 )
                 gradient = gradient + basis_mix / self.num_layers
-        import pdb
-        pdb.set_trace()
+        # import pdb
+        # pdb.set_trace()
         if self.for_conf:
             return s
 
