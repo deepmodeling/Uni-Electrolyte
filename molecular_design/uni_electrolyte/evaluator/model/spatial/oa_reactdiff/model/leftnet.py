@@ -916,6 +916,7 @@ class LEFTNet(torch.nn.Module):
 
         _, dpos = self.out_pos(s, vec)
 
+        update_coords_mask=None
         if update_coords_mask is not None:
             dpos = update_coords_mask * dpos
         pos = pos + dpos + gradient
