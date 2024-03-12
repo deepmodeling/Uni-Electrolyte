@@ -925,6 +925,7 @@ class LEFTNet(torch.nn.Module):
             return s, dpos
 
         h = self.embedding_out(s)
+        node_mask=None
         if node_mask is not None:
             h = h * node_mask
         edge_attr = None
