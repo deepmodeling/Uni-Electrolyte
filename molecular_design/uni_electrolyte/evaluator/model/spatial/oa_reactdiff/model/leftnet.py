@@ -836,6 +836,7 @@ class LEFTNet(torch.nn.Module):
         vec = torch.zeros(s.size(0), 3, s.size(1), device=s.device)
         gradient = torch.zeros(s.size(0), 3, device=s.device)
         for i in range(self.num_layers):
+            print(i,torch.norm(s))
             # Added by Chenru: for letting multiple objects message passing.
             if self.legacy or i == 0:
                 s = s + self.pos_expansion(pos_prjt)
