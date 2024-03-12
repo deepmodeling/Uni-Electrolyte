@@ -14,12 +14,7 @@ class OA_REACTDIFF_LEFTNet(torch.nn.Module):
         )
         self.model = ddpm_trainer.ddpm.dynamics.model
         self.cutoff=self.model.cutoff
-        # self.last_last_layer = nn.Sequential(
-        #     nn.Linear(hidden_channels, int(hidden_channels / 2)),
-        #     nn.ReLU(),
-        #     nn.Linear(int(hidden_channels / 2), int(hidden_channels / 4)),
-        #     nn.ReLU(),
-        #     nn.Linear(int(hidden_channels / 4), 1))
+        self.last_layer = nn.Linear(8,1)
     def forward(self,data):
 
         ATOM_MAPPING = {
@@ -46,5 +41,6 @@ class OA_REACTDIFF_LEFTNet(torch.nn.Module):
         h = torch.stack(_h_list)
         edge_index = radius_graph(pos, r=self.cutoff, batch=batch, max_num_neighbors=1000)
 
-        out=self.model.forward(h=h,pos=pos,edge_index=edge_index)
+        out_h,_,_=self.model.forward(h=h,pos=pos,edge_index=edge_index)
+        out=self.last_layer(out_h)
         pass
