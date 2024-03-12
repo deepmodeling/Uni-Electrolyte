@@ -48,7 +48,7 @@ trainer = pyG_trainer()
 
 trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
                model=model, loss_func=loss_func, evaluation=evaluation,
-               batch_size=10, val_batch_size=10, epochs=1,
+               batch_size=80, val_batch_size=80, epochs=2,
                save_dir='./output/run_info',
                log_dir='./output/run_info',
                 optimizer_args={'max_lr': 5e-4,
