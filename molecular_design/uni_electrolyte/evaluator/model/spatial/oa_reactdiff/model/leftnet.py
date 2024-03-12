@@ -11,7 +11,7 @@ from torch_scatter import scatter, scatter_mean
 
 from oa_reactdiff.model.util_funcs import unsorted_segment_sum
 from oa_reactdiff.model.core import MLP
-from torch_geometric.nn import radius_graph
+
 EPS = 1e-6
 
 
@@ -674,12 +674,7 @@ class LEFTNet(torch.nn.Module):
             self.update_layers.append(EquiUpdate(hidden_channels, reflect_equiv))
 
         self.last_layer = nn.Linear(hidden_channels, 1)
-        self.last_last_layer= nn.Sequential(
-            nn.Linear(hidden_channels, int(hidden_channels/2)),
-            nn.ReLU(),
-            nn.Linear( int(hidden_channels/2),  int(hidden_channels/4)),
-            nn.ReLU(),
-            nn.Linear( int(hidden_channels/4), 1))
+
         self.inv_sqrt_2 = 1 / math.sqrt(2.0)
         self.out_pos = EquiOutput(
             hidden_channels,
@@ -728,9 +723,6 @@ class LEFTNet(torch.nn.Module):
 
     def forward(
         self,
-        data
-    ):
-        """
         h: Tensor,
         pos: Tensor,
         edge_index: Tensor,
@@ -739,41 +731,9 @@ class LEFTNet(torch.nn.Module):
         edge_mask: Optional[Tensor] = None,
         update_coords_mask: Optional[Tensor] = None,
         subgraph_mask: Optional[Tensor] = None,
-        """
+    ):
         # if self.pos_require_grad:
         #     pos.requires_grad_()
-
-        ATOM_MAPPING = {
-            1: 0,
-            6: 1,
-            7: 2,
-            8: 3,
-            9: 4,
-        }
-        n_element = len(list(ATOM_MAPPING.keys()))
-
-
-        pos = data.pos.to(torch.float32)
-        batch = data.batch
-
-        z = data.z.long().detach().tolist()
-
-        _h_list = []
-        for atom_num in z:
-            one_hot_v = [0] * n_element
-            one_hot_v[ATOM_MAPPING[atom_num]] = 1
-            _h = torch.tensor(one_hot_v + [0, 0, 0], device=pos.device, dtype=torch.float32)
-            _h_list.append(_h)
-        h = torch.stack(_h_list)
-
-        edge_index = radius_graph(pos, r=self.cutoff, batch=batch, max_num_neighbors=1000)
-
-
-
-
-
-        #原版的leftnet z shape: len(data.batch) 内容是原子号  oareactdiff版的是 len(data.batch)*8  其中，前5位是原子号one_hot 第6位是charge可为0 最后两位是扩散模型用的 见egnn_dynamics.EGNNDynamics.forward
-
 
         if not self.object_aware:
             subgraph_mask = None
@@ -789,10 +749,6 @@ class LEFTNet(torch.nn.Module):
         inner_subgraph_mask[torch.where(dist < self.cutoff)[0]] = 1
 
         all_edge_masks = inner_subgraph_mask
-
-        # import pdb
-        # pdb.set_trace()
-        subgraph_mask=None #一个分子作为输入
         if subgraph_mask is not None:
             all_edge_masks = all_edge_masks * subgraph_mask
 
@@ -915,20 +871,13 @@ class LEFTNet(torch.nn.Module):
                     + dynamic_coff[:, 2:3] * z1
                 )
                 gradient = gradient + basis_mix / self.num_layers
-
-        s = self.last_last_layer(s)
-        s = scatter(s, batch, dim=0, reduce="sum")
-        return s
-        # if self.use_sigmoid:
-        #     s = torch.sigmoid((s - 0.5) * 5)
-
-
+        import pdb
+        pdb.set_trace()
         if self.for_conf:
             return s
 
         _, dpos = self.out_pos(s, vec)
 
-        update_coords_mask=None
         if update_coords_mask is not None:
             dpos = update_coords_mask * dpos
         pos = pos + dpos + gradient
@@ -937,7 +886,6 @@ class LEFTNet(torch.nn.Module):
             return s, dpos
 
         h = self.embedding_out(s)
-        node_mask=None
         if node_mask is not None:
             h = h * node_mask
         edge_attr = None

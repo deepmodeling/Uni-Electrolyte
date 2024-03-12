@@ -7,7 +7,7 @@ from uni_electrolyte.evaluator.inference import pyG_inference_test, pyG_inferenc
 
 from uni_electrolyte.evaluator.trainer import pyG_trainer
 from torch_geometric.data import DataLoader
-from uni_electrolyte.evaluator.model.spatial.oa_reactdiff.trainer.pl_trainer import DDPMModule
+from uni_electrolyte.evaluator.model.spatial import OA_REACTDIFF_LEFTNet
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("cpu")
 
 targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
@@ -19,11 +19,9 @@ target = targets[2]
 #     num_radial=96,
 #     cutoff=8
 # )
-ddpm_trainer = DDPMModule.load_from_checkpoint(
-    checkpoint_path="./model_file/pretrained-ts1x-diff.ckpt",
-    map_location=device,
-)
-model=ddpm_trainer.ddpm.dynamics.model
+import pdb
+pdb.set_trace()
+model=OA_REACTDIFF_LEFTNet()
 model = model.to(device)
 # import pdb
 # pdb.set_trace()

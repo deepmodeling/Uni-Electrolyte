@@ -5,6 +5,7 @@ from .leftnet import LEFTNet
 from .painn import PaiNN
 from .schnet import SchNet
 from .so3net import SO3net
+from .oa_reactdiff_leftnet import OA_REACTDIFF_LEFTNet
 
 __all__ = [
     'DimeNetPP',
@@ -14,4 +15,5 @@ __all__ = [
     'SO3net',
     'SchNet',
     'PaiNN',
+    "OA_REACTDIFF_LEFTNet"
 ]
