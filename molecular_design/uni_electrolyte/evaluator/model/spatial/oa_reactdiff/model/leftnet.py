@@ -746,10 +746,9 @@ class LEFTNet(torch.nn.Module):
             9: 4,
         }
         n_element = len(list(ATOM_MAPPING.keys()))
-        import pdb
-        pdb.set_trace()
 
-        pos = data.pos.to(torch.float64)
+
+        pos = data.pos.to(torch.float32)
         batch = data.batch
 
         z = data.z.long().detach().tolist()
@@ -758,7 +757,7 @@ class LEFTNet(torch.nn.Module):
         for atom_num in z:
             one_hot_v = [0] * n_element
             one_hot_v[ATOM_MAPPING[atom_num]] = 1
-            _h = torch.tensor(one_hot_v + [0, 0, 0], device=pos.device, dtype=torch.float64)
+            _h = torch.tensor(one_hot_v + [0, 0, 0], device=pos.device, dtype=torch.float32)
             _h_list.append(_h)
         h = torch.stack(_h_list)
 
@@ -785,6 +784,10 @@ class LEFTNet(torch.nn.Module):
         inner_subgraph_mask[torch.where(dist < self.cutoff)[0]] = 1
 
         all_edge_masks = inner_subgraph_mask
+
+        import pdb
+        pdb.set_trace()
+        subgraph_mask=None #一个分子作为输入
         if subgraph_mask is not None:
             all_edge_masks = all_edge_masks * subgraph_mask
 
