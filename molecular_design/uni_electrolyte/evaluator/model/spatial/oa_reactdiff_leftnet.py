@@ -43,4 +43,5 @@ class OA_REACTDIFF_LEFTNet(torch.nn.Module):
 
         out_h,_,_=self.model.forward(h=h,pos=pos,edge_index=edge_index)
         out=self.last_layer(out_h)
+        return out
         pass
