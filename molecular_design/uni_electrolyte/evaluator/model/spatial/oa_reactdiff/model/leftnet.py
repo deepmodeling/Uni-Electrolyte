@@ -679,7 +679,7 @@ class LEFTNet(torch.nn.Module):
             nn.ReLU(),
             nn.Linear( int(hidden_channels/2),  int(hidden_channels/4)),
             nn.ReLU(),
-            nn.Linear( int(hidden_channels/4, 1)))
+            nn.Linear( int(hidden_channels/4), 1))
         self.inv_sqrt_2 = 1 / math.sqrt(2.0)
         self.out_pos = EquiOutput(
             hidden_channels,
