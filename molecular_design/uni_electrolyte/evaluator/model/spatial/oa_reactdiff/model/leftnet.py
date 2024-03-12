@@ -674,7 +674,12 @@ class LEFTNet(torch.nn.Module):
             self.update_layers.append(EquiUpdate(hidden_channels, reflect_equiv))
 
         self.last_layer = nn.Linear(hidden_channels, 1)
-
+        self.last_last_layer= nn.Sequential(
+            nn.Linear(hidden_channels, int(hidden_channels/2)),
+            nn.ReLU(),
+            nn.Linear( int(hidden_channels/2),  int(hidden_channels/4)),
+            nn.ReLU(),
+            nn.Linear( int(hidden_channels/4, 1)))
         self.inv_sqrt_2 = 1 / math.sqrt(2.0)
         self.out_pos = EquiOutput(
             hidden_channels,
@@ -911,7 +916,7 @@ class LEFTNet(torch.nn.Module):
                 )
                 gradient = gradient + basis_mix / self.num_layers
 
-        s = self.last_layer(s)
+        s = self.last_last_layer(s)
         s = scatter(s, batch, dim=0, reduce="sum")
         return s
         # if self.use_sigmoid:
