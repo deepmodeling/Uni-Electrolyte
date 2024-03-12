@@ -3,6 +3,7 @@ import torch
 from uni_electrolyte.evaluator.model.spatial.oa_reactdiff.trainer.pl_trainer import DDPMModule
 from torch_geometric.nn import radius_graph
 from torch import nn
+from torch_scatter import scatter
 EPS = 1e-6
 
 class OA_REACTDIFF_LEFTNet(torch.nn.Module):
@@ -43,5 +44,6 @@ class OA_REACTDIFF_LEFTNet(torch.nn.Module):
 
         out_h,_,_=self.model.forward(h=h,pos=pos,edge_index=edge_index)
         out=self.last_layer(out_h)
+        out = scatter(out, batch, dim=0, reduce=self.readout)
         return out
         pass
