@@ -19,8 +19,8 @@ target = targets[2]
 #     num_radial=96,
 #     cutoff=8
 # )
-import pdb
-pdb.set_trace()
+# import pdb
+# pdb.set_trace()
 model=OA_REACTDIFF_LEFTNet(device)
 model = model.to(device)
 # import pdb
@@ -46,7 +46,7 @@ trainer = pyG_trainer()
 
 trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
                model=model, loss_func=loss_func, evaluation=evaluation,
-               batch_size=80, val_batch_size=80, epochs=2,
+               batch_size=200, val_batch_size=200, epochs=1000,
                save_dir='./output/run_info',
                log_dir='./output/run_info',
                 optimizer_args={'max_lr': 5e-4,
