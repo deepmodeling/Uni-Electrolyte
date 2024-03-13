@@ -7,7 +7,7 @@ from uni_electrolyte.evaluator.inference import pyG_inference_test, pyG_inferenc
 
 from uni_electrolyte.evaluator.trainer import pyG_trainer
 from torch_geometric.data import DataLoader
-from uni_electrolyte.evaluator.model.spatial import OA_REACTDIFF_LEFTNet
+from uni_electrolyte.evaluator.model.spatial import OA_REACTDIFF_LEFTNet,LEFTNet
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("cpu")
 
 targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
