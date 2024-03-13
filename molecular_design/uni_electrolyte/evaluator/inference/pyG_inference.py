@@ -61,7 +61,8 @@ class pyG_inference_test:
             pred.writelines(list(map(lambda x: str(x) + "\n", y_pred_flatten)))
         with open("target", "w") as true:
             true.writelines(list(map(lambda x: str(x) + "\n", y_true_flatten)))
-        df=pd.DataFrame(input_dict)
+        output_dict={"y_true":input_dict["y_true"].flatten().tolist(),"y_pred":input_dict["y_pred"].flatten().tolist()}
+        df=pd.DataFrame(output_dict)
         df.to_csv("pred_target_%s.csv"%(self.property))
         if use_r2_score:
             r = r2_score(y_true_flatten, y_pred_flatten)
