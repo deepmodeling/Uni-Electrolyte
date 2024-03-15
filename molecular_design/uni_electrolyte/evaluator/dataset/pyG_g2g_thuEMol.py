@@ -353,11 +353,14 @@ class g2g_thuEMol(InMemoryDataset):
     def __init__(self, root='dataset/', transform=None, pre_transform=None, pre_filter=None, load_target_list: list=None, use_pbc: bool=False):
         self.load_target_list = load_target_list
         self.use_pbc = use_pbc
+        self.error_nums = 0
+        fp=open(osp.join(self.processed_dir, "error_data"), "w")
+        fp.close()
 
         super(g2g_thuEMol, self).__init__(root, transform, pre_transform, pre_filter)
 
         self.data, self.slices = torch.load(self.processed_paths[0])
-        self.error_nums=0
+
 
     @property
     def raw_file_names(self):
