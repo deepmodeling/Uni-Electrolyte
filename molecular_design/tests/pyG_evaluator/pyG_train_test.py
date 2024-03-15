@@ -13,17 +13,17 @@ device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("
 
 targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
 target = targets[1]
-# model = LEFTNet(
-#     num_layers=6,
-#     hidden_channels=128,
-#     # hidden_channels=256,
-#     num_radial=96,
-#     cutoff=8
-# )
+model = LEFTNet(
+    num_layers=6,
+    hidden_channels=128,
+    # hidden_channels=256,
+    num_radial=96,
+    cutoff=8
+)
 # import pdb
 # pdb.set_trace()
-model=OA_REACTDIFF_LEFTNet(device)
-model = model.to(device)
+# model=OA_REACTDIFF_LEFTNet(device)
+# model = model.to(device)
 # import pdb
 # pdb.set_trace()
 
@@ -51,19 +51,22 @@ evaluation = pyG_inference_train()
 
 trainer = pyG_trainer()
 
-trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
-               model=model, loss_func=loss_func, evaluation=evaluation,
-               batch_size=200, val_batch_size=200, epochs=2,
-               save_dir='./output/run_info',
-               log_dir='./output/run_info',
-                optimizer_args={'max_lr': 5e-4,
-                                'base_lr': 1e-5,
-                                'step_size_up': 10,
-                                'step_size_down': 40,
-                                'mode': "exp_range"},
-                )
+# trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
+#                model=model, loss_func=loss_func, evaluation=evaluation,
+#                batch_size=200, val_batch_size=200, epochs=2,
+#                save_dir='./output/run_info',
+#                log_dir='./output/run_info',
+#                 optimizer_args={'max_lr': 5e-4,
+#                                 'base_lr': 1e-5,
+#                                 'step_size_up': 10,
+#                                 'step_size_down': 40,
+#                                 'mode': "exp_range"},
+#                 )
+
 ####################################################################################################################
-ckpt = torch.load('./output/run_info/valid_checkpoint.pt')
+
+#ckpt = torch.load('./output/run_info/valid_checkpoint.pt')
+ckpt=torch.load("/opt/ckpt/homo_lumo_gen_utils/ckpt/dielectric_constant.pt")
 model.load_state_dict(ckpt['model_state_dict'])
 model.to(device=device)
 ####################################################################################################################
