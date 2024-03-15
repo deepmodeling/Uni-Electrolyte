@@ -395,9 +395,15 @@ class g2g_thuEMol(InMemoryDataset):
             #add SMILES/bond info
             mols=xyz2mol(atoms=z_i.tolist(),coordinates=R_i.tolist())
             if type(mols)!=list:
-                raise Exception(osp.join(self.raw_dir, self.raw_file_names),"molecule %s xyz2mol error"%(i))
+                print(osp.join(self.raw_dir, self.raw_file_names), "molecule %s xyz2mol error" % (i))
+                with open(osp.join(self.processed_dir, "error_data"),"a") as fp:
+                    print("mol index :%s atom_nums:%s"%(i,len(z_i)),file=fp)
+                continue
             if len(mols)!=1:
-                raise Exception(osp.join(self.raw_dir, self.raw_file_names), "molecule %s xyz2mol error" % (i))
+                print(osp.join(self.raw_dir, self.raw_file_names), "molecule %s xyz2mol error" % (i))
+                with open(osp.join(self.processed_dir, "error_data"), "a") as fp:
+                    print("mol index :%s atom_nums:%s" % (i, len(z_i)), file=fp)
+                continue
             mol=mols[0]
             tmp_mol=AllChem.RemoveAllHs(mol)
             xyz2smiles=AllChem.MolToSmiles(tmp_mol)
