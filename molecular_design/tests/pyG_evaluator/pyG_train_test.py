@@ -51,17 +51,17 @@ evaluation = pyG_inference_train()
 
 trainer = pyG_trainer()
 
-# trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
-#                model=model, loss_func=loss_func, evaluation=evaluation,
-#                batch_size=200, val_batch_size=200, epochs=2,
-#                save_dir='./output/run_info',
-#                log_dir='./output/run_info',
-#                 optimizer_args={'max_lr': 5e-4,
-#                                 'base_lr': 1e-5,
-#                                 'step_size_up': 10,
-#                                 'step_size_down': 40,
-#                                 'mode': "exp_range"},
-#                 )
+trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
+               model=model, loss_func=loss_func, evaluation=evaluation,
+               batch_size=200, val_batch_size=200, epochs=2,
+               save_dir='./output/run_info',
+               log_dir='./output/run_info',
+                optimizer_args={'max_lr': 5e-4,
+                                'base_lr': 1e-5,
+                                'step_size_up': 10,
+                                'step_size_down': 40,
+                                'mode': "exp_range"},
+                )
 
 ####################################################################################################################
 

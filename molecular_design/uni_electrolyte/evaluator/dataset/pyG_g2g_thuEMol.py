@@ -433,10 +433,10 @@ class g2g_thuEMol(InMemoryDataset):
 
             # Gen X
             data.__num_nodes__ = int(src_graph['num_nodes'])
-            data.edge_index = src_graph['edge_index']
-            data.edge_attr = src_graph['edge_feat']
-            data.x = src_graph['node_feat']
-            data.all_rel_pos_3d = src_graph['rel_pos_3d']
+            data.edge_index = torch.tensor(src_graph['edge_index'],dtype=torch.int64)
+            data.edge_attr =torch.tensor( src_graph['edge_feat'],dtype=torch.int64)
+            data.x = torch.tensor(src_graph['node_feat'],dtype=torch.int64)
+            data.all_rel_pos_3d = torch.tensor(src_graph['rel_pos_3d'],dtype=torch.float32)
             data.xyz2smiles = xyz2smiles
 
 
