@@ -354,11 +354,11 @@ class g2g_thuEMol(InMemoryDataset):
         self.load_target_list = load_target_list
         self.use_pbc = use_pbc
         self.error_nums = 0
-        fp=open(osp.join(self.processed_dir, "error_data"), "w")
-        fp.close()
+
 
         super(g2g_thuEMol, self).__init__(root, transform, pre_transform, pre_filter)
-
+        fp = open(osp.join(self.processed_dir, "error_data"), "w")
+        fp.close()
         self.data, self.slices = torch.load(self.processed_paths[0])
 
 
