@@ -41,7 +41,7 @@ train_size=int(0.9*len(all_train_dataset))
 valid_size=len(all_train_dataset)-train_size
 split_idx = _train_dataset.get_idx_split(len(all_train_dataset), train_size=train_size, valid_size=valid_size, seed=42)
 # split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=100, valid_size=100, seed=42)
-train_dataset, valid_dataset, = all_train_dataset[split_idx['train']], all_train_dataset[split_idx['valid']]
+train_dataset, valid_dataset = all_train_dataset[split_idx['train']], all_train_dataset[split_idx['valid']]
 print('train, validaion, test:', len(train_dataset), len(valid_dataset))
 
 loss_func = torch.nn.MSELoss()
