@@ -357,6 +357,7 @@ class g2g_thuEMol(InMemoryDataset):
         super(g2g_thuEMol, self).__init__(root, transform, pre_transform, pre_filter)
 
         self.data, self.slices = torch.load(self.processed_paths[0])
+        self.error_nums=0
 
     @property
     def raw_file_names(self):
@@ -393,14 +394,26 @@ class g2g_thuEMol(InMemoryDataset):
             data = Data(pos=R_i, z=z_i, y=y_i[0], **y_dict)
 
             #add SMILES/bond info
-            mols=xyz2mol(atoms=z_i.tolist(),coordinates=R_i.tolist())
+            try:
+                mols=xyz2mol(atoms=z_i.tolist(),coordinates=R_i.tolist())
+            except:
+                self.error_nums += 1
+                print(osp.join(self.raw_dir, self.raw_file_names),
+                      "molecule %s xyz2mol error nums:%s" % (i, self.error_nums))
+                with open(osp.join(self.processed_dir, "error_data"), "a") as fp:
+                    print("mol index :%s atom_nums:%s" % (i, len(z_i)), file=fp)
+                continue
             if type(mols)!=list:
-                print(osp.join(self.raw_dir, self.raw_file_names), "molecule %s xyz2mol error" % (i))
-                with open(osp.join(self.processed_dir, "error_data"),"a") as fp:
-                    print("mol index :%s atom_nums:%s"%(i,len(z_i)),file=fp)
+                self.error_nums += 1
+                print(osp.join(self.raw_dir, self.raw_file_names),
+                      "molecule %s xyz2mol error nums:%s" % (i, self.error_nums))
+                with open(osp.join(self.processed_dir, "error_data"), "a") as fp:
+                    print("mol index :%s atom_nums:%s" % (i, len(z_i)), file=fp)
                 continue
             if len(mols)!=1:
-                print(osp.join(self.raw_dir, self.raw_file_names), "molecule %s xyz2mol error" % (i))
+                self.error_nums += 1
+                print(osp.join(self.raw_dir, self.raw_file_names),
+                      "molecule %s xyz2mol error nums:%s" % (i, self.error_nums))
                 with open(osp.join(self.processed_dir, "error_data"), "a") as fp:
                     print("mol index :%s atom_nums:%s" % (i, len(z_i)), file=fp)
                 continue

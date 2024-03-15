@@ -567,7 +567,7 @@ def AC2BO(AC, atoms, charge, allow_charged_fragments=True, use_graph=True):
                 max(atomic_valence[atomicNum]),
                 ". Stopping",
             )
-            sys.exit()
+            raise Exception()#sys.exit()
         valences_list_of_lists.append(possible_valence)
 
     # convert [[4],[2,1]] to [[4,2],[4,1]]
