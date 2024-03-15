@@ -364,7 +364,7 @@ class g2g_thuEMol(InMemoryDataset):
 
     @property
     def processed_file_names(self):
-        return 'thuEMol_pre.pt'
+        return 'g2g_thuEMol_pre.pt'
 
     def download(self):
         print('Please contact Tsinghua University.')
