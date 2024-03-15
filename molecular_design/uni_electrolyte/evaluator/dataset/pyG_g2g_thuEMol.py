@@ -393,13 +393,16 @@ class g2g_thuEMol(InMemoryDataset):
             data = Data(pos=R_i, z=z_i, y=y_i[0], **y_dict)
 
             #add SMILES/bond info
-            mols=xyz2mol(atoms=z_i,coordinates=R_i)
+            mols=xyz2mol(atoms=z_i.tolist(),coordinates=R_i.tolist())
             if type(mols)!=list:
                 raise Exception(osp.join(self.raw_dir, self.raw_file_names),"molecule %s xyz2mol error"%(i))
             if len(mols)!=1:
                 raise Exception(osp.join(self.raw_dir, self.raw_file_names), "molecule %s xyz2mol error" % (i))
             mol=mols[0]
-            xyz2smiles=AllChem.MolToSmiles(mol)
+            tmp_mol=AllChem.RemoveAllHs(mol)
+            xyz2smiles=AllChem.MolToSmiles(tmp_mol)
+            # import pdb
+            # pdb.set_trace()
             src_graph=mol2graph(mol)
 
             assert (len(src_graph['edge_feat']) == src_graph['edge_index'].shape[1])
