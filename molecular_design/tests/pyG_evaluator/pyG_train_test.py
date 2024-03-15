@@ -1,7 +1,7 @@
 import os
 
 import torch
-from torch.utils.data import ConcatDataset
+from torch.utils.data import ConcatDataset,Subset
 #export PYTHONPATH=$PYTHONPATH:/root/yinshiqiu/Uni-Electrolyte/molecular_design:/root/yinshiqiu/Uni-Electrolyte/molecular_design/uni_electrolyte/evaluator/model/spatial   to search the uni_electrolyte package
 from uni_electrolyte.evaluator.dataset import thuEMol,g2g_thuEMol
 from uni_electrolyte.evaluator.inference import pyG_inference_test, pyG_inference_train, pyG_inference_without_label
@@ -41,7 +41,9 @@ train_size=int(0.9*len(all_train_dataset))
 valid_size=len(all_train_dataset)-train_size
 split_idx = _train_dataset.get_idx_split(len(all_train_dataset), train_size=train_size, valid_size=valid_size, seed=42)
 # split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=100, valid_size=100, seed=42)
-train_dataset, valid_dataset = all_train_dataset[split_idx['train']], all_train_dataset[split_idx['valid']]
+#train_dataset, valid_dataset = all_train_dataset[split_idx['train']], all_train_dataset[split_idx['valid']]
+train_dataset = Subset(all_train_dataset, indices=split_idx['train'])
+valid_dataset= Subset(all_train_dataset, indices=split_idx['valid'])
 print('train, validaion, test:', len(train_dataset), len(valid_dataset))
 
 loss_func = torch.nn.MSELoss()
