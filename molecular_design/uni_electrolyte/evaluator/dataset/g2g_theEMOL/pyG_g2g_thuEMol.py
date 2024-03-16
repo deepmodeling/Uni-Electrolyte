@@ -125,6 +125,13 @@ class g2g_thuEMol(InMemoryDataset):
             data.xyz2smiles = xyz2smiles
 
             data = preprocess_item(data, noise=False)
+            data.adj = data.adj.numpy()
+            data.attn_bias = data.attn_bias.numpy()
+            data.attn_edge_type = data.attn_edge_type.numpy()
+            data.rel_pos = data.rel_pos.numpy()
+            data.edge_input = data.edge_input.numpy()
+            data.all_rel_pos_3d_1 = data.all_rel_pos_3d_1.numpy()
+
             data_list.append(data)
 
         if self.pre_filter is not None:
