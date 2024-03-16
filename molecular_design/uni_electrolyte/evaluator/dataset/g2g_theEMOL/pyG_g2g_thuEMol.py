@@ -23,7 +23,7 @@ import math
 from scipy.spatial.distance import cdist
 import torch
 import numpy as np
-from custom_dataset import mol2graph,preprocess_item
+from .custom_dataset import mol2graph,preprocess_item
 
 
 # the original target prediction class
