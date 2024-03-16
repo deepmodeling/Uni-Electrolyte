@@ -11,7 +11,7 @@ from rdkit.Chem import AllChem
 from torch_geometric.data import InMemoryDataset, download_url
 from torch_geometric.data import Data, DataLoader
 from ..model.spatial.oa_reactdiff.utils.xyz2mol import xyz2mol
-
+import algos as algos
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
@@ -42,6 +42,11 @@ implicit_valence_list = list(range(13))
 total_valence_list = list(range(26))
 total_degree_list = list(range(32))
 
+def convert_to_single_emb(x, offset=128):
+    feature_num = x.size(1) if len(x.size()) > 1 else 1
+    feature_offset = 1 + torch.arange(0, feature_num * offset, offset, dtype=torch.long)
+    x = x + feature_offset
+    return x
 
 def simple_atom_feature(atom):
     atomic_num = atom.GetAtomicNum()
@@ -374,6 +379,56 @@ class g2g_thuEMol(InMemoryDataset):
         print('Please contact Tsinghua University.')
         pass
 
+    def preprocess_item(self,item, noise=False):
+
+        edge_attr, edge_index, x = item.edge_attr, item.edge_index, item.x
+        y = item.y
+
+        N = x.size(0)
+        x = convert_to_single_emb(x)
+
+        # mask
+        # node adj matrix [N, N] bool
+        adj = torch.zeros([N, N], dtype=torch.bool)
+        adj[edge_index[0, :], edge_index[1, :]] = True
+
+        # edge feature here
+        if len(edge_attr.size()) == 1:
+            edge_attr = edge_attr[:, None]
+
+        # 20230905：当前版本all_rel_pos_3d 为拓扑距离
+        all_rel_pos_3d_with_noise = torch.from_numpy(algos.bin_rel_pos_3d_1(item.all_rel_pos_3d, noise=noise)).long()
+
+        rel_pos_3d_attr = all_rel_pos_3d_with_noise[edge_index[0, :], edge_index[1, :]]
+
+        edge_attr = torch.cat([edge_attr, rel_pos_3d_attr[:, None]], dim=-1)
+        attn_edge_type = torch.zeros([N, N, edge_attr.size(-1)], dtype=torch.long)
+        attn_edge_type[edge_index[0, :], edge_index[1, :]] = convert_to_single_emb(edge_attr) + 1
+
+        shortest_path_result, path = algos.floyd_warshall(adj.numpy())
+        max_dist = np.amax(shortest_path_result)
+        edge_input = algos.gen_edge_input(max_dist, path, attn_edge_type.numpy())
+        rel_pos = torch.from_numpy((shortest_path_result)).long()
+        attn_bias = torch.zeros([N + 1, N + 1], dtype=torch.float)  # with graph token
+
+        # combine
+        item.x = x
+        item.adj = adj
+        item.attn_bias = attn_bias
+        item.attn_edge_type = attn_edge_type
+        item.rel_pos = rel_pos
+        item.in_degree = adj.long().sum(dim=1).view(-1)
+        item.out_degree = adj.long().sum(dim=0).view(-1)
+        item.edge_input = torch.from_numpy(edge_input).long()
+        item.all_rel_pos_3d_1 = torch.from_numpy(item.all_rel_pos_3d).float()
+
+        # new
+        item.y = y
+
+        if item.pos is None:  # 兼容没有pos 的2D  dataset 数据
+            item.pos = torch.zeros(item.rel_pos.shape[0], 3).float()
+
+        return item
     def process(self):
 
         old_data = np.load(osp.join(self.raw_dir, self.raw_file_names))
@@ -432,6 +487,8 @@ class g2g_thuEMol(InMemoryDataset):
 
 
             # Gen X
+
+
             data.__num_nodes__ = int(src_graph['num_nodes'])
             data.edge_index = torch.tensor(src_graph['edge_index'],dtype=torch.int64)
             data.edge_attr =torch.tensor( src_graph['edge_feat'],dtype=torch.int64)
