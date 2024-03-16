@@ -30,7 +30,7 @@ import numpy as np
 import torch_geometric.datasets
 import pyximport
 pyximport.install(setup_args={'include_dirs': np.get_include()})
-import uni_electrolyte.evaluator.dataset.g2g_theEMOL.algos
+import uni_electrolyte.evaluator.dataset.g2g_theEMOL.algos as algos
 # import pickle
 # import copy
 # import copy
