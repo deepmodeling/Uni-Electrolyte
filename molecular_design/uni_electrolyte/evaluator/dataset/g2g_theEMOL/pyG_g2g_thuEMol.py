@@ -10,7 +10,7 @@ from sklearn.utils import shuffle
 from rdkit.Chem import AllChem
 from torch_geometric.data import InMemoryDataset, download_url
 from torch_geometric.data import Data, DataLoader
-from molecular_design.uni_electrolyte.evaluator.model.spatial.oa_reactdiff.utils.xyz2mol import xyz2mol
+from uni_electrolyte.evaluator.model.spatial.oa_reactdiff.utils.xyz2mol import xyz2mol
 
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
