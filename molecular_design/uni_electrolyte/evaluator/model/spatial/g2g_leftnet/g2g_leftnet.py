@@ -472,7 +472,7 @@ class G2G_LEFTNet(nn.Module):
             data.all_rel_pos_3d_1[idx] = torch.from_numpy(data.all_rel_pos_3d_1[idx])
             data.in_degree[idx] = torch.from_numpy(data.in_degree[idx])
             data.out_degree[idx] = torch.from_numpy(data.out_degree[idx])
-            data.x[idx] = torch.from_numpy(data.x[idx])
+            #data.x[idx] = torch.from_numpy(data.x[idx])
 
         for idx in range(len(data.edge_input)):
             data.edge_input[idx]=data.edge_input[idx][:, :, :multi_hop_max_dist, :]
