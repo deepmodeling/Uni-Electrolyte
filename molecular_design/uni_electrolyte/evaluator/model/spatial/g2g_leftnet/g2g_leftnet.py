@@ -331,7 +331,7 @@ class G2G_LEFTNet(nn.Module):
             output_dim=1,
             cutoff=6.0, num_layers=4, readout="sum",
             hidden_channels=128, num_radial=96, eps=1e-10,
-            use_pbc=False, use_sigmoid=False,device=None
+            use_pbc=False, use_sigmoid=False,device=None,g2g_checkpoint_path=None
     ):
         super(G2G_LEFTNet, self).__init__()
         self.device=device
@@ -418,7 +418,7 @@ class G2G_LEFTNet(nn.Module):
 
         self.ptm = GraphFormer.load_from_checkpoint(
             # args.checkpoint_path,
-            self.checkpoint_path,
+            g2g_checkpoint_path,
             strict=False,
             n_layers=8,
             head_size=24,
