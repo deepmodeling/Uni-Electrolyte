@@ -181,9 +181,10 @@ class pyG_trainer():
                     torch.save(checkpoint, os.path.join(save_dir, 'best.pt' ))
                     torch.save(checkpoint, os.path.join(save_dir, 'checkpoint_%s_%.3f.pt'%(epoch,best_valid)))
                     best_ckpt_path_list.append( 'checkpoint_%s_%.3f.pt' % (epoch, best_valid))
-                    if len(best_ckpt_path_list)>=4:
+                    if len(best_ckpt_path_list)>=2:
                         old_ckpt_path=best_ckpt_path_list.pop(0)
-                        os.remove(old_ckpt_path)
+                        print("remove %s"%(old_ckpt_path))
+                        os.remove(os.path.join(save_dir, old_ckpt_path))
             else:
                 checkpoint = {'epoch': epoch, 'model_state_dict': model.state_dict(),
                               'optimizer_state_dict': optimizer.state_dict(),
