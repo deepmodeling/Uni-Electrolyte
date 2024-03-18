@@ -463,7 +463,7 @@ class G2G_LEFTNet(nn.Module):
     def preprocess_g2g_data(self,data,max_node=9999, multi_hop_max_dist=5,rel_pos_max=1024,device=None):
 
         for idx in range(len(data.y)):
-            data.reverse[idx]= torch.from_numpy(data.reverse[idx])
+            #data.reverse[idx]= torch.from_numpy(data.reverse[idx])
             data.x[idx] = torch.from_numpy(data.x[idx])
             data.edge_input[idx] = torch.from_numpy(data.edge_input[idx])
             data.attn_bias[idx] = torch.from_numpy(data.attn_bias[idx])
@@ -484,7 +484,7 @@ class G2G_LEFTNet(nn.Module):
         max_dist = max(i.shape[-2] for i in data.edge_input)
 
         # retrosynthesis or forward synthesis
-        data.reverse = torch.cat([i for i in data.reverse]).to(device)
+        data.reverse = data.reverse.to(device)
         data.x = torch.cat([pad_2d_unsqueeze(i, max_node_num) for i in data.x]).to(device)
         data.edge_input = torch.cat([pad_3d_unsqueeze(i, max_node_num, max_node_num, max_dist) for i in data.edge_input]).to(device)
         data.attn_bias = torch.cat([pad_attn_bias_unsqueeze(i, max_node_num + 1) for i in data.attn_bias]).to(device)
