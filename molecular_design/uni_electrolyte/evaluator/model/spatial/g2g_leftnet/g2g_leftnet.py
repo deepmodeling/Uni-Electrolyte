@@ -18,6 +18,7 @@ from .g2g_model import GraphFormer
 from uni_electrolyte.evaluator.dataset.g2g_theEMOL.collator import pad_2d_unsqueeze,pad_3d_unsqueeze,\
             pad_attn_bias_unsqueeze,pad_edge_type_unsqueeze,pad_rel_pos_unsqueeze,pad_rel_pos_3d_unsqueeze,\
             pad_1d_unsqueeze
+from torch_geometric.utils import to_dense_batch,dense_to_sparse
 def swish(x):
     return x * torch.sigmoid(x)
 
@@ -57,6 +58,25 @@ class rbf_emb(nn.Module):
                   (torch.cos(dist * pi / self.rbound_upper) + 1.0)
         rbounds = rbounds * (dist < self.rbound_upper).float()
         return rbounds*torch.exp(-self.betas * torch.square((torch.exp(-dist) - self.means)))
+
+class NeighborEmb4G2G(MessagePassing):
+
+    def __init__(self, hid_dim: int,in_hidden_channels:int):
+        super(NeighborEmb4G2G, self).__init__(aggr='add')
+        self.embedding =nn.Linear(in_hidden_channels, hid_dim)
+        self.hid_dim = hid_dim
+        self.ln_emb = nn.LayerNorm(hid_dim,
+                                   elementwise_affine=False)
+
+    def forward(self, z, s, edge_index, embs):
+        s_neighbors = self.ln_emb(self.embedding(z))
+        s_neighbors = self.propagate(edge_index, x=s_neighbors, norm=embs)
+
+        s = s + s_neighbors
+        return s
+
+    def message(self, x_j, norm):
+        return norm.view(-1, self.hid_dim) * x_j
 
 
 class NeighborEmb(MessagePassing):
@@ -415,14 +435,14 @@ class G2G_LEFTNet(nn.Module):
                   predict_input_csv_file_path='./input.csv', predict_dataset_name='inference_dataset_be',
                    log_name='inference_be_20240318111828'
         """
-
+        g2g_hidden_dim=768
         self.ptm = GraphFormer.load_from_checkpoint(
             # args.checkpoint_path,
             g2g_checkpoint_path,
             strict=False,
             n_layers=8,
             head_size=24,
-            hidden_dim=768,
+            hidden_dim=g2g_hidden_dim,
             attention_dropout_rate=0.1,
             dropout_rate=0.1,
             intput_dropout_rate=0.1,
@@ -438,9 +458,11 @@ class G2G_LEFTNet(nn.Module):
             flag=False,
             flag_m=3,
             flag_step_size=0.001,
-        ).to(self.device)
+        )
         self.ptm.freeze()
         self.feature_extractor = self.ptm.translate_encoder
+        self.g2g_embedding = nn.Linear(g2g_hidden_dim, hidden_channels)
+        self.neighbor_emb4g2g = NeighborEmb4G2G(hid_dim=hidden_channels, in_hidden_channels=g2g_hidden_dim)
 
     def reset_parameters(self):
         self.z_emb.reset_parameters()
@@ -495,15 +517,20 @@ class G2G_LEFTNet(nn.Module):
         data.out_degree = torch.cat([pad_1d_unsqueeze(i, max_node_num) for i in data.out_degree]).to(device)
 
     def _forward(self, data):
-
-        self.preprocess_g2g_data(data,device=self.device)
-        zz=self.feature_extractor(data)
-
         import pdb
         pdb.set_trace()
+        self.preprocess_g2g_data(data,device=self.device)
+        zz=self.feature_extractor(data) #batch_size,max_atom_num+1,768
+        feature_len=zz.shape[-1]
+        zz=zz[:,1:,:]
+        total_atom_num=data.pos.shape[0]
+        zz_tmp=torch.zeros(size=(total_atom_num,feature_len),device=self.device)
+        zz_tmp_dense_data, zz_mask = to_dense_batch(zz_tmp, data.batch)
+        z=zz[zz_mask]
+
         pos = data.pos
         batch = data.batch
-        z = data.z.long()
+        #z = data.z.long()
 
 
         pos -= scatter(pos, batch, dim=0)[batch]
@@ -529,7 +556,8 @@ class G2G_LEFTNet(nn.Module):
             dist = vecs.norm(dim=-1)
 
         # embed z
-        z_emb = self.z_emb_ln(self.z_emb(z))
+        z_emb = self.g2g_embedding(z)
+        #z_emb = self.z_emb_ln(self.z_emb(z))
         
         # # # # construct edges based on the cutoff value
         # # # edge_index = radius_graph(pos, r=self.cutoff, batch=batch)
@@ -545,7 +573,9 @@ class G2G_LEFTNet(nn.Module):
 
         # init invariant node features
         # shape: (num_nodes, hidden_channels)
-        s = self.neighbor_emb(z, z_emb, edge_index, radial_hidden)
+        #s = self.neighbor_emb(z, z_emb, edge_index, radial_hidden)
+        s = self.neighbor_emb4g2g(z, z_emb, edge_index, radial_hidden)
+
 
         # init equivariant node features
         # shape: (num_nodes, 3, hidden_channels)

@@ -35,6 +35,7 @@ model=G2G_LEFTNet(
     device=device,
     g2g_checkpoint_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/uni_electrolyte/evaluator/model/spatial/g2g_leftnet/ckpt/epoch=41-step=160120.ckpt"
 )
+model = model.to(device)
 
 data_root_path="202312_data"
 data_path = f'{data_root_path}/input/'
