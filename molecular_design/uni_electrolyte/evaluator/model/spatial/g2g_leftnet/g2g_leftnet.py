@@ -469,8 +469,8 @@ class G2G_LEFTNet(nn.Module):
             data.attn_bias[idx][1:, 1:][data.rel_pos[idx] >= rel_pos_max] = float('-inf')
 
 
-        max_node_num = max(i.size(0) for i in data.x)
-        max_dist = max(i.size(-2) for i in data.edge_input)
+        max_node_num = max(i.shape(0) for i in data.x)
+        max_dist = max(i.shape(-2) for i in data.edge_input)
 
         # retrosynthesis or forward synthesis
         data.reverse = torch.cat([i for i in data.reverse]).to(device)
