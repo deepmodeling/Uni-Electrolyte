@@ -177,7 +177,8 @@ class pyG_trainer():
                                   'optimizer_state_dict': optimizer.state_dict(),
                                   'scheduler_state_dict': scheduler.state_dict(), 'best_valid_mae': best_valid,
                                   'num_params': num_params}
-                    torch.save(checkpoint, os.path.join(save_dir, 'valid_checkpoint.pt'))
+                    torch.save(checkpoint, os.path.join(save_dir, 'best.pt' ))
+                    torch.save(checkpoint, os.path.join(save_dir, 'checkpoint_%s_%.3f.pt'%(epoch,best_valid)))
             else:
                 checkpoint = {'epoch': epoch, 'model_state_dict': model.state_dict(),
                               'optimizer_state_dict': optimizer.state_dict(),

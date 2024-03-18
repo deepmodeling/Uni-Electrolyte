@@ -11,6 +11,9 @@ from torch_geometric.data import DataLoader
 from uni_electrolyte.evaluator.model.spatial import OA_REACTDIFF_LEFTNet,LEFTNet,G2G_LEFTNet
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("cpu")
 
+import datetime
+now = datetime.datetime.now()
+
 targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
 target = targets[1]
 # model = LEFTNet(
@@ -60,12 +63,12 @@ loss_func = torch.nn.MSELoss()
 evaluation = pyG_inference_train()
 
 trainer = pyG_trainer()
-
+output_dir="%s_%s"%(now.strftime("%Y%m%d%H%M%S"),target)
 trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
                model=model, loss_func=loss_func, evaluation=evaluation,
                batch_size=200, val_batch_size=200, epochs=2,
-               save_dir='./output/run_info',
-               log_dir='./output/run_info',
+               save_dir='./%s/run_info'%output_dir,
+               log_dir='./%s/run_info'%output_dir,
                 optimizer_args={'max_lr': 5e-4,
                                 'base_lr': 1e-5,
                                 'step_size_up': 10,
@@ -75,8 +78,8 @@ trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_d
 
 ####################################################################################################################
 
-#ckpt = torch.load('./output/run_info/valid_checkpoint.pt')
-ckpt=torch.load("/opt/ckpt/homo_lumo_gen_utils/ckpt/dielectric_constant.pt")
+ckpt = torch.load('./%s/run_info/best.pt'%output_dir)
+#ckpt=torch.load("/opt/ckpt/homo_lumo_gen_utils/ckpt/dielectric_constant.pt")
 model.load_state_dict(ckpt['model_state_dict'])
 model.to(device=device)
 ####################################################################################################################
@@ -86,7 +89,7 @@ iid_test_dataset.data.y = iid_test_dataset.data[target]
 # test_dataset = dataset[split_idx['test']]
 # print('Dataset size:', len(test_dataset))
 ####################################################################################################################
-evaluation = pyG_inference_test(dump_info_path=r'./output/test_info/iid_test', info_file_flag=target, property=target)
+evaluation = pyG_inference_test(dump_info_path=r'./%s/test_info/iid_test'%output_dir, info_file_flag=target, property=target)
 _ = trainer.val(model=model, data_loader=DataLoader(iid_test_dataset, 50, shuffle=False),
                    energy_and_force=False, p=0, evaluation=evaluation, device=device)
 # ####################################################################################################################
