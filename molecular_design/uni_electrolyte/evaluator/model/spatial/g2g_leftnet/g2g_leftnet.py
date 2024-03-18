@@ -438,7 +438,7 @@ class G2G_LEFTNet(nn.Module):
             flag=False,
             flag_m=3,
             flag_step_size=0.001,
-        )
+        ).to(self.device)
         self.ptm.freeze()
         self.feature_extractor = self.ptm.translate_encoder
 
@@ -495,11 +495,12 @@ class G2G_LEFTNet(nn.Module):
         data.out_degree = torch.cat([pad_1d_unsqueeze(i, max_node_num) for i in data.out_degree]).to(device)
 
     def _forward(self, data):
-        import pdb
 
-        pdb.set_trace()
         self.preprocess_g2g_data(data)
+        zz=self.feature_extractor(data)
 
+        import pdb
+        pdb.set_trace()
         pos = data.pos
         batch = data.batch
         z = data.z.long()
