@@ -41,7 +41,7 @@ model=G2G_LEFTNet(
 )
 model = model.to(device)
 
-data_root_path="202312_data"
+data_root_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/202312_data"
 data_path = f'{data_root_path}/input/'
 ####################################################################################################################
 
