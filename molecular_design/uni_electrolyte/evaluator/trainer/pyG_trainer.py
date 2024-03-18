@@ -143,6 +143,7 @@ class pyG_trainer():
             valid_loader = DataLoader(valid_dataset, val_batch_size, shuffle=False, num_workers=num_workers, sampler=sampler)
 
         best_valid = float('inf')
+        best_ckpt_path_list=[]
 
         if save_dir != '':
             if not os.path.exists(save_dir):
@@ -179,6 +180,10 @@ class pyG_trainer():
                                   'num_params': num_params}
                     torch.save(checkpoint, os.path.join(save_dir, 'best.pt' ))
                     torch.save(checkpoint, os.path.join(save_dir, 'checkpoint_%s_%.3f.pt'%(epoch,best_valid)))
+                    best_ckpt_path_list.append( 'checkpoint_%s_%.3f.pt' % (epoch, best_valid))
+                    if len(best_ckpt_path_list)>=4:
+                        old_ckpt_path=best_ckpt_path_list.pop(0)
+                        os.remove(old_ckpt_path)
             else:
                 checkpoint = {'epoch': epoch, 'model_state_dict': model.state_dict(),
                               'optimizer_state_dict': optimizer.state_dict(),
