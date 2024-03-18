@@ -2,8 +2,8 @@
 # Licensed under the MIT License.
 
 #from IPython import embed
-from data import get_dataset
-from lr import PolynomialDecayLR
+# from data import get_dataset
+# from lr import PolynomialDecayLR
 from torch.optim.lr_scheduler import CyclicLR
 # from torchmetrics import PrecisionRecallCurve
 # import sys
@@ -11,7 +11,7 @@ import torch
 import math
 import torch.nn as nn
 import pytorch_lightning as pl
-from utils.flag import flag, flag_bounded
+# from utils.flag import flag, flag_bounded
 import numpy as np
 import torch.nn.functional as F
 import sys
@@ -169,7 +169,7 @@ class GraphFormer(pl.LightningModule):
         
         #todo fix eval
         # self.evaluator = get_dataset(dataset_name)['evaluator']
-        self.metric = get_dataset(dataset_name)['metric']
+        #self.metric = get_dataset(dataset_name)['metric']
         #self.loss_fn = get_dataset(dataset_name)['loss_fn']
         self.dataset_name = dataset_name
         
