@@ -462,6 +462,17 @@ class G2G_LEFTNet(nn.Module):
 
     def preprocess_g2g_data(self,data,max_node=9999, multi_hop_max_dist=5,rel_pos_max=1024,device=None):
 
+        for idx in range(len(data.y)):
+            data.reverse[idx]= torch.from_numpy(data.reverse[idx])
+            data.x[idx] = torch.from_numpy(data.x[idx])
+            data.edge_input[idx] = torch.from_numpy(data.edge_input[idx])
+            data.attn_bias[idx] = torch.from_numpy(data.attn_bias[idx])
+            data.attn_edge_type[idx] = torch.from_numpy(data.attn_edge_type[idx])
+            data.rel_pos[idx] = torch.from_numpy(data.rel_pos[idx])
+            data.all_rel_pos_3d_1[idx] = torch.from_numpy(data.all_rel_pos_3d_1[idx])
+            data.in_degree[idx] = torch.from_numpy(data.in_degree[idx])
+            data.out_degree[idx] = torch.from_numpy(data.out_degree[idx])
+            data.x[idx] = torch.from_numpy(data.x[idx])
 
         for idx in range(len(data.edge_input)):
             data.edge_input[idx]=data.edge_input[idx][:, :, :multi_hop_max_dist, :]
