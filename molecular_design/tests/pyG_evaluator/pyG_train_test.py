@@ -63,10 +63,10 @@ loss_func = torch.nn.MSELoss()
 evaluation = pyG_inference_train()
 
 trainer = pyG_trainer()
-output_dir="%s_%s"%(now.strftime("%Y%m%d%H%M%S"),target)
+output_dir="output_%s_%s"%(now.strftime("%Y%m%d%H%M%S"),target)
 trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
                model=model, loss_func=loss_func, evaluation=evaluation,
-               batch_size=200, val_batch_size=200, epochs=2,
+               batch_size=200, val_batch_size=200, epochs=5,
                save_dir='./%s/run_info'%output_dir,
                log_dir='./%s/run_info'%output_dir,
                 optimizer_args={'max_lr': 5e-4,
