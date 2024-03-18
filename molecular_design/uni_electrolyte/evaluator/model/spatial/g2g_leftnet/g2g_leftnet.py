@@ -517,8 +517,8 @@ class G2G_LEFTNet(nn.Module):
         data.out_degree = torch.cat([pad_1d_unsqueeze(i, max_node_num) for i in data.out_degree]).to(device)
 
     def _forward(self, data):
-        import pdb
-        pdb.set_trace()
+        # import pdb
+        # pdb.set_trace()
         self.preprocess_g2g_data(data,device=self.device)
         zz=self.feature_extractor(data) #batch_size,max_atom_num+1,768
         feature_len=zz.shape[-1]
