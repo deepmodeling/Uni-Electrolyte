@@ -466,7 +466,7 @@ class G2G_LEFTNet(nn.Module):
         for idx in range(len(data.edge_input)):
             data.edge_input[idx]=data.edge_input[idx][:, :, :multi_hop_max_dist, :]
         for idx, _ in enumerate(data.attn_bias):
-            data.attn_bias[idx][1:, 1:][data.rel_pose[idx] >= rel_pos_max] = float('-inf')
+            data.attn_bias[idx][1:, 1:][data.rel_pos[idx] >= rel_pos_max] = float('-inf')
 
 
         max_node_num = max(i.size(0) for i in data.x)
@@ -478,7 +478,7 @@ class G2G_LEFTNet(nn.Module):
         data.edge_input = torch.cat([pad_3d_unsqueeze(i, max_node_num, max_node_num, max_dist) for i in data.edge_input]).to(device)
         data.attn_bias = torch.cat([pad_attn_bias_unsqueeze(i, max_node_num + 1) for i in data.attn_bias]).to(device)
         data.attn_edge_type = torch.cat([pad_edge_type_unsqueeze(i, max_node_num) for i in data.attn_edge_type]).to(device)
-        data.rel_pos = torch.cat([pad_rel_pos_unsqueeze(i, max_node_num) for i in data.rel_pose]).to(device)
+        data.rel_pos = torch.cat([pad_rel_pos_unsqueeze(i, max_node_num) for i in data.rel_pos]).to(device)
         data.all_rel_pos_3d_1 = torch.cat([pad_rel_pos_3d_unsqueeze(i, max_node_num) for i in data.all_rel_pos_3d_1]).to(device)
         data.in_degree = torch.cat([pad_1d_unsqueeze(i, max_node_num) for i in data.in_degree]).to(device)
         data.out_degree = torch.cat([pad_1d_unsqueeze(i, max_node_num) for i in data.out_degree]).to(device)
