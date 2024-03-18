@@ -8,24 +8,32 @@ from uni_electrolyte.evaluator.inference import pyG_inference_test, pyG_inferenc
 
 from uni_electrolyte.evaluator.trainer import pyG_trainer
 from torch_geometric.data import DataLoader
-from uni_electrolyte.evaluator.model.spatial import OA_REACTDIFF_LEFTNet,LEFTNet
+from uni_electrolyte.evaluator.model.spatial import OA_REACTDIFF_LEFTNet,LEFTNet,G2G_LEFTNet
 device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device("cpu")
 
 targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
 target = targets[1]
-model = LEFTNet(
-    num_layers=6,
-    hidden_channels=128,
-    # hidden_channels=256,
-    num_radial=96,
-    cutoff=8
-)
+# model = LEFTNet(
+#     num_layers=6,
+#     hidden_channels=128,
+#     # hidden_channels=256,
+#     num_radial=96,
+#     cutoff=8
+# )
 # import pdb
 # pdb.set_trace()
 # model=OA_REACTDIFF_LEFTNet(device)
 # model = model.to(device)
 # import pdb
 # pdb.set_trace()
+model=G2G_LEFTNet(
+    num_layers=6,
+    hidden_channels=128,
+    # hidden_channels=256,
+    num_radial=96,
+    cutoff=8,
+    device=device
+)
 
 data_root_path="202312_data"
 data_path = f'{data_root_path}/input/'
