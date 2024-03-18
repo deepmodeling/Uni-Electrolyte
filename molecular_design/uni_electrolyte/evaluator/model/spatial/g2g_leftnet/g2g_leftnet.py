@@ -460,7 +460,7 @@ class G2G_LEFTNet(nn.Module):
 
     # @conditional_grad(torch.enable_grad())
 
-    def preprocess_g2g_data(self,data,max_node=9999, multi_hop_max_dist=5,rel_pos_max=1024,device=None):
+    def preprocess_g2g_data(self,data,device,max_node=9999, multi_hop_max_dist=5,rel_pos_max=1024 ):
 
         for idx in range(len(data.y)):
             #data.reverse[idx]= torch.from_numpy(data.reverse[idx])
@@ -496,7 +496,7 @@ class G2G_LEFTNet(nn.Module):
 
     def _forward(self, data):
 
-        self.preprocess_g2g_data(data)
+        self.preprocess_g2g_data(data,device=self.device)
         zz=self.feature_extractor(data)
 
         import pdb
