@@ -24,7 +24,7 @@ class pyG_trainer():
 
     def run(self, device, train_dataset, valid_dataset, test_dataset, model, loss_func, evaluation, epochs=500,
             batch_size=32, vt_batch_size=32, lr=0.0005, lr_decay_factor=0.5, lr_decay_step_size=50, weight_decay=0,
-            energy_and_force=False, p=100, save_dir='', log_dir='', num_workers=4, sampler=None):
+            energy_and_force=False, p=100, save_dir='', log_dir='', num_workers=0, sampler=None):
         r"""
         The run script for training and validation.
         
@@ -122,7 +122,7 @@ class pyG_trainer():
             batch_size=32, val_batch_size=32,
             energy_and_force=False, p=100, save_dir='', log_dir='',
             optimizer_args: dict = {'max_lr': 1e-3, 'base_lr': 1e-5, 'step_size_up': 10, 'step_size_down': 40,
-                                    'mode': "exp_range"}, num_workers=4, sampler=None):
+                                    'mode': "exp_range"}, num_workers=0, sampler=None):
         model = model.to(device)
         num_params = sum(p.numel() for p in model.parameters())
         print(f'#Params: {num_params}')
@@ -202,7 +202,7 @@ class pyG_trainer():
     def runExpo(self, device, train_dataset, valid_dataset, model, loss_func, evaluation, epochs=500,
             batch_size=32, val_batch_size=32,
             energy_and_force=False, p=100, save_dir='', log_dir='',
-            optimizer_args: dict = {'lr': 5e-4, 'gamma': 0.98}, num_workers=4, sampler=None):
+            optimizer_args: dict = {'lr': 5e-4, 'gamma': 0.98}, num_workers=0, sampler=None):
 
         model = model.to(device)
         num_params = sum(p.numel() for p in model.parameters())
