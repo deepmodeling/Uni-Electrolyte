@@ -17,6 +17,8 @@ now = datetime.datetime.now()
 
 targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
 target = sys.argv[1]#targets[sys.argv[1]]
+if target not in targets:
+    raise Exception
 # model = LEFTNet(
 #     num_layers=6,
 #     hidden_channels=128,
@@ -61,7 +63,7 @@ valid_dataset= Subset(all_train_dataset, indices=split_idx['valid'])
 print('train, validaion, test:', len(train_dataset), len(valid_dataset))
 
 loss_func = torch.nn.MSELoss()
-evaluation = pyG_inference_train()
+evaluation = pyG_inference_train(property=target)
 
 trainer = pyG_trainer()
 output_dir="output_%s_%s"%(now.strftime("%Y%m%d%H%M%S"),target)

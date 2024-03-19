@@ -53,6 +53,8 @@ class pyG_inference_test:
         y_true_flatten = torch.flatten(y_true).detach().cpu().numpy()
 
         if self.property in ['viscosity', 'dielectric_constant']:
+            log_y_true_flatten=y_true_flatten
+            log_y_pred_flatten=y_pred_flatten
             y_true_flatten = pow(10, y_true_flatten)
             y_pred_flatten = pow(10, y_pred_flatten)
             #
@@ -77,11 +79,14 @@ class pyG_inference_test:
         spearmanr_v=round(stats.spearmanr( y_pred_flatten,y_true_flatten)[0],3)
         reversed_ratio=round(reversed_ratio_fun(y_pred_flatten,y_true_flatten),3)
 
-        print(f'{self.info_file_flag} mae: {str(mae_e)}\n')
-        print(f'{self.info_file_flag} corr: {str(r)}\n')
-        print(f'{self.info_file_flag} mae_ratio: {str(mae_ratio)}\n')
-        print(f'{self.info_file_flag} spearmanr: {str(spearmanr_v)}\n')
-        print(f'{self.info_file_flag} reversed_ratio: {str(reversed_ratio)}\n')
+        if self.property in ['viscosity', 'dielectric_constant']:
+            log_mae = float(np.mean(np.abs(log_y_true_flatten - log_y_pred_flatten)))
+            print('%s log mae: %.3f' % (self.info_file_flag, log_mae))
+        print(f'{self.info_file_flag} mae: {str(mae_e)}')
+        print(f'{self.info_file_flag} corr: {str(r)}')
+        print(f'{self.info_file_flag} mae_ratio: {str(mae_ratio)}')
+        print(f'{self.info_file_flag} spearmanr: {str(spearmanr_v)}')
+        print(f'{self.info_file_flag} reversed_ratio: {str(reversed_ratio)}')
         plot_rel(label=y_true_flatten, prediction=y_pred_flatten, flag=self.info_file_flag, mae=mae_e, r2=r)
         plot_heatmap(label=y_true_flatten, prediction=y_pred_flatten, flag=self.info_file_flag, mae=mae_e, r2=r)
         plot_rank(label=y_true_flatten, prediction=y_pred_flatten, flag=self.info_file_flag, use_r2_score=use_r2_score)
@@ -92,13 +97,46 @@ class pyG_inference_test:
 
 
 class pyG_inference_train:
-    def __init__(self):
+    def __init__(self,property:str):
+        self.property=property
         pass
 
-    def eval(self, input_dict):
+    def eval(self, input_dict,use_r2_score:bool=True):
+
+
+
         y_pred, y_true = input_dict['y_pred'], input_dict['y_true']
         y_pred_flatten = torch.flatten(y_pred).detach().cpu().numpy()
         y_true_flatten = torch.flatten(y_true).detach().cpu().numpy()
+        if self.property in ['viscosity', 'dielectric_constant']:
+            log_y_true_flatten=y_true_flatten
+            log_y_pred_flatten=y_pred_flatten
+            y_true_flatten = pow(10, y_true_flatten)
+            y_pred_flatten = pow(10, y_pred_flatten)
+
+
+        if use_r2_score:
+            r = r2_score(y_true_flatten, y_pred_flatten)
+        else:
+            r, _ = stats.pearsonr(y_true_flatten, y_pred_flatten)
+        r = round(r, 3)
+        mae_e = float(np.mean(np.abs(y_true_flatten - y_pred_flatten)))
+        mae_e = round(mae_e, 3)
+
+        mae_ratio = np.average(np.abs(y_pred_flatten /y_true_flatten - 1))
+        mae_ratio=round(mae_ratio,3)
+        spearmanr_v=round(stats.spearmanr( y_pred_flatten,y_true_flatten)[0],3)
+        reversed_ratio=round(reversed_ratio_fun(y_pred_flatten,y_true_flatten),3)
+
+        if self.property in ['viscosity', 'dielectric_constant']:
+            log_mae = float(np.mean(np.abs(log_y_true_flatten - log_y_pred_flatten)))
+            print(' log mae: %.3f' % ( log_mae))
+        print(f' mae: {str(mae_e)}')
+        print(f' corr: {str(r)}')
+        print(f' mae_ratio: {str(mae_ratio)}')
+        print(f' spearmanr: {str(spearmanr_v)}')
+        print(f'  reversed_ratio: {str(reversed_ratio)}')
+
 
         mae_e = np.mean(np.abs(y_true_flatten - y_pred_flatten))
 
