@@ -463,6 +463,8 @@ class G2G_LEFTNet(nn.Module):
         if g2g_freeze:
             print("g2g_freeze !")
             self.ptm.freeze()
+        else:
+            print("g2g no freeze")
         self.feature_extractor = self.ptm.translate_encoder
         self.g2g_embedding = nn.Linear(g2g_hidden_dim, hidden_channels)
         self.neighbor_emb4g2g = NeighborEmb4G2G(hid_dim=hidden_channels, in_hidden_channels=g2g_hidden_dim)
