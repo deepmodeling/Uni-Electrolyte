@@ -19,6 +19,7 @@ targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
 target = sys.argv[1]#targets[sys.argv[1]]
 if target not in targets:
     raise Exception
+output_dir="output_%s_%s"%(now.strftime("%Y%m%d%H%M%S"),target)
 # model = LEFTNet(
 #     num_layers=6,
 #     hidden_channels=128,
@@ -41,6 +42,8 @@ model=G2G_LEFTNet(
     device=device,
     g2g_checkpoint_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/uni_electrolyte/evaluator/model/spatial/g2g_leftnet/ckpt/epoch=41-step=160120.ckpt"
 )
+# ckpt = torch.load('/personal/checkpoint_193_0.167.pt')
+# model.load_state_dict(ckpt['model_state_dict'])
 model = model.to(device)
 
 data_root_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/202312_data"
@@ -61,12 +64,15 @@ split_idx = _train_dataset.get_idx_split(len(all_train_dataset), train_size=trai
 train_dataset = Subset(all_train_dataset, indices=split_idx['train'])
 valid_dataset= Subset(all_train_dataset, indices=split_idx['valid'])
 print('train, validaion, test:', len(train_dataset), len(valid_dataset))
+iid_test_dataset = g2g_thuEMol(root=os.path.join(data_path, 'iid_test'), load_target_list=targets)
+iid_test_dataset.data.y = iid_test_dataset.data[target]
+
 
 loss_func = torch.nn.MSELoss()
 evaluation = pyG_inference_train(property=target)
 
 trainer = pyG_trainer()
-output_dir="output_%s_%s"%(now.strftime("%Y%m%d%H%M%S"),target)
+
 trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
                model=model, loss_func=loss_func, evaluation=evaluation,
                batch_size=200, val_batch_size=200, epochs=2000,
@@ -86,8 +92,7 @@ ckpt = torch.load('./%s/run_info/best.pt'%output_dir)
 model.load_state_dict(ckpt['model_state_dict'])
 model.to(device=device)
 ####################################################################################################################
-iid_test_dataset = g2g_thuEMol(root=os.path.join(data_path, 'iid_test'), load_target_list=targets)
-iid_test_dataset.data.y = iid_test_dataset.data[target]
+
 # split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=0, valid_size=0, seed=42)
 # test_dataset = dataset[split_idx['test']]
 # print('Dataset size:', len(test_dataset))
