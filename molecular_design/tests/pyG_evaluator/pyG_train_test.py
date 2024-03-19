@@ -21,7 +21,14 @@ if target not in targets:
     raise Exception
 batch_size=int(sys.argv[2])
 
-output_dir="output_%s_%s"%(now.strftime("%Y%m%d%H%M%S"),target)
+if sys.argv[3]=="True":
+    g2g_freeze=True
+elif sys.argv[3]=="False":
+    g2g_freeze=False
+else:
+    raise Exception
+
+output_dir="output_%s_%s%s"%(now.strftime("%Y%m%d%H%M%S"),target,"_g2g_freeze" if not g2g_freeze else "")
 # model = LEFTNet(
 #     num_layers=6,
 #     hidden_channels=128,
@@ -42,7 +49,8 @@ model=G2G_LEFTNet(
     num_radial=96,
     cutoff=8,
     device=device,
-    g2g_checkpoint_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/uni_electrolyte/evaluator/model/spatial/g2g_leftnet/ckpt/epoch=41-step=160120.ckpt"
+    g2g_checkpoint_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/uni_electrolyte/evaluator/model/spatial/g2g_leftnet/ckpt/epoch=41-step=160120.ckpt",
+    g2g_freeze=g2g_freeze
 )
 # ckpt = torch.load('/personal/checkpoint_193_0.167.pt')
 # model.load_state_dict(ckpt['model_state_dict'])
