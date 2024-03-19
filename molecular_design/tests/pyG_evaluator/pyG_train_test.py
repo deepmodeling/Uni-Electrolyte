@@ -19,6 +19,8 @@ targets = ['binding_e', 'dielectric_constant', 'viscosity', 'homo', 'lumo']
 target = sys.argv[1]#targets[sys.argv[1]]
 if target not in targets:
     raise Exception
+batch_size=int(sys.argv[2])
+
 output_dir="output_%s_%s"%(now.strftime("%Y%m%d%H%M%S"),target)
 # model = LEFTNet(
 #     num_layers=6,
@@ -54,18 +56,21 @@ ood_test_dataset=g2g_thuEMol(root=os.path.join(data_path, 'ood_test'), load_targ
 ood_test_dataset.data.y = ood_test_dataset.data[target]
 _train_dataset = g2g_thuEMol(root=os.path.join(data_path, 'train'), load_target_list=targets)
 _train_dataset.data.y = _train_dataset.data[target]
-all_train_dataset = ConcatDataset([ood_test_dataset, _train_dataset])
+#all_train_dataset = ConcatDataset([ood_test_dataset, _train_dataset])
+#all_train_dataset=_train_dataset
+# train_size=int(0.9*len(all_train_dataset))
+# valid_size=len(all_train_dataset)-train_size
+# split_idx = _train_dataset.get_idx_split(len(all_train_dataset), train_size=train_size, valid_size=valid_size, seed=42)
+# # split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=100, valid_size=100, seed=42)
+# #train_dataset, valid_dataset = all_train_dataset[split_idx['train']], all_train_dataset[split_idx['valid']]
+# train_dataset = Subset(all_train_dataset, indices=split_idx['train'])
+# valid_dataset= Subset(all_train_dataset, indices=split_idx['valid'])
+# print('train, validaion, test:', len(train_dataset), len(valid_dataset))
 
-train_size=int(0.9*len(all_train_dataset))
-valid_size=len(all_train_dataset)-train_size
-split_idx = _train_dataset.get_idx_split(len(all_train_dataset), train_size=train_size, valid_size=valid_size, seed=42)
-# split_idx = dataset.get_idx_split(len(dataset.data.y), train_size=100, valid_size=100, seed=42)
-#train_dataset, valid_dataset = all_train_dataset[split_idx['train']], all_train_dataset[split_idx['valid']]
-train_dataset = Subset(all_train_dataset, indices=split_idx['train'])
-valid_dataset= Subset(all_train_dataset, indices=split_idx['valid'])
-print('train, validaion, test:', len(train_dataset), len(valid_dataset))
 iid_test_dataset = g2g_thuEMol(root=os.path.join(data_path, 'iid_test'), load_target_list=targets)
 iid_test_dataset.data.y = iid_test_dataset.data[target]
+train_dataset=_train_dataset
+valid_dataset=iid_test_dataset
 
 
 loss_func = torch.nn.MSELoss()
@@ -75,7 +80,7 @@ trainer = pyG_trainer()
 
 trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_dataset,
                model=model, loss_func=loss_func, evaluation=evaluation,
-               batch_size=200, val_batch_size=200, epochs=2000,
+               batch_size=batch_size, val_batch_size=batch_size, epochs=2000,
                save_dir='./%s/run_info'%output_dir,
                log_dir='./%s/run_info'%output_dir,
                 optimizer_args={'max_lr': 5e-4,

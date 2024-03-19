@@ -459,7 +459,7 @@ class G2G_LEFTNet(nn.Module):
             flag_m=3,
             flag_step_size=0.001,
         )
-        self.ptm.freeze()
+        #self.ptm.freeze()
         self.feature_extractor = self.ptm.translate_encoder
         self.g2g_embedding = nn.Linear(g2g_hidden_dim, hidden_channels)
         self.neighbor_emb4g2g = NeighborEmb4G2G(hid_dim=hidden_channels, in_hidden_channels=g2g_hidden_dim)
