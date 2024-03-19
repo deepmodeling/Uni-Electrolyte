@@ -52,7 +52,7 @@ model=G2G_LEFTNet(
     g2g_checkpoint_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/uni_electrolyte/evaluator/model/spatial/g2g_leftnet/ckpt/epoch=41-step=160120.ckpt",
     g2g_freeze=g2g_freeze
 )
-# ckpt = torch.load('/personal/checkpoint_193_0.167.pt')
+# ckpt = torch.load('/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/output_20240319142052_dielectric_constant_g2g_freeze/run_info/checkpoint_31_3.526.pt')
 # model.load_state_dict(ckpt['model_state_dict'])
 model = model.to(device)
 

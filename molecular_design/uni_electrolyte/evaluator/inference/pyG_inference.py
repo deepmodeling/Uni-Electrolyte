@@ -111,9 +111,13 @@ class pyG_inference_train:
         if self.property in ['viscosity', 'dielectric_constant']:
             log_y_true_flatten=y_true_flatten
             log_y_pred_flatten=y_pred_flatten
-            y_true_flatten = pow(10, y_true_flatten)
-            y_pred_flatten = pow(10, y_pred_flatten)
-
+            try:
+                y_true_flatten = pow(10, y_true_flatten)
+                y_pred_flatten = pow(10, y_pred_flatten)
+            except:
+                import traceback
+                print(traceback.format_exc())
+                return {'mae': 1e10}
 
         if use_r2_score:
             r = r2_score(y_true_flatten, y_pred_flatten)
