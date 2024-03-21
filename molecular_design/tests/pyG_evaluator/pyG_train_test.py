@@ -61,7 +61,7 @@ if target=="viscosity":ckpt=torch.load("/opt/ckpt/homo_lumo_gen_utils/ckpt/visco
 
 #if target=="dielectric_constant": ckpt = torch.load('/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/output_20240319142052_dielectric_constant_g2g_freeze/run_info/checkpoint_31_3.526.pt')
 #if target=="dielectric_constant":ckpt = torch.load("/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/output_20240319142217_viscosity_g2g_freeze/run_info# checkpoint_18_6.327.pt")
-model.load_state_dict(ckpt['model_state_dict'])
+model.load_state_dict(ckpt['model_state_dict'],strict=False)
 model = model.to(device)
 
 data_root_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/202312_data"
