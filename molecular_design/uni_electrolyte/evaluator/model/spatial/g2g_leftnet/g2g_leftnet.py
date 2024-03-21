@@ -405,34 +405,36 @@ class G2G_LEFTNet(nn.Module):
         self.use_pbc = use_pbc
         self.use_sigmoid = use_sigmoid
 
+        self.__init_g2g(g2g_checkpoint_path,g2g_freeze)
+    def __init_g2g(self,g2g_checkpoint_path,g2g_freeze,):
         #g2g
 
         """
-        logger=True, checkpoint_callback=True, default_root_dir='/root/Uni-Electrolyte/scoring_model/g2gt/src/', 
-        gradient_clip_val=0.0, gradient_clip_algorithm='norm', process_position=0, num_nodes=1, num_processes=1, 
-        devices=None, gpus=1, auto_select_gpus=False, tpu_cores=None, ipus=None, log_gpu_memory=None, 
-        progress_bar_refresh_rate=1, overfit_batches=0.0, track_grad_norm=-1, check_val_every_n_epoch=1, 
+        logger=True, checkpoint_callback=True, default_root_dir='/root/Uni-Electrolyte/scoring_model/g2gt/src/',
+        gradient_clip_val=0.0, gradient_clip_algorithm='norm', process_position=0, num_nodes=1, num_processes=1,
+        devices=None, gpus=1, auto_select_gpus=False, tpu_cores=None, ipus=None, log_gpu_memory=None,
+        progress_bar_refresh_rate=1, overfit_batches=0.0, track_grad_norm=-1, check_val_every_n_epoch=1,
         fast_dev_run=False, accumulate_grad_batches=1, max_epochs=None, min_epochs=None, max_steps=10001,
-         min_steps=None, max_time=None, limit_train_batches=1.0, limit_val_batches=1.0, limit_test_batches=1.0, 
+         min_steps=None, max_time=None, limit_train_batches=1.0, limit_val_batches=1.0, limit_test_batches=1.0,
          limit_predict_batches=1.0, val_check_interval=1.0, flush_logs_every_n_steps=100, log_every_n_steps=50,
-          accelerator=None, sync_batchnorm=False, precision=32, weights_summary='top', weights_save_path=None, 
+          accelerator=None, sync_batchnorm=False, precision=32, weights_summary='top', weights_save_path=None,
           num_sanity_val_steps=2, truncated_bptt_steps=None, resume_from_checkpoint=None, profiler=None,
-           benchmark=False, deterministic=False, reload_dataloaders_every_n_epochs=0, 
-           reload_dataloaders_every_epoch=False, auto_lr_find=False, replace_sampler_ddp=True, 
-           terminate_on_nan=False, auto_scale_batch_size=False, prepare_data_per_node=True, 
+           benchmark=False, deterministic=False, reload_dataloaders_every_n_epochs=0,
+           reload_dataloaders_every_epoch=False, auto_lr_find=False, replace_sampler_ddp=True,
+           terminate_on_nan=False, auto_scale_batch_size=False, prepare_data_per_node=True,
            plugins=<pytorch_lightning.plugins.training_type.ddp.DDPPlugin object at 0x7fa425deba60>,
             amp_backend='native', amp_level='O2', distributed_backend=None, move_metrics_to_cpu=False,
              multiple_trainloader_mode='max_size_cycle', stochastic_weight_avg=False, n_layers=8, head_size=24,
-              hidden_dim=768, ffn_dim=2048, intput_dropout_rate=0.1, dropout_rate=0.1, weight_decay=0.0, 
+              hidden_dim=768, ffn_dim=2048, intput_dropout_rate=0.1, dropout_rate=0.1, weight_decay=0.0,
               attention_dropout_rate=0.1, warmup_updates=1000, tot_updates=10000, peak_lr=0.00025, end_lr=1e-06,
                edge_type='one_hop', validate=False, test=False, dataset_name='inference_dataset_be', flag=False,
-                flag_m=3, flag_step_size=0.001, flag_mag=0.001, beam=1, num_workers=11, batch_size=512, seed=42, 
-                multi_hop_max_dist=5, rel_pos_max=1024, pooling='attention', downstream_ffn_dim=768, 
-                downstream_dropout=0, input_filename=None, sigmoid_inf=-5.0, sigmoid_sup=1.0, epoch=None, 
+                flag_m=3, flag_step_size=0.001, flag_mag=0.001, beam=1, num_workers=11, batch_size=512, seed=42,
+                multi_hop_max_dist=5, rel_pos_max=1024, pooling='attention', downstream_ffn_dim=768,
+                downstream_dropout=0, input_filename=None, sigmoid_inf=-5.0, sigmoid_sup=1.0, epoch=None,
                 iid_test_dataset_name=None, iid_test_input_filename=None, ood_test_dataset_name=None,
                  ood_test_input_filename=None, freeze=False, log_name_prefix='inference', predicted_target='be',
-                  loaded_target_list=['be'], inference=True, ID_name='EP_ID', 
-                  predict_output_csv_file_path='./output/output_bohrium_be.csv', 
+                  loaded_target_list=['be'], inference=True, ID_name='EP_ID',
+                  predict_output_csv_file_path='./output/output_bohrium_be.csv',
                   predict_input_csv_file_path='./input.csv', predict_dataset_name='inference_dataset_be',
                    log_name='inference_be_20240318111828'
         """
@@ -466,6 +468,7 @@ class G2G_LEFTNet(nn.Module):
         else:
             print("g2g no freeze")
         self.feature_extractor = self.ptm.translate_encoder
+        hidden_channels=self.hidden_channels
         self.g2g_embedding = nn.Linear(g2g_hidden_dim, hidden_channels)
         self.neighbor_emb4g2g = NeighborEmb4G2G(hid_dim=hidden_channels, in_hidden_channels=g2g_hidden_dim)
 

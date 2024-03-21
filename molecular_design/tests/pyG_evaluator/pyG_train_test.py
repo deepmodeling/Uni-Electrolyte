@@ -28,7 +28,7 @@ elif sys.argv[3]=="False":
 else:
     raise Exception
 
-output_dir="output_%s_%s%s"%(now.strftime("%Y%m%d%H%M%S"),target,"_g2g_freeze" if not g2g_freeze else "")
+output_dir="output_%s_%s"%(now.strftime("%Y%m%d%H%M%S"),target)
 # model = LEFTNet(
 #     num_layers=6,
 #     hidden_channels=128,
@@ -36,6 +36,10 @@ output_dir="output_%s_%s%s"%(now.strftime("%Y%m%d%H%M%S"),target,"_g2g_freeze" i
 #     num_radial=96,
 #     cutoff=8
 # )
+# ckpt=torch.load("/opt/ckpt/homo_lumo_gen_utils/ckpt/dielectric_constant.pt")
+# ckpt=torch.load("/opt/ckpt/homo_lumo_gen_utils/ckpt/viscosity.pt")
+# model.load_state_dict(ckpt['model_state_dict'])
+# model = model.to(device)
 # import pdb
 # pdb.set_trace()
 # model=OA_REACTDIFF_LEFTNet(device)
@@ -52,9 +56,12 @@ model=G2G_LEFTNet(
     g2g_checkpoint_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/uni_electrolyte/evaluator/model/spatial/g2g_leftnet/ckpt/epoch=41-step=160120.ckpt",
     g2g_freeze=g2g_freeze
 )
-# ckpt = torch.load('/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/output_20240319142052_dielectric_constant_g2g_freeze/run_info/checkpoint_31_3.526.pt')
-"/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/output_20240319142217_viscosity_g2g_freeze/run_info# checkpoint_18_6.327.pt"
-# model.load_state_dict(ckpt['model_state_dict'])
+if target=="dielectric_constant":ckpt=torch.load("/opt/ckpt/homo_lumo_gen_utils/ckpt/dielectric_constant.pt")
+if target=="viscosity":ckpt=torch.load("/opt/ckpt/homo_lumo_gen_utils/ckpt/viscosity.pt")
+
+#if target=="dielectric_constant": ckpt = torch.load('/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/output_20240319142052_dielectric_constant_g2g_freeze/run_info/checkpoint_31_3.526.pt')
+#if target=="dielectric_constant":ckpt = torch.load("/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/output_20240319142217_viscosity_g2g_freeze/run_info# checkpoint_18_6.327.pt")
+model.load_state_dict(ckpt['model_state_dict'])
 model = model.to(device)
 
 data_root_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/202312_data"
@@ -92,8 +99,8 @@ trainer.runCLR(device=device, train_dataset=train_dataset, valid_dataset=valid_d
                batch_size=batch_size, val_batch_size=batch_size, epochs=2000,
                save_dir='./%s/run_info'%output_dir,
                log_dir='./%s/run_info'%output_dir,
-                optimizer_args={'max_lr': 5e-4,
-                                'base_lr': 1e-5,
+                optimizer_args={'max_lr': 5e-5,
+                                'base_lr': 2e-6,
                                 'step_size_up': 10,
                                 'step_size_down': 40,
                                 'mode': "exp_range"},
