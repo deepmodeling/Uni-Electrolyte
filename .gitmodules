@@ -4,3 +4,6 @@
 [submodule "retrosynthesis/ASKCOS2"]
 	path = retrosynthesis/ASKCOS2
 	url = https://github.com/yinliangying/ASKCOS.git
+[submodule "retrosynthesis/g2gt"]
+	path = retrosynthesis/g2gt
+	url = https://github.com/yinliangying/G2GT_2.git
