@@ -64,7 +64,7 @@ if target=="viscosity":ckpt=torch.load("/opt/ckpt/homo_lumo_gen_utils/ckpt/visco
 model.load_state_dict(ckpt['model_state_dict'],strict=False)
 model = model.to(device)
 
-data_root_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/202312_data"
+data_root_path="/root/yinshiqiu/Uni-Electrolyte/molecular_design/tests/pyG_evaluator/202312_data" #vaccume
 data_path = f'{data_root_path}/input/'
 ####################################################################################################################
 
