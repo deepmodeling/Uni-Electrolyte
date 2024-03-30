@@ -10,3 +10,6 @@
 [submodule "retrosynthesis/g2g"]
 	path = retrosynthesis/g2g
 	url = https://github.com/yinliangying/G2G.git
+[submodule "retrosynthesis/g2gretro"]
+	path = retrosynthesis/g2gretro
+	url = https://github.com/yinliangying/G2Gretro.git
