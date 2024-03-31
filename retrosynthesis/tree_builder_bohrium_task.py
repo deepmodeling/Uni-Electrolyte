@@ -50,6 +50,9 @@ for idx, v in input_df.iterrows():
     except:
         smiles=v["SMILES"]
 
+    import pdb
+    pdb.set_trace()
+    smiles="CN1C2CCC1CC(OC(=O)C(CO)c1ccccc1)C2"
     result_dict[idx] = {"smiles": smiles}
     try:
         status, paths = treeBuilder.get_buyable_paths(smiles, max_depth=4, template_prioritization=gc.relevance,
