@@ -71,10 +71,31 @@ def render_app():
                     ProjectMenu(),
                     dbc.DropdownMenu(
                         [
-                            dbc.DropdownMenuItem(
-                                "Molecular design",
-                                id="Molecular design",
-                            ),
+                            dbc.DropdownMenu(
+                                [
+                                    dbc.DropdownMenuItem(
+                                        "Predict properties",
+                                        id="Predict properties",
+                                    ),
+                                    dbc.DropdownMenuItem(
+                                        "Screen molecules from database",
+                                        id="Screen molecules from database",
+                                    ),
+                                    dbc.DropdownMenuItem(
+                                        "Query molecules with similar properties",
+                                        id="Interfacial reaction",
+                                    ),
+                                    dbc.DropdownMenuItem(
+                                        "Generate molecules and predict properties",
+                                        id="Generate molecules and predict properties",
+                                    ),
+                                ],
+                                label="Molecular design",
+                                nav=True,
+                                in_navbar=True,
+                                style={"flexGrow": "1"},
+                            )
+                            ,
                             dbc.DropdownMenuItem(
                                 "Retrosynthesis",
                                 id="Retrosynthesis",
@@ -84,7 +105,7 @@ def render_app():
                                 id="Interfacial reaction",
                             ),
                         ],
-                        label="Projects",
+                        label="Functions",
                         nav=True,
                         in_navbar=True,
                         style={"flexGrow": "1"},
