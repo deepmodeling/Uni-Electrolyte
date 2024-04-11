@@ -71,7 +71,10 @@ def render_app():
                     ProjectMenu(),
                     dbc.DropdownMenu(
                         [
-                            dbc.DropdownMenu(
+                            dbc.DropdownMenuItem(
+                                "Molecular design",
+                                id="Molecular design",
+                                children=
                                 [
                                     dbc.DropdownMenuItem(
                                         "Predict properties",
@@ -90,10 +93,7 @@ def render_app():
                                         id="Generate molecules and predict properties",
                                     ),
                                 ],
-                                label="Molecular design",
-                                nav=True,
-                                in_navbar=True,
-                                style={"flexGrow": "1"},
+
                             )
                             ,
                             dbc.DropdownMenuItem(
