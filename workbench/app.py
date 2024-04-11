@@ -21,7 +21,7 @@ app = Dash(
     ],
     requests_pathname_prefix="/uni-electrolyte/workbench/",
     routes_pathname_prefix="/uni-electrolyte/workbench/",
-    title="Retro Synthesis",
+    title="Uni Electrolyte",
     update_title=None,
     external_stylesheets=[
         "https://static01.dp.tech/openfiles.mlops.dp.tech/v1/static/npm/bootswatch@5.3.0/dist/pulse/bootstrap.min.css"

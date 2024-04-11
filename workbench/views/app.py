@@ -69,6 +69,26 @@ def render_app():
                 fixed=True,
                 children=[
                     ProjectMenu(),
+                    dbc.DropdownMenu(
+                        [
+                            dbc.DropdownMenuItem(
+                                "Molecular design",
+                                id="Molecular design",
+                            ),
+                            dbc.DropdownMenuItem(
+                                "Retrosynthesis",
+                                id="Retrosynthesis",
+                            ),
+                            dbc.DropdownMenuItem(
+                                "Interfacial reaction",
+                                id="Interfacial reaction",
+                            ),
+                        ],
+                        label="Projects",
+                        nav=True,
+                        in_navbar=True,
+                        style={"flexGrow": "1"},
+                    ),
                     dbc.NavItem(
                         dbc.NavLink(
                             "More Apps",
