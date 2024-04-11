@@ -14,4 +14,4 @@ export FAKE_USER=fake@dp.tech
 export TMPDIR=/app-dir/tmp/
 export LAUNCHING_JWT_PUBLIC_KEY=""
 export REACT_VERSION=18.2.0
-gunicorn --bind 0.0.0.0:8050 -w 4 -t 300 --chdir "/app" --preload app:server
+gunicorn --bind 0.0.0.0:50003 -w 4 -t 300 --chdir "/app" --preload app:server
