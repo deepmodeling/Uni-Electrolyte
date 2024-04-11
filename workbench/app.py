@@ -19,8 +19,8 @@ app = Dash(
     external_scripts=[
         "https://static01.dp.tech/openfiles.mlops.dp.tech/v2/projects/workbench/afbd2617ef2143b4b97537b32fce334a/plotly.min.js"
     ],
-    requests_pathname_prefix="/retro-synthesis/workbench/",
-    routes_pathname_prefix="/retro-synthesis/workbench/",
+    requests_pathname_prefix="/uni-electrolyte/workbench/",
+    routes_pathname_prefix="/uni-electrolyte/workbench/",
     title="Retro Synthesis",
     update_title=None,
     external_stylesheets=[
