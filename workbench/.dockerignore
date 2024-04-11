@@ -1,0 +1,10 @@
+.git
+generated_schemas/
+outputs/
+run_service_local.sh
+Makefile
+k8s-manifest
+local-debug
+var
+tests
+venv
