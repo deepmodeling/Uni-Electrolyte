@@ -113,8 +113,8 @@ def render_app():
                     if for_helps_image
                     else None,
                 ],
-                brand="Uni-Electrolyte",
-                brand_href="/uni-electrolyte/workbench/",
+                brand="Uni-Retro",
+                brand_href="/retro-synthesis/workbench/",
                 brand_style={"paddingTop": "3px", "fontWeight": "500"},
                 color="rgba(89,49,150,.9)",
                 dark=True,
