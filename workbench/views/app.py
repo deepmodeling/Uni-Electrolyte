@@ -177,20 +177,21 @@ def render_app():
                 sidebarDefaultSize=200,
                 sidebarMinSize=200,
                 sidebarStyle={"display": "block"},
-                sidebarChildren=[
-                    dbc.Row(
-                        [
-                            render_secondary_section(
-                                "Molecule",
-                                "",
-                                # "Click molecule to view in fullscreen mode.",
-                                molecule_view(),
-                            ),
-                        ],
-                        id="row-molecule-view",
-                        style={"height": "60%", "paddingTop": "1rem"},
-                    )
-                ],
+                sidebarChildren="Upload Files sidebarChildren",
+                # [
+                #     dbc.Row(
+                #         [
+                #             render_secondary_section(
+                #                 "Molecule",
+                #                 "",
+                #                 # "Click molecule to view in fullscreen mode.",
+                #                 molecule_view(),
+                #             ),
+                #         ],
+                #         id="row-molecule-view",
+                #         style={"height": "60%", "paddingTop": "1rem"},
+                #     )
+                # ],
                 mainChildren=DashPaneSplit(
                     sidebarTitle="Options",
                     sidebarMinSize=200,
@@ -201,116 +202,119 @@ def render_app():
                         "overflowX": "hidden",
                         "height": "100%",
                     },
-                    sidebarChildren=[
-                        dbc.Row(
-                            render_secondary_section(
-                                "Configure Exploration", "", options_view()
-                            ),
-                            id="row-options-view",
-                            style={
-                                "height": "100%",
-                                "alignItems": "flexStart",
-                                "paddingRight": "2%",
-                                "paddingTop": "1rem",
-                            },
-                        ),
-                        # UserTrack.get_component(),
-                    ],
+                    sidebarChildren="Options  sidebarChildren",
+                    # [
+                    #     dbc.Row(
+                    #         render_secondary_section(
+                    #             "Configure Exploration", "", options_view()
+                    #         ),
+                    #         id="row-options-view",
+                    #         style={
+                    #             "height": "100%",
+                    #             "alignItems": "flexStart",
+                    #             "paddingRight": "2%",
+                    #             "paddingTop": "1rem",
+                    #         },
+                    #     ),
+                    #     # UserTrack.get_component(),
+                    # ],
                     mainChildren=DashPaneSplit(
                         sidebarTitle="Exploration Details",
                         splitMode="horizontal",
                         sidebarDefaultSize=250,
                         sidebarSize=10,
                         panelOrder="mainFirst",
-                        sidebarChildren=html.Div(
-                            dbc.Tabs(
-                                [
-                                    dbc.Tab(
-                                        jobs_view(),
-                                        label="Explorations",
-                                        tab_id="tab-jobs",
-                                        style={
-                                            "paddingTop": "40px",
-                                            "overflowY": "auto",
-                                        },
-                                    ),
-                                    dbc.Tab(
-                                        route_view(),
-                                        label="Candidate Routes",
-                                        tab_id="tab-routes",
-                                        style={
-                                            "paddingTop": "40px",
-                                            "overflowY": "auto",
-                                        },
-                                    ),
-                                    dbc.Tab(
-                                        result_view(),
-                                        label="Alternative Reactions",
-                                        tab_id="tab-backups",
-                                        style={
-                                            "paddingTop": "40px",
-                                            "overflowY": "auto",
-                                        },
-                                    ),
-                                    # dbc.Tab(
-                                    #    summary_view(),
-                                    #    label="Summary",
-                                    #    tab_id="tab-summary",
-                                    # ),
-                                ],
-                                id="tabs",
-                                active_tab="tab-routes",
-                                style={
-                                    "position": "absolute",
-                                    "top": "1px",
-                                    "width": "100%",
-                                    "background": "#f9f9f9",
-                                },
-                            ),
-                            style={
-                                "width": "100%",
-                                "height": "100%",
-                                "marginTop": "0.2rem",
-                                "background": "#f9f9f9",
-                            },
-                        ),
-                        mainChildren=[
-                            dbc.Row(
-                                render_section(
-                                    "Start a New Project", "", starter_view()
-                                ),
-                                id="row-starter-view",
-                                style={
-                                    "flex": "8",
-                                    "minHeight": "400px",
-                                    "height": "100%",
-                                    "alignItems": "flexStart",
-                                    "width": "100%",
-                                },
-                            ),
-                            dbc.Row(
-                                render_section("", "", running_view()),
-                                id="row-running-view",
-                                style={
-                                    "flex": "8",
-                                    "display": "none",
-                                    "minHeight": "400px",
-                                    "height": "100%",
-                                    "alignItems": "flexStart",
-                                },
-                            ),
-                            dbc.Row(
-                                render_section("", "main view", editor_view()),
-                                id="row-main-view",
-                                style={
-                                    "flex": "8",
-                                    "display": "none",
-                                    "minHeight": "400px",
-                                    "height": "100%",
-                                    "alignItems": "flexStart",
-                                },
-                            ),
-                        ],
+                        sidebarChildren="Exploration Details sidebarChildren",
+                        # html.Div(
+                        #     dbc.Tabs(
+                        #         [
+                        #             dbc.Tab(
+                        #                 jobs_view(),
+                        #                 label="Explorations",
+                        #                 tab_id="tab-jobs",
+                        #                 style={
+                        #                     "paddingTop": "40px",
+                        #                     "overflowY": "auto",
+                        #                 },
+                        #             ),
+                        #             dbc.Tab(
+                        #                 route_view(),
+                        #                 label="Candidate Routes",
+                        #                 tab_id="tab-routes",
+                        #                 style={
+                        #                     "paddingTop": "40px",
+                        #                     "overflowY": "auto",
+                        #                 },
+                        #             ),
+                        #             dbc.Tab(
+                        #                 result_view(),
+                        #                 label="Alternative Reactions",
+                        #                 tab_id="tab-backups",
+                        #                 style={
+                        #                     "paddingTop": "40px",
+                        #                     "overflowY": "auto",
+                        #                 },
+                        #             ),
+                        #             # dbc.Tab(
+                        #             #    summary_view(),
+                        #             #    label="Summary",
+                        #             #    tab_id="tab-summary",
+                        #             # ),
+                        #         ],
+                        #         id="tabs",
+                        #         active_tab="tab-routes",
+                        #         style={
+                        #             "position": "absolute",
+                        #             "top": "1px",
+                        #             "width": "100%",
+                        #             "background": "#f9f9f9",
+                        #         },
+                        #     ),
+                        #     style={
+                        #         "width": "100%",
+                        #         "height": "100%",
+                        #         "marginTop": "0.2rem",
+                        #         "background": "#f9f9f9",
+                        #     },
+                        # ),
+                        mainChildren="Exploration Details mainChildren",
+                        # [
+                        #     dbc.Row(
+                        #         render_section(
+                        #             "Start a New Project", "", starter_view()
+                        #         ),
+                        #         id="row-starter-view",
+                        #         style={
+                        #             "flex": "8",
+                        #             "minHeight": "400px",
+                        #             "height": "100%",
+                        #             "alignItems": "flexStart",
+                        #             "width": "100%",
+                        #         },
+                        #     ),
+                        #     dbc.Row(
+                        #         render_section("", "", running_view()),
+                        #         id="row-running-view",
+                        #         style={
+                        #             "flex": "8",
+                        #             "display": "none",
+                        #             "minHeight": "400px",
+                        #             "height": "100%",
+                        #             "alignItems": "flexStart",
+                        #         },
+                        #     ),
+                        #     dbc.Row(
+                        #         render_section("", "main view", editor_view()),
+                        #         id="row-main-view",
+                        #         style={
+                        #             "flex": "8",
+                        #             "display": "none",
+                        #             "minHeight": "400px",
+                        #             "height": "100%",
+                        #             "alignItems": "flexStart",
+                        #         },
+                        #     ),
+                        # ],
                         mainStyle={
                             "height": "100%",
                             "width": "100%",
