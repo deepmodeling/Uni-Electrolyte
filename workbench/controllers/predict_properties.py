@@ -9,16 +9,16 @@ from dash.exceptions import PreventUpdate
 # from utils.enhanced_callback import callback_with_metrics
 
 
-
-@callback(
-    Output("Predict properties", "children"),
-    [Input("Predict properties", "n_clicks")]
-)
-def update_output(n_clicks):
-    print("dddddddddddddddddddddddddddddddddddddddddd")
-    if n_clicks is not None:
-        # 在这里编写你要输出的内容
-        output_text = "菜单项被点击了！"
-        return output_text
-    else:
-        return ""
+#
+# @callback(
+#     Output("Predict properties", "children"),
+#     [Input("Predict properties", "n_clicks")]
+# )
+# def update_output(n_clicks):
+#     print("dddddddddddddddddddddddddddddddddddddddddd")
+#     if n_clicks is not None:
+#         # 在这里编写你要输出的内容
+#         output_text = "菜单项被点击了！"
+#         return output_text
+#     else:
+#         return ""
