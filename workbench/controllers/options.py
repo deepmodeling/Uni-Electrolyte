@@ -6,7 +6,7 @@ from models.session import JobStatus
 from utils.rdkit_utils import validate_smiles
 from topics import Topics
 
-
+"""
 @callback(
     Output("btn-run", "disabled"),
     [
@@ -84,3 +84,4 @@ def toggle_update_options(
     res["input_ligand"] = target_molecule
     logger.info(f"return res {res}")
     return res
+"""
