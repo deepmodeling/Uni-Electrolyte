@@ -169,7 +169,7 @@ def render_app():
                 },
             ),
             DashPaneSplit(
-                sidebarTitle="Highlights",
+                sidebarTitle="Upload Files",
                 containerStyle={"height": "calc(100% - 55px)"},
                 splitMode="vertical",
                 panelOrder="sidebarFirst",
