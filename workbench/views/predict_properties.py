@@ -30,7 +30,7 @@ def options_view():
                     # {"label": "Database", "value": "database"},
                 ],
                 inline=True,
-                value=[ "Binding energy",  "Binding energy","Viscosity","HOMO","LUMO"],
+                value=[ "Binding energy",  "Dielectric constant","Viscosity","HOMO","LUMO"],
             ),
             html.Br(),
             dbc.Label("Screen Switch - Options", className="dp-form-label"),

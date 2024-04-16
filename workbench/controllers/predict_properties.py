@@ -125,8 +125,7 @@ def show_predict_properties(n_clicks):
         # 在这里编写你要输出的内容
         print("ffffffffffffffffff")
 
-        right_sidebar=[
-                        dbc.Row(
+        right_sidebar= dbc.Row(
                             render_secondary_section(
                                 "Configure Exploration", "", options_view()
                             ),
@@ -140,7 +139,6 @@ def show_predict_properties(n_clicks):
                         ),
                         # UserTrack.get_component(),
 
-                    ],
 
 
         output_text = "菜单项被点击了！"
