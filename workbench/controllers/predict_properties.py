@@ -7,7 +7,7 @@ from views.helper import render_section, render_secondary_section
 from views.predict_properties import options_view
 @callback(
     Output("Predict Property And Screen","children"),
-    [Input({"view": "options",  "type": "input", "name": "screen-switch",},"value")]
+    [Input("screen-switch_RadioItems","value")]
 )
 def show_screen_switch(value):
     print("dddddddddddddddddddddddddddddddddddddddddd")

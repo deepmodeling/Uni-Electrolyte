@@ -35,11 +35,12 @@ def options_view():
             html.Br(),
             dbc.Label("Screen Switch - Options", className="dp-form-label"),
             dbc.RadioItems(
-                id={
-                    "view": "options",
-                    "type": "input",
-                    "name": "screen-switch",
-                },
+                id="screen-switch_RadioItems",
+                # {
+                #     "view": "options",
+                #     "type": "input",
+                #     "name": "screen-switch",
+                # },
                 options=[
                     {"label": "Predict Property Only", "value": "Predict Property Only"},
                     {"label": "Predict Property And Screen", "value": "Predict Property And Screen"}
