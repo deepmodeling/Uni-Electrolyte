@@ -87,7 +87,7 @@ def render_app():
                                     ),
                                     dbc.DropdownMenuItem(
                                         "Query molecules with similar properties",
-                                        id="Interfacial reaction",
+                                        id="Query molecules with similar properties",
                                     ),
                                     dbc.DropdownMenuItem(
                                         "Generate molecules and predict properties",
