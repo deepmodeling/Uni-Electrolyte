@@ -11,7 +11,11 @@ from dash.exceptions import PreventUpdate
 
 
 @callback(
-    Output("for-helps", "children"),
+    [Output("left sidebar", "sidebarChildren"),
+     Output("right sidebar","sidebarChildren"),
+     Output("Exploration Details","sidebarChildren"),
+     Output("Exploration Details","mainChildren"),
+     ],
     [Input("Predict properties", "n_clicks")]
 )
 def update_output(n_clicks):
@@ -19,6 +23,6 @@ def update_output(n_clicks):
     if n_clicks is not None:
         # 在这里编写你要输出的内容
         output_text = "菜单项被点击了！"
-        return output_text
+        return output_text,output_text,output_text,output_text
     else:
-        return ""
+        return "","","",""

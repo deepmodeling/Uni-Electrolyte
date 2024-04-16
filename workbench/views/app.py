@@ -170,6 +170,7 @@ def render_app():
                 },
             ),
             DashPaneSplit(
+                id="left sidebar",
                 sidebarTitle="Upload Files",
                 containerStyle={"height": "calc(100% - 55px)"},
                 splitMode="vertical",
@@ -193,6 +194,7 @@ def render_app():
                 #     )
                 # ],
                 mainChildren=DashPaneSplit(
+                    id="right sidebar",
                     sidebarTitle="Options",
                     sidebarMinSize=200,
                     splitMode="vertical",
@@ -219,6 +221,7 @@ def render_app():
                     #     # UserTrack.get_component(),
                     # ],
                     mainChildren=DashPaneSplit(
+                        id="Exploration Details",
                         sidebarTitle="Exploration Details",
                         splitMode="horizontal",
                         sidebarDefaultSize=250,
