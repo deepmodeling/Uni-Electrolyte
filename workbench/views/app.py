@@ -69,47 +69,48 @@ def render_app():
                 fixed=True,
                 children=[
                     ProjectMenu(),
-                    # dbc.DropdownMenu(
-                    #     [
-                    #         dbc.DropdownMenu(
-                    #             label="Molecular design",
-                    #             id="Molecular design",
-                    #             children=
-                    #             [
-                    #                 dbc.DropdownMenuItem(
-                    #                     "Predict properties",
-                    #                     id="Predict properties",
-                    #                 ),
-                    #                 dbc.DropdownMenuItem(
-                    #                     "Screen molecules from database",
-                    #                     id="Screen molecules from database",
-                    #                 ),
-                    #                 dbc.DropdownMenuItem(
-                    #                     "Query molecules with similar properties",
-                    #                     id="Interfacial reaction",
-                    #                 ),
-                    #                 dbc.DropdownMenuItem(
-                    #                     "Generate molecules and predict properties",
-                    #                     id="Generate molecules and predict properties",
-                    #                 ),
-                    #             ],
-                    #
-                    #         )
-                    #         ,
-                    #         dbc.DropdownMenuItem(
-                    #             "Retrosynthesis",
-                    #             id="Retrosynthesis",
-                    #         ),
-                    #         dbc.DropdownMenuItem(
-                    #             "Interfacial reaction",
-                    #             id="Interfacial reaction",
-                    #         ),
-                    #     ],
-                    #     label="Functions",
-                    #     nav=True,
-                    #     in_navbar=True,
-                    #     style={"flexGrow": "1"},
-                    # ),
+
+                    dbc.DropdownMenu(
+                        [
+                            dbc.DropdownMenu(
+                                label="Molecular design",
+                                id="Molecular design",
+                                children=
+                                [
+                                    dbc.DropdownMenuItem(
+                                        "Predict properties",
+                                        id="Predict properties",
+                                    ),
+                                    dbc.DropdownMenuItem(
+                                        "Screen molecules from database",
+                                        id="Screen molecules from database",
+                                    ),
+                                    dbc.DropdownMenuItem(
+                                        "Query molecules with similar properties",
+                                        id="Interfacial reaction",
+                                    ),
+                                    dbc.DropdownMenuItem(
+                                        "Generate molecules and predict properties",
+                                        id="Generate molecules and predict properties",
+                                    ),
+                                ],
+                            )
+                            ,
+                            dbc.DropdownMenuItem(
+                                "Retrosynthesis",
+                                id="Retrosynthesis",
+                            ),
+                            dbc.DropdownMenuItem(
+                                "Interfacial reaction",
+                                id="Interfacial reaction",
+                            ),
+                        ],
+                        label="Functions",
+                        nav=True,
+                        in_navbar=True,
+                        style={"flexGrow": "1"},
+                    ),
+
                     dbc.NavItem(
                         dbc.NavLink(
                             "More Apps",
