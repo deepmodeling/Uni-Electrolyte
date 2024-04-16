@@ -15,6 +15,7 @@ from dash.exceptions import PreventUpdate
     [Input("Predict properties", "n_clicks")]
 )
 def update_output(n_clicks):
+    print("dddddddddddddddddddddddddddddddddddddddddd")
     if n_clicks is not None:
         # 在这里编写你要输出的内容
         output_text = "菜单项被点击了！"

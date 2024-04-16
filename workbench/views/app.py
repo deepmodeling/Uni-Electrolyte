@@ -71,8 +71,8 @@ def render_app():
                     ProjectMenu(),
                     dbc.DropdownMenu(
                         [
-                            dbc.DropdownMenuItem(
-                                "Molecular design",
+                            dbc.DropdownMenu(
+                                label="Molecular design",
                                 id="Molecular design",
                                 children=
                                 [
