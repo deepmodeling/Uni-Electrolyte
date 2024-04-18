@@ -4,109 +4,17 @@ from dash.exceptions import PreventUpdate
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
-from views.predict_properties import options_view
+from views.predict_properties import options_view,screen_switch_view
 @callback(
     Output("Predict Property And Screen","children"),
-    [Input("screen-switch_RadioItems","value")]
+    [Input("Screen molecules from database","n_clicks")]
 )
-def show_screen_switch(value):
+def show_screen_switch(n_clicks):
     print("dddddddddddddddddddddddddddddddddddddddddd")
-    if value=="Predict Property And Screen":
+    if n_clicks is not None:
         print("eeeeeeeeeeeeeeeeeeeeeeeeeee")
-        output=[
-            dbc.Label("Homo Range ", className="dp-form-label"),
-            html.P("The targeted HOMO interval. In unit eV.", className="intro"),
-            dcc.RangeSlider(
-                min=-9,
-                max=-2,
-                step=100,
-                marks=None,
-                value=[-8, -7],
-                tooltip={
-                    "placement": "bottom",
-                    # "always_visible": True,
-                },
-                id={
-                    "view": "options",
-                    "type": "input",
-                    "name": "HOMO Range RangeSlider",
-                },
-            ),
-            dbc.Label("Lumo Range", className="dp-form-label"),
-            html.P("The targeted LUMO interval. In unit eV.", className="intro"),
-            dcc.RangeSlider(
-                min=-4,
-                max=-10,
-                step=100,
-                marks=None,
-                value=[8, 9],
-                tooltip={
-                    "placement": "bottom",
-                    # "always_visible": True,
-                },
-                id={
-                    "view": "options",
-                    "type": "input",
-                    "name": "LUMO Range RangeSlider",
-                },
-            ),
-            dbc.Label("Binding Energy Range ", className="dp-form-label"),
-            html.P("The targeted binding_energy interval. In unit eV.", className="intro"),
-            dcc.RangeSlider(
-                min=-4,
-                max=1,
-                step=100,
-                marks=None,
-                value=[-2, -1],
-                tooltip={
-                    "placement": "bottom",
-                    # "always_visible": True,
-                },
-                id={
-                    "view": "options",
-                    "type": "input",
-                    "name": "Binding Energy Range RangeSlider",
-                },
-            ),
-            dbc.Label("Log Viscosity Range ", className="dp-form-label"),
-            html.P("The targeted viscosity interval. In log form and unit mPa*s without log.", className="intro"),
-            dcc.RangeSlider(
-                min=-2.25,
-                max=2.25,
-                step=100,
-                marks=None,
-                value=[-1, -0.3],
-                tooltip={
-                    "placement": "bottom",
-                    # "always_visible": True,
-                },
-                id={
-                    "view": "options",
-                    "type": "input",
-                    "name": "Log Viscosity Range RangeSlider",
-                },
-            ),
-            dbc.Label("Log Dielectric Constant Range", className="dp-form-label"),
-            html.P("The targeted viscosity interval. In log form and unit mPa*s without log.", className="intro"),
-            dcc.RangeSlider(
-                min=0,
-                max=2 ,
-                step=100,
-                marks=None,
-                value=[0.74, 0.81],
-                tooltip={
-                    "placement": "bottom",
-                    # "always_visible": True,
-                },
-                id={
-                    "view": "options",
-                    "type": "input",
-                    "name": "Log Dielectric Constant Range RangeSlider",
-                },
-            ),
 
-        ]
-        return output
+        return screen_switch_view()
 
 
 
