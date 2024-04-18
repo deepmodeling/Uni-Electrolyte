@@ -19,7 +19,6 @@ import controllers.jobs  # noqa
 import controllers.login  # noqa
 import controllers.projects  # noqa
 import controllers.predict_properties # noqa
-import controllers.predict_properties2 # noqa
 
 from ids import KETCHER_COMPONENT_ID
 
