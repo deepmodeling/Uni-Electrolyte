@@ -26,7 +26,7 @@ from views.predict_properties import options_view,screen_switch_view
      ],
     [Input("Screen molecules from database", "n_clicks")]
 )
-def show_predict_properties(n_clicks):
+def show_predict_properties2(n_clicks):
 
     if n_clicks is not None:
         # 在这里编写你要输出的内容
@@ -45,14 +45,10 @@ def show_predict_properties(n_clicks):
                             },
                         ),
                         # UserTrack.get_component(),
-
-
-
         output_text = "菜单项被点击了！"
         return right_sidebar,output_text,output_text,output_text
     else:
         return "","","",""
-
 
 @callback(
     [Output("left sidebar", "sidebarChildren"),
@@ -60,14 +56,11 @@ def show_predict_properties(n_clicks):
      Output("Exploration Details","sidebarChildren"),
      Output("Exploration Details","mainChildren"),
      ],
-    [Input("Predict properties", "n_clicks")]
-)
+    [Input("Predict properties", "n_clicks")])
 def show_predict_properties(n_clicks):
-
     if n_clicks is not None:
         # 在这里编写你要输出的内容
         print("ffffffffffffffffff")
-
         right_sidebar= dbc.Row(
                             render_secondary_section(
                                 "Configure Exploration", "", options_view()
@@ -81,9 +74,6 @@ def show_predict_properties(n_clicks):
                             },
                         ),
                         # UserTrack.get_component(),
-
-
-
         output_text = "菜单项被点击了！"
         return output_text,right_sidebar,output_text,output_text
     else:
