@@ -24,7 +24,7 @@ def show_screen_switch(value):
     prevent_initial_call=True,
 )
 def show_predict_properties(n_clicks):
-    print("show_screen_switch")
+    print("show_predict_properties")
     if n_clicks is not None:
         # 在这里编写你要输出的内容
 
