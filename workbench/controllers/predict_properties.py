@@ -19,7 +19,7 @@ def show_screen_switch(value):
         return ""
 
 @callback(
-     Output("right sidebar","sidebarChildren", allow_duplicate=True)
+     Output("right sidebar","sidebarChildren", allow_duplicate=True),
     [Input("Predict properties", "n_clicks")],
     prevent_initial_call=True,
 )
