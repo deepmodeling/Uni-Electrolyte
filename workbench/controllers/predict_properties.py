@@ -7,23 +7,27 @@ from views.helper import render_section, render_secondary_section
 from views.predict_properties import options_view,screen_switch_view
 
 @callback(
-    Output("Predict Property And Screen","children"),
-    [Input("Screen molecules from database","n_clicks")]
+    Output("Predict Property And Screen","children", allow_duplicate=True),
+    [Input("Screen molecules from database","value"),],
+    prevent_initial_call=True,
 )
-def show_screen_switch(n_clicks):
-    print("dddddddddddddddddddddddddddddddddddddddddd")
-    if n_clicks is not None:
-        print("eeeeeeeeeeeeeeeeeeeeeeeeeee")
-
+def show_screen_switch(value):
+    print("show_screen_switch")
+    if value=="Predict Property And Screen":
         return screen_switch_view()
+    else:
+        return ""
 
 @callback(
-     Output("right sidebar","sidebarChildren"),
-    [Input("Predict properties", "n_clicks")])
+     Output("right sidebar","sidebarChildren", allow_duplicate=True)
+    [Input("Predict properties", "n_clicks")],
+    prevent_initial_call=True,
+)
 def show_predict_properties(n_clicks):
+    print("show_screen_switch")
     if n_clicks is not None:
         # 在这里编写你要输出的内容
-        print("ffffffffffffffffff")
+
         right_sidebar= dbc.Row(
                             render_secondary_section(
                                 "Configure Exploration", "", options_view()
