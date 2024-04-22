@@ -50,7 +50,7 @@ def options_view():
                 value="Predict Property Only",
             ),
 
-            html.Div("DDDDDD", id="Predict Property And Screen RangeSlider",style={"displey_None"}),
+            html.Div("DDDDDD", id="Predict Property And Screen RangeSlider",style={"display":"none"}),
 
             # dcc.RangeSlider(
             #     min=5,
