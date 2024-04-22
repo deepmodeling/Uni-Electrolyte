@@ -4,7 +4,7 @@ from dash.exceptions import PreventUpdate
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
-from views.predict_properties import options_view,screen_switch_view
+from views.predict_properties import options_view
 
 @callback(
     Output("Predict Property And Screen","style", allow_duplicate=True),

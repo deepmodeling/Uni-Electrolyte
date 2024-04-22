@@ -49,119 +49,104 @@ def options_view():
                 inline=True,
                 value="Predict Property Only",
             ),
-            dcc.RangeSlider(
-                min=5,
-                max=100,
-                step=5,
-                marks=None,
-                value=[0, 20],
-                tooltip={
-                    "placement": "bottom",
-                    # "always_visible": True,
-                },
-                id={
-                    "view": "options",
-                    "type": "input",
-                    "name": "max-iteration",
-                },
-            ),
-            # html.Div(
-            #     [
-            #         dbc.Label("Homo Range ", className="dp-form-label"),
-            #         html.P("The targeted HOMO interval. In unit eV.", className="intro"),
-            #         dcc.RangeSlider(
-            #             min=-9,
-            #             max=-2,
-            #             step=100,
-            #             marks=None,
-            #             value=[-8, -7],
-            #             tooltip={
-            #                 "placement": "bottom",
-            #                 # "always_visible": True,
-            #             },
-            #             id={
-            #                 "view": "options",
-            #                 "type": "input",
-            #                 "name": "HOMO Range RangeSlider",
-            #             },
-            #         ),
-            #         dbc.Label("Lumo Range", className="dp-form-label"),
-            #         html.P("The targeted LUMO interval. In unit eV.", className="intro"),
-            #         dcc.RangeSlider(
-            #             min=-4,
-            #             max=-10,
-            #             step=100,
-            #             marks=None,
-            #             value=[8, 9],
-            #             tooltip={
-            #                 "placement": "bottom",
-            #                 # "always_visible": True,
-            #             },
-            #             id={
-            #                 "view": "options",
-            #                 "type": "input",
-            #                 "name": "LUMO Range RangeSlider",
-            #             },
-            #         ),
-            #         dbc.Label("Binding Energy Range ", className="dp-form-label"),
-            #         html.P("The targeted binding_energy interval. In unit eV.", className="intro"),
-            #         dcc.RangeSlider(
-            #             min=-4,
-            #             max=1,
-            #             step=100,
-            #             marks=None,
-            #             value=[-2, -1],
-            #             tooltip={
-            #                 "placement": "bottom",
-            #                 # "always_visible": True,
-            #             },
-            #             id={
-            #                 "view": "options",
-            #                 "type": "input",
-            #                 "name": "Binding Energy Range RangeSlider",
-            #             },
-            #         ),
-            #         dbc.Label("Log Viscosity Range ", className="dp-form-label"),
-            #         html.P("The targeted viscosity interval. In log form and unit mPa*s without log.",
-            #                className="intro"),
-            #         dcc.RangeSlider(
-            #             min=-2.25,
-            #             max=2.25,
-            #             step=100,
-            #             marks=None,
-            #             value=[-1, -0.3],
-            #             tooltip={
-            #                 "placement": "bottom",
-            #                 # "always_visible": True,
-            #             },
-            #             id={
-            #                 "view": "options",
-            #                 "type": "input",
-            #                 "name": "Log Viscosity Range RangeSlider",
-            #             },
-            #         ),
-            #         dbc.Label("Log Dielectric Constant Range", className="dp-form-label"),
-            #         html.P("The targeted viscosity interval. In log form and unit mPa*s without log.",
-            #                className="intro"),
-            #         dcc.RangeSlider(
-            #             min=0,
-            #             max=2,
-            #             step=100,
-            #             marks=None,
-            #             value=[0.74, 0.81],
-            #             tooltip={
-            #                 "placement": "bottom",
-            #                 # "always_visible": True,
-            #             },
-            #             id={
-            #                 "view": "options",
-            #                 "type": "input",
-            #                 "name": "Log Dielectric Constant Range RangeSlider",
-            #             },
-            #         ),
-            #
-            #     ], id="Predict Property And Screen RangeSlider"),
-            #
+
+            html.Div(
+                [
+                    dbc.Label("Homo Range ", className="dp-form-label"),
+                    html.P("The targeted HOMO interval. In unit eV.", className="intro"),
+                    dcc.RangeSlider(
+                        min=-9,
+                        max=-2,
+                        step=0.2,
+                        marks=None,
+                        value=[-8, -7],
+                        tooltip={
+                            "placement": "bottom",
+                            # "always_visible": True,
+                        },
+                        id={
+                            "view": "options",
+                            "type": "input",
+                            "name": "HOMO Range RangeSlider",
+                        },
+                    ),
+                    dbc.Label("Lumo Range", className="dp-form-label"),
+                    html.P("The targeted LUMO interval. In unit eV.", className="intro"),
+                    dcc.RangeSlider(
+                        min=-4,
+                        max=-10,
+                        step=0.2,
+                        marks=None,
+                        value=[8, 9],
+                        tooltip={
+                            "placement": "bottom",
+                            # "always_visible": True,
+                        },
+                        id={
+                            "view": "options",
+                            "type": "input",
+                            "name": "LUMO Range RangeSlider",
+                        },
+                    ),
+                    dbc.Label("Binding Energy Range ", className="dp-form-label"),
+                    html.P("The targeted binding_energy interval. In unit eV.", className="intro"),
+                    dcc.RangeSlider(
+                        min=-4,
+                        max=1,
+                        step=0.2,
+                        marks=None,
+                        value=[-2, -1],
+                        tooltip={
+                            "placement": "bottom",
+                            # "always_visible": True,
+                        },
+                        id={
+                            "view": "options",
+                            "type": "input",
+                            "name": "Binding Energy Range RangeSlider",
+                        },
+                    ),
+                    dbc.Label("Log Viscosity Range ", className="dp-form-label"),
+                    html.P("The targeted viscosity interval. In log form and unit mPa*s without log.",
+                           className="intro"),
+                    dcc.RangeSlider(
+                        min=-2.25,
+                        max=2.25,
+                        step=0.2,
+                        marks=None,
+                        value=[-1, -0.3],
+                        tooltip={
+                            "placement": "bottom",
+                            # "always_visible": True,
+                        },
+                        id={
+                            "view": "options",
+                            "type": "input",
+                            "name": "Log Viscosity Range RangeSlider",
+                        },
+                    ),
+                    dbc.Label("Log Dielectric Constant Range", className="dp-form-label"),
+                    html.P("The targeted viscosity interval. In log form and unit mPa*s without log.",
+                           className="intro"),
+                    dcc.RangeSlider(
+                        min=0,
+                        max=2,
+                        step=0.2,
+                        marks=None,
+                        value=[0.74, 0.81],
+                        tooltip={
+                            "placement": "bottom",
+                            # "always_visible": True,
+                        },
+                        id={
+                            "view": "options",
+                            "type": "input",
+                            "name": "Log Dielectric Constant Range RangeSlider",
+                        },
+                    ),
+
+                ], id="Predict Property And Screen RangeSlider"),
+
 
             # dbc.Switch(
             #    id={
