@@ -7,16 +7,17 @@ from views.helper import render_section, render_secondary_section
 from views.predict_properties import options_view,screen_switch_view
 
 @callback(
-    Output("Predict Property And Screen","children", allow_duplicate=True),
-    [Input("Screen molecules from database","value"),],
+    Output("Predict Property And Screen","style", allow_duplicate=True),
+    [Input("Screen molecules from database","n_clicks"),],
     prevent_initial_call=True,
 )
 def show_screen_switch(value):
     print("show_screen_switch")
     if value=="Predict Property And Screen":
-        return screen_switch_view()
+        return None
     else:
         return ""
+
 
 @callback(
      Output("right sidebar","sidebarChildren", allow_duplicate=True),
