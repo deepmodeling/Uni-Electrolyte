@@ -4,25 +4,13 @@ from dash.exceptions import PreventUpdate
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
-from views.predict_properties import options_view
-
-# @callback(
-#     Output("Predict Property And Screen","style", allow_duplicate=True),
-#     [Input("Screen molecules from database","n_clicks"),],
-#     prevent_initial_call=True,
-# )
-# def show_screen_switch(value):
-#     print("show_screen_switch")
-#     if value=="Predict Property And Screen":
-#         return None
-#     else:
-#         return ""
+from views.screen_molecules_from_database import options_view
 
 
 
 @callback(
      Output("right sidebar","sidebarChildren", allow_duplicate=True),
-    [Input("Predict properties", "n_clicks")],
+    [Input("Screen molecules from database", "n_clicks")],
     prevent_initial_call=True,
 )
 def show_predict_properties(n_clicks):

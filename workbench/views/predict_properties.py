@@ -17,7 +17,7 @@ def options_view():
 
             dbc.Checklist(
                 id={
-                    "view": "options",
+                    "view": "predict_properties",
                     "type": "input",
                     "name": "target_selection",
                 },
@@ -36,12 +36,12 @@ def options_view():
             dbc.Label("Screen Switch - Options", className="dp-form-label"),
 
             dbc.RadioItems(
-                id="screen-switch_RadioItems",
-                # {
-                #     "view": "options",
-                #     "type": "input",
-                #     "name": "screen-switch",
-                # },
+                id=
+                {
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "screen-switch",
+                },
                 options=[
                     {"label": "Predict Property Only", "value": "Predict Property Only"},
                     {"label": "Predict Property And Screen", "value": "Predict Property And Screen"}
@@ -65,7 +65,7 @@ def options_view():
                             # "always_visible": True,
                         },
                         id={
-                            "view": "options",
+                            "view": "predict_properties",
                             "type": "input",
                             "name": "HOMO Range RangeSlider",
                         },
@@ -83,7 +83,7 @@ def options_view():
                             # "always_visible": True,
                         },
                         id={
-                            "view": "options",
+                            "view": "predict_properties",
                             "type": "input",
                             "name": "LUMO Range RangeSlider",
                         },
@@ -101,7 +101,7 @@ def options_view():
                             # "always_visible": True,
                         },
                         id={
-                            "view": "options",
+                            "view": "predict_properties",
                             "type": "input",
                             "name": "Binding Energy Range RangeSlider",
                         },
@@ -120,7 +120,7 @@ def options_view():
                             # "always_visible": True,
                         },
                         id={
-                            "view": "options",
+                            "view": "predict_properties",
                             "type": "input",
                             "name": "Log Viscosity Range RangeSlider",
                         },
@@ -139,7 +139,7 @@ def options_view():
                             # "always_visible": True,
                         },
                         id={
-                            "view": "options",
+                            "view": "predict_properties",
                             "type": "input",
                             "name": "Log Dielectric Constant Range RangeSlider",
                         },
@@ -159,7 +159,7 @@ def options_view():
             # ),
             dbc.Button(
                 "Start Exploration",
-                id="btn-run",
+                id="predict_properties_btn-run",
                 n_clicks=0,
                 color="primary",
                 className="me-6",
