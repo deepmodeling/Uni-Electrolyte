@@ -74,7 +74,7 @@ def options_view():
                     html.P("The targeted LUMO interval. In unit eV.", className="intro"),
                     dcc.RangeSlider(
                         min=-4,
-                        max=-10,
+                        max=10,
                         step=0.2,
                         marks=None,
                         value=[8, 9],
