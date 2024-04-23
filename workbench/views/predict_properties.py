@@ -5,6 +5,35 @@ from dash import html, dcc
 import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
 
+import dash_uploader as du
+
+def upload_view():
+    return html.Div(
+        du.Upload(
+            id="upload-predict-input-dataset",
+            text="Drag and Drop or Select Files (accept .csv)",
+            max_files=1,
+            max_file_size=5 * 1024,  # 5GB
+            disabled=False,
+            pause_button=False,
+            cancel_button=False,
+            text_disabled="Log in to upload files",
+            filetypes=["csv"],
+            default_style={
+                "width": "755px",
+                "height": "40px",
+                "cursor": "pointer",
+                "lineHeight": "10px",
+                "borderWidth": "1px",
+                "borderStyle": "dashed",
+                "borderRadius": "5px",
+                "textAlign": "center",
+                "marginTop": "1rem",
+                "marginBottom": "1rem",
+                "minHeight": "40px",
+            },
+        ),
+    )
 def options_view():
     return html.Div(
         [

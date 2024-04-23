@@ -4,7 +4,7 @@ from dash.exceptions import PreventUpdate
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
-from views.predict_properties import options_view
+from views.predict_properties import options_view,upload_view
 
 # @callback(
 #     Output("Predict Property And Screen","style", allow_duplicate=True),
@@ -32,7 +32,7 @@ def show_predict_properties(n_clicks):
 
         right_sidebar= dbc.Row(
                             render_secondary_section(
-                                "Configure Exploration", "", options_view()
+                                "Configure Exploration", "", upload_view()
                             ),
                             id="row-options-view",
                             style={

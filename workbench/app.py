@@ -9,6 +9,8 @@ from views import render_app
 from flask import request
 from flask import Response
 from time import strftime
+import dash_uploader as du
+from config import UPLOAD_ROOT
 
 logger.remove()
 logger.add(sys.stdout, level="DEBUG")
@@ -32,6 +34,8 @@ app = Dash(
 
 app.layout = render_app()
 app._favicon = "favicon.png"
+
+du.configure_upload(app, UPLOAD_ROOT)
 
 
 @app.server.after_request
