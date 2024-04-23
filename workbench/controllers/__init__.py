@@ -20,6 +20,7 @@ import controllers.login  # noqa
 import controllers.projects  # noqa
 import controllers.predict_properties # noqa
 import controllers.screen_molecules_from_database # noqa
+import controllers.Query_molecules_with_similar_properties # noqa
 
 from ids import KETCHER_COMPONENT_ID
 
