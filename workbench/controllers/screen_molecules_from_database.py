@@ -9,7 +9,8 @@ from views.screen_molecules_from_database import options_view
 
 
 @callback(
-     Output("right sidebar","sidebarChildren", allow_duplicate=True),
+     [Output("left sidebar","sidebarChildren", allow_duplicate=True),
+      Output("right sidebar","sidebarChildren", allow_duplicate=True),]
     [Input("Screen molecules from database", "n_clicks")],
     prevent_initial_call=True,
 )
@@ -32,6 +33,6 @@ def show_predict_properties(n_clicks):
                         ),
                         # UserTrack.get_component(),
 
-        return right_sidebar
+        return "",right_sidebar
     else:
-        return ""
+        return "",""
