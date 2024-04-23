@@ -20,11 +20,17 @@ from views.Query_molecules_with_similar_properties import middle_view,right_view
 
 
 
+
+#
+# [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
+#      Output("right sidebar", "sidebarChildren", allow_duplicate=True),
+#      Output("Exploration Details", "sidebarChildren", allow_duplicate=True),
+#      Output("Exploration Details", "mainChildren", allow_duplicate=True), ]
+#todo 以上这么写有渲染问题，暂时搁置
 @callback(
-    [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
-     Output("right sidebar", "sidebarChildren", allow_duplicate=True),
-     Output("Exploration Details", "sidebarChildren", allow_duplicate=True),
-     Output("Exploration Details", "mainChildren", allow_duplicate=True), ],
+     [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
+         Output("Exploration Details","mainChildren", allow_duplicate=True),
+      Output("right sidebar","sidebarChildren", allow_duplicate=True)],
     [Input("Query molecules with similar properties", "n_clicks")],
     prevent_initial_call=True,
 )
@@ -59,6 +65,6 @@ def show_Query_molecules_with_similar_properties(n_clicks):
                             },
                         ),
                         # UserTrack.get_component(),
-        return "",right_sidebar,middle,""
+        return "",middle,right_sidebar
     else:
-        return "","","",""
+        return "","",""
