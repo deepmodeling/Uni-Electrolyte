@@ -40,6 +40,7 @@ def right_view():
                 valid=False,
                 value="",
             ),
+            "",
             dbc.Button(
                 "Start Exploration",
                 id="Query_molecules_with_similar_properties_btn-run",
@@ -48,7 +49,7 @@ def right_view():
                 className="me-6",
                 disabled=False,
             ),
-           ]),
+           ])
 
 
 
