@@ -192,7 +192,7 @@ def right_view():
                 n_clicks=0,
                 color="primary",
                 className="me-6",
-                disabled=True,
+                disabled=False,
             ),
         ],
     )
