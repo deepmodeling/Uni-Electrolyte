@@ -45,7 +45,7 @@ def show_predict_properties(n_clicks):
                         # UserTrack.get_component(),
         left_sidebar= dbc.Row(
                             render_secondary_section(
-                                "Upload Files", "","Upload Files"
+                                "Upload Files", "",options_view()
                             ),
                             id="row-options-view",
                             style={
