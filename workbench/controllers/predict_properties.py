@@ -21,7 +21,7 @@ from views.predict_properties import options_view
 
 
 @callback(
-     Output("right sidebar","sidebarChildren", allow_duplicate=True),
+     [Output("left sidebar","sidebarChildren", allow_duplicate=True),Output("right sidebar","sidebarChildren", allow_duplicate=True)],
     [Input("Predict properties", "n_clicks")],
     prevent_initial_call=True,
 )
@@ -43,7 +43,18 @@ def show_predict_properties(n_clicks):
                             },
                         ),
                         # UserTrack.get_component(),
-
-        return right_sidebar
+        left_sidebar= dbc.Row(
+                            render_secondary_section(
+                                "Upload Files", "","Upload Files"
+                            ),
+                            id="row-options-view",
+                            style={
+                                "height": "100%",
+                                "alignItems": "flexStart",
+                                "paddingRight": "2%",
+                                "paddingTop": "1rem",
+                            },
+                        ),
+        return left_sidebar,right_sidebar
     else:
-        return ""
+        return "",""
