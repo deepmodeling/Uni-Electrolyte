@@ -7,8 +7,9 @@ from views.helper import render_section, render_secondary_section
 
 import dash_uploader as du
 
-def upload_view():
+def left_view():
     return html.Div(
+        [
         du.Upload(
             id="upload-predict-input-dataset",
             text="Drag and Drop or Select Files (accept .csv)",
@@ -20,8 +21,8 @@ def upload_view():
             text_disabled="Log in to upload files",
             filetypes=["csv"],
             default_style={
-                "width": "755px",
-                "height": "40px",
+                "width": "155px",
+                "height": "80px",
                 "cursor": "pointer",
                 "lineHeight": "10px",
                 "borderWidth": "1px",
@@ -33,16 +34,8 @@ def upload_view():
                 "minHeight": "40px",
             },
         ),
-    )
-def options_view():
-    return html.Div(
-        [
-            # html.H5("Optimization Options", style={"fontWeight": "bold"})
             dbc.Label("Target", className="dp-form-label"),
             html.P("Target properties to be predicted.", className="intro"),
-
-
-
 
             dbc.Checklist(
                 id={
@@ -59,9 +52,16 @@ def options_view():
                     # {"label": "Database", "value": "database"},
                 ],
                 inline=True,
-                value=[ "Binding energy",  "Dielectric constant","Viscosity","HOMO","LUMO"],
+                value=["Binding energy", "Dielectric constant", "Viscosity", "HOMO", "LUMO"],
             ),
             html.Br(),
+        ]
+    )
+def right_view():
+    return html.Div(
+        [
+            # html.H5("Optimization Options", style={"fontWeight": "bold"})
+
             dbc.Label("Screen Switch - Options", className="dp-form-label"),
 
             dbc.RadioItems(
