@@ -21,7 +21,8 @@ from views.predict_properties import options_view,upload_view
 
 
 @callback(
-     [Output("left sidebar","sidebarChildren", allow_duplicate=True),Output("right sidebar","sidebarChildren", allow_duplicate=True)],
+     [Output("left sidebar","sidebarChildren", allow_duplicate=True),
+      Output("right sidebar","sidebarChildren", allow_duplicate=True)],
     [Input("Predict properties", "n_clicks")],
     prevent_initial_call=True,
 )
@@ -30,9 +31,22 @@ def show_predict_properties(n_clicks):
     if n_clicks is not None:
         # 在这里编写你要输出的内容
 
+        left_sidebar= dbc.Row(
+                            render_secondary_section(
+                                "Upload Files", "",upload_view()
+                            ),
+                            id="row-options-view",
+                            style={
+                                "height": "100%",
+                                "alignItems": "flexStart",
+                                "paddingRight": "2%",
+                                "paddingTop": "1rem",
+                            },
+                        ),
+
         right_sidebar= dbc.Row(
                             render_secondary_section(
-                                "Configure Exploration", "", upload_view()
+                                "Configure Exploration", "", options_view()
                             ),
                             id="row-options-view",
                             style={
@@ -43,18 +57,6 @@ def show_predict_properties(n_clicks):
                             },
                         ),
                         # UserTrack.get_component(),
-        left_sidebar= dbc.Row(
-                            render_secondary_section(
-                                "Upload Files", "",options_view()
-                            ),
-                            id="row-options-view",
-                            style={
-                                "height": "100%",
-                                "alignItems": "flexStart",
-                                "paddingRight": "2%",
-                                "paddingTop": "1rem",
-                            },
-                        ),
         return left_sidebar,right_sidebar
     else:
         return "",""
