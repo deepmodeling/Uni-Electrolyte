@@ -11,6 +11,14 @@ def middle_view():
         [
             dbc.Label("Molecule to be searched", className="dp-form-label"),
             # html.P("The targeted HOMO interval. In unit eV.", className="intro"),
+            dbc.Input(
+                id="Query_molecules_with_similar_properties_input-molecule",
+                name="molecule",
+                placeholder="SMILES required",
+                style={"width": "755px"},
+                valid=False,
+                value="",
+            ),
             html.Div(
                 dash_ketcher.DashKetcher(
                     id=KETCHER_COMPONENT_ID.get_identifier(),
