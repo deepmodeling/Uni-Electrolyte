@@ -21,8 +21,10 @@ from views.predict_properties import left_view,right_view
 
 
 @callback(
-     [Output("left sidebar","sidebarChildren", allow_duplicate=True),
-      Output("right sidebar","sidebarChildren", allow_duplicate=True)],
+     [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
+     Output("right sidebar","sidebarChildren", allow_duplicate=True),
+     Output("Exploration Details","sidebarChildren", allow_duplicate=True),
+     Output("Exploration Details","mainChildren", allow_duplicate=True),],
     [Input("Predict properties", "n_clicks")],
     prevent_initial_call=True,
 )
@@ -57,6 +59,6 @@ def show_predict_properties(n_clicks):
                             },
                         ),
                         # UserTrack.get_component(),
-        return left_sidebar,right_sidebar
+        return left_sidebar,right_sidebar,"",""
     else:
-        return "",""
+        return "","","",""

@@ -21,8 +21,10 @@ from views.Query_molecules_with_similar_properties import middle_view,right_view
 
 
 @callback(
-     [Output("Exploration Details","mainChildren", allow_duplicate=True),
-      Output("right sidebar","sidebarChildren", allow_duplicate=True)],
+    [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
+     Output("right sidebar", "sidebarChildren", allow_duplicate=True),
+     Output("Exploration Details", "sidebarChildren", allow_duplicate=True),
+     Output("Exploration Details", "mainChildren", allow_duplicate=True), ],
     [Input("Query molecules with similar properties", "n_clicks")],
     prevent_initial_call=True,
 )
@@ -57,6 +59,6 @@ def show_Query_molecules_with_similar_properties(n_clicks):
                             },
                         ),
                         # UserTrack.get_component(),
-        return middle,right_sidebar
+        return "",right_sidebar,middle,""
     else:
-        return "",""
+        return "","","",""
