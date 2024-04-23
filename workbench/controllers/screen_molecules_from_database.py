@@ -10,7 +10,7 @@ from views.screen_molecules_from_database import options_view
 
 @callback(
      [Output("left sidebar","sidebarChildren", allow_duplicate=True),
-      Output("right sidebar","sidebarChildren", allow_duplicate=True),]
+      Output("right sidebar","sidebarChildren", allow_duplicate=True),],
     [Input("Screen molecules from database", "n_clicks")],
     prevent_initial_call=True,
 )
