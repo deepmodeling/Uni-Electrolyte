@@ -6,17 +6,6 @@ import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
 from views.Generate_molecules_and_predict_properties import  right_view
 
-# @callback(
-#     Output("Predict Property And Screen","style", allow_duplicate=True),
-#     [Input("Screen molecules from database","n_clicks"),],
-#     prevent_initial_call=True,
-# )
-# def show_screen_switch(value):
-#     print("show_screen_switch")
-#     if value=="Predict Property And Screen":
-#         return None
-#     else:
-#         return ""
 
 
 
@@ -24,7 +13,7 @@ from views.Generate_molecules_and_predict_properties import  right_view
      [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
          Output("Exploration Details","mainChildren", allow_duplicate=True),
       Output("right sidebar","sidebarChildren", allow_duplicate=True)],
-    [Input("Query molecules with similar properties", "n_clicks")],
+    [Input("Generate molecules and predict properties", "n_clicks")],
     prevent_initial_call=True,
 )
 def show_Generate_molecules_and_predict_properties(n_clicks):
