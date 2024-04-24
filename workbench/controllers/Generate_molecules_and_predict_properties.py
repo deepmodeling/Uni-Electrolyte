@@ -4,7 +4,7 @@ from dash.exceptions import PreventUpdate
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
-from views.Generate_molecules_and_predict_properties import  right_view
+from views.Generate_molecules_and_predict_properties import  middle_view
 
 
 
@@ -25,7 +25,7 @@ def show_Generate_molecules_and_predict_properties(n_clicks):
 
         right_sidebar= dbc.Row(
                             render_secondary_section(
-                                "Options", "", right_view()
+                                "Options", "", middle_view()
                             ),
                             id="row-options-view",
                             style={
@@ -36,6 +36,6 @@ def show_Generate_molecules_and_predict_properties(n_clicks):
                             },
                         ),
                         # UserTrack.get_component(),
-        return "","",right_sidebar
+        return "",right_sidebar,""
     else:
         return "","",""

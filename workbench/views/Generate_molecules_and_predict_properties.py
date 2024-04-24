@@ -6,7 +6,7 @@ import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
 import dash_ketcher
 from ids import KETCHER_COMPONENT_ID
-def right_view():
+def middle_view():
     return html.Div(
         [
             dbc.Label("Gen Mode - Options ", className="dp-form-label"),
