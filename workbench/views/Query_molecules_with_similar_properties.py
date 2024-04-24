@@ -21,7 +21,7 @@ def middle_view():
             ),
             html.Div(
                 dash_ketcher.DashKetcher(
-                    id=KETCHER_COMPONENT_ID.get_identifier(),
+                    id="Query_molecules_with_similar_properties_dash_ketcher",
                     input_molecule="",
                     style={
                         "height": "450px",
