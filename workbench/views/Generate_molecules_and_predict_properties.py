@@ -72,6 +72,7 @@ def middle_view():
                     "type": "input",
                     "name": "HOMO LUMO Options ",
                 },
+
             ),
 
             html.Div(
@@ -105,6 +106,7 @@ def middle_view():
                     "type": "input",
                     "name": "Binding Enegry And Formular",
                 },
+                style={"display": "none"}
             ),
 
             html.Div(
@@ -137,8 +139,9 @@ def middle_view():
                 {
                     "view": "Generate_molecules_and_predict_properties",
                     "type": "input",
-                    "name": "Binding Enegry And Formular",
+                    "name": "Structure Finger Print",
                 },
+                style={"display": "none"}
             ),
 
 

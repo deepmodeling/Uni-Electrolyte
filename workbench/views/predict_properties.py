@@ -51,7 +51,7 @@ def left_view():
                     {"label": "LUMO", "value": "LUMO"},
                     # {"label": "Database", "value": "database"},
                 ],
-                inline=True,
+
                 value=["Binding energy", "Dielectric constant", "Viscosity", "HOMO", "LUMO"],
             ),
             html.Br(),

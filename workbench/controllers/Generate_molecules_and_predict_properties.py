@@ -6,8 +6,43 @@ import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
 from views.Generate_molecules_and_predict_properties import  middle_view
 
+@callback(
+    [
+        Output({
+            "view": "Generate_molecules_and_predict_properties",
+            "type": "input",
+            "name": "HOMO LUMO Options ",
+        }, "style", allow_duplicate=True),
+        Output({
+                    "view": "Generate_molecules_and_predict_properties",
+                    "type": "input",
+                    "name": "Binding Enegry And Formular",
+                },"style", allow_duplicate=True),
+        Output({
+                    "view": "Generate_molecules_and_predict_properties",
+                    "type": "input",
+                    "name": "Structure Finger Print",
+                },"style", allow_duplicate=True),
 
 
+    ],
+    [Input({
+                    "view": "Generate_molecules_and_predict_properties",
+                    "type": "input",
+                    "name": "Gen Mode - Options ",
+                },"value"),],
+    prevent_initial_call=True,
+)
+def show_gen_switch(value):
+    print("show_gen_switch")
+    if value=="HOMO LUMO":
+        return None,{"display": "none"},{"display": "none"}
+    elif value=="Binding Enegry And Formular":
+        return {"display": "none"},None,{"display": "none"}
+    elif value=="Structure Finger Print":
+        return {"display": "none"},{"display": "none"},None
+    else:
+        return {"display": "none"},{"display": "none"},{"display": "none"},{"display": "none"}
 
 @callback(
      [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
