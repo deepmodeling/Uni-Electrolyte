@@ -12,14 +12,14 @@ def left_view():
         [
         du.Upload(
             id="upload-predict-input-dataset",
-            text="Drag and Drop or Select Files (accept .csv)",
+            text="Drag and drop or select files (File with one SMILES per line or xyz file)",
             max_files=1,
             max_file_size=5 * 1024,  # 5GB
             disabled=False,
             pause_button=False,
             cancel_button=False,
             text_disabled="Log in to upload files",
-            filetypes=["csv"],
+            #filetypes=["csv"],
             default_style={
                 "width": "155px",
                 "height": "80px",
@@ -62,7 +62,7 @@ def right_view():
         [
             # html.H5("Optimization Options", style={"fontWeight": "bold"})
 
-            dbc.Label("Screen Switch - Options", className="dp-form-label"),
+            dbc.Label("Screen switch options", className="dp-form-label"),
 
             dbc.Select(
                 id=
@@ -72,16 +72,16 @@ def right_view():
                     "name": "screen-switch",
                 },
                 options=[
-                    {"label": "Predict Property Only", "value": "Predict Property Only"},
-                    {"label": "Predict Property And Screen", "value": "Predict Property And Screen"}
+                    {"label": "Predict property only", "value": "Predict property only"},
+                    {"label": "Predict property and screen", "value": "Predict property and screen"}
                 ],
 
-                value="Predict Property Only",
+                value="Predict property only",
             ),
 
             html.Div(
                 [
-                    dbc.Label("Homo Range ", className="dp-form-label"),
+                    dbc.Label("HOMO range ", className="dp-form-label"),
                     html.P("The targeted HOMO interval. In unit eV.", className="intro"),
                     dcc.RangeSlider(
                         min=-9,
@@ -96,10 +96,10 @@ def right_view():
                         id={
                             "view": "predict_properties",
                             "type": "input",
-                            "name": "HOMO Range RangeSlider",
+                            "name": "HOMO range RangeSlider",
                         },
                     ),
-                    dbc.Label("Lumo Range", className="dp-form-label"),
+                    dbc.Label("LUMO range", className="dp-form-label"),
                     html.P("The targeted LUMO interval. In unit eV.", className="intro"),
                     dcc.RangeSlider(
                         min=-4,
@@ -114,11 +114,11 @@ def right_view():
                         id={
                             "view": "predict_properties",
                             "type": "input",
-                            "name": "LUMO Range RangeSlider",
+                            "name": "LUMO range RangeSlider",
                         },
                     ),
-                    dbc.Label("Binding Energy Range ", className="dp-form-label"),
-                    html.P("The targeted binding_energy interval. In unit eV.", className="intro"),
+                    dbc.Label("Binding energy range ", className="dp-form-label"),
+                    html.P("The targeted binding energy interval. In unit eV.", className="intro"),
                     dcc.RangeSlider(
                         min=-4,
                         max=1,
@@ -135,7 +135,7 @@ def right_view():
                             "name": "Binding Energy Range RangeSlider",
                         },
                     ),
-                    dbc.Label("Log Viscosity Range ", className="dp-form-label"),
+                    dbc.Label("Log viscosity range ", className="dp-form-label"),
                     html.P("The targeted viscosity interval. In log form and unit mPa*s without log.",
                            className="intro"),
                     dcc.RangeSlider(
@@ -154,7 +154,7 @@ def right_view():
                             "name": "Log Viscosity Range RangeSlider",
                         },
                     ),
-                    dbc.Label("Log Dielectric Constant Range", className="dp-form-label"),
+                    dbc.Label("Log dielectric constant range", className="dp-form-label"),
                     html.P("The targeted viscosity interval. In log form and unit mPa*s without log.",
                            className="intro"),
                     dcc.RangeSlider(
@@ -174,7 +174,7 @@ def right_view():
                         },
                     ),
 
-                ], id="Predict Property And Screen RangeSlider", style={"display": "none"}),
+                ], id="Predict property and screen RangeSlider", style={"display": "none"}),
 
 
             # dbc.Switch(
@@ -187,7 +187,7 @@ def right_view():
             #    disabled=True,
             # ),
             dbc.Button(
-                "Start Exploration",
+                "Start exploration",
                 id="predict_properties_btn-run",
                 n_clicks=0,
                 color="primary",

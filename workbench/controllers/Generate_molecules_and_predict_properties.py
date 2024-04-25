@@ -16,12 +16,12 @@ from views.Generate_molecules_and_predict_properties import  middle_view
         Output({
                     "view": "Generate_molecules_and_predict_properties",
                     "type": "input",
-                    "name": "Binding Enegry And Formular",
+                    "name": "Binding enegry and formular",
                 },"style", allow_duplicate=True),
         Output({
                     "view": "Generate_molecules_and_predict_properties",
                     "type": "input",
-                    "name": "Structure Finger Print",
+                    "name": "Structure finger print",
                 },"style", allow_duplicate=True),
 
 
@@ -29,7 +29,7 @@ from views.Generate_molecules_and_predict_properties import  middle_view
     [Input({
                     "view": "Generate_molecules_and_predict_properties",
                     "type": "input",
-                    "name": "Gen Mode - Options ",
+                    "name": "Gen mode options ",
                 },"value"),],
     prevent_initial_call=True,
 )
@@ -37,9 +37,9 @@ def show_gen_switch(value):
     print("show_gen_switch")
     if value=="HOMO LUMO":
         return None,{"display": "none"},{"display": "none"}
-    elif value=="Binding Enegry And Formular":
+    elif value=="Binding enegry and formular":
         return {"display": "none"},None,{"display": "none"}
-    elif value=="Structure Finger Print":
+    elif value=="Structure finger print":
         return {"display": "none"},{"display": "none"},None
     else:
         return {"display": "none"},{"display": "none"},{"display": "none"}

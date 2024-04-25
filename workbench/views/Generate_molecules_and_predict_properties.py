@@ -9,18 +9,18 @@ from ids import KETCHER_COMPONENT_ID
 def middle_view():
     return html.Div(
         [
-            dbc.Label("Gen Mode - Options ", className="dp-form-label"),
+            dbc.Label("Gen mode options ", className="dp-form-label"),
             dbc.Select(
                 id=
                 {
                     "view": "Generate_molecules_and_predict_properties",
                     "type": "input",
-                    "name": "Gen Mode - Options ",
+                    "name": "Gen mode options ",
                 },
                 options=[
                     {"label": "HOMO LUMO", "value": "HOMO LUMO"},
-                    {"label": "Binding Enegry And Formular", "value":"Binding Enegry And Formular"},
-                    {"label": "Structure Finger Print","value":"Structure Finger Print"}
+                    {"label": "Binding energy and formular", "value":"Binding enegry and formular"},
+                    {"label": "Structure finger print","value":"Structure finger print"}
                 ],
                 value="HOMO LUMO",
             ),
@@ -28,7 +28,7 @@ def middle_view():
             html.Div(
 
                 [
-                dbc.Label("Homo Range ", className="dp-form-label"),
+                dbc.Label("HOMO range ", className="dp-form-label"),
                 html.P("The targeted HOMO interval. In unit eV.", className="intro"),
                 dcc.RangeSlider(
                     min=-9,
@@ -43,10 +43,10 @@ def middle_view():
                     id={
                         "view": "Generate_molecules_and_predict_properties",
                         "type": "input",
-                        "name": "HOMO Range RangeSlider",
+                        "name": "HOMO range RangeSlider",
                     },
                 ),
-                dbc.Label("Lumo Range", className="dp-form-label"),
+                dbc.Label("LUMO range", className="dp-form-label"),
                 html.P("The targeted LUMO interval. In unit eV.", className="intro"),
                 dcc.RangeSlider(
                     min=-4,
@@ -61,7 +61,7 @@ def middle_view():
                     id={
                         "view":"Generate_molecules_and_predict_properties",
                         "type": "input",
-                        "name": "LUMO Range RangeSlider",
+                        "name": "LUMO range RangeSlider",
                     },
                 ),
 
@@ -88,7 +88,7 @@ def middle_view():
                         valid=False,
                         value="",
                     ),
-                    dbc.Label("Targeted Binding E ", className="dp-form-label"),
+                    dbc.Label("Targeted binding energy ", className="dp-form-label"),
                     html.P(" The targeted binding energy", className="intro"),
                     dbc.Input(
                         id="Generate_molecules_and_predict_properties_Binding_Enegry_And_Formular_Targeted Binding E ",
@@ -104,7 +104,7 @@ def middle_view():
                 {
                     "view": "Generate_molecules_and_predict_properties",
                     "type": "input",
-                    "name": "Binding Enegry And Formular",
+                    "name": "Binding energy and formular",
                 },
                 style={"display": "none"}
             ),
@@ -112,10 +112,10 @@ def middle_view():
             html.Div(
 
                 [
-                    dbc.Label("Structure Finger Print", className="dp-form-label"),
+                    dbc.Label("Structure finger print", className="dp-form-label"),
                     # html.P("The targeted HOMO interval. In unit eV.", className="intro"),
                     dbc.Input(
-                        id="Structure Finger Print_input-molecule",
+                        id="Structure finger print_input-molecule",
                         name="molecule",
                         placeholder="SMILES required",
                         style={"width": "755px"},
@@ -124,7 +124,7 @@ def middle_view():
                     ),
                     html.Div(
                         dash_ketcher.DashKetcher(
-                            id="Structure Finger Print_input dash_ketcher",
+                            id="Structure finger print_input dash_ketcher",
                             input_molecule="",
                             style={
                                 "height": "450px",
@@ -139,13 +139,13 @@ def middle_view():
                 {
                     "view": "Generate_molecules_and_predict_properties",
                     "type": "input",
-                    "name": "Structure Finger Print",
+                    "name": "Structure finger print",
                 },
                 style={"display": "none"}
             ),
 
 
-            dbc.Label("N Molecules ", className="dp-form-label"),
+            dbc.Label("Number molecules ", className="dp-form-label"),
             html.P("Total number of molecules to be generated.",
                    className="intro"),
             dbc.Input(
@@ -159,7 +159,7 @@ def middle_view():
 
 
             dbc.Button(
-                "Start Exploration",
+                "Start exploration",
                 id="Generate_molecules_and_predict_properties_btn-run",
                 n_clicks=0,
                 color="primary",

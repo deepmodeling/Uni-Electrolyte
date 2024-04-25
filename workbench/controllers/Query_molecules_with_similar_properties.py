@@ -7,13 +7,13 @@ from views.helper import render_section, render_secondary_section
 from views.Query_molecules_with_similar_properties import middle_view,right_view
 
 # @callback(
-#     Output("Predict Property And Screen","style", allow_duplicate=True),
+#     Output("Predict property and screen","style", allow_duplicate=True),
 #     [Input("Screen molecules from database","n_clicks"),],
 #     prevent_initial_call=True,
 # )
 # def show_screen_switch(value):
 #     print("show_screen_switch")
-#     if value=="Predict Property And Screen":
+#     if value=="Predict property and screen":
 #         return None
 #     else:
 #         return ""

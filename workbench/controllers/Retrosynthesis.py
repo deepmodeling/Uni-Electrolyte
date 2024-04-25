@@ -23,9 +23,9 @@ from views.Retrosynthesis import  middle_view
 )
 def show_retro_switch(value):
     print("show_gen_switch")
-    if value=="Upload molecules with file ":
+    if value=="Draw a molecule":
         return None,{"display": "none"}
-    elif value=="Draw a molecule":
+    elif value=="Upload molecules with file " :
         return {"display": "none"},None
     else:
         return {"display": "none"},{"display": "none"}

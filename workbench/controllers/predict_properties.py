@@ -7,7 +7,7 @@ from views.helper import render_section, render_secondary_section
 from views.predict_properties import left_view,right_view
 
 @callback(
-    Output("Predict Property And Screen RangeSlider","style", allow_duplicate=True),
+    Output("Predict property and screen RangeSlider","style", allow_duplicate=True),
     [Input({
                     "view": "predict_properties",
                     "type": "input",
@@ -17,7 +17,7 @@ from views.predict_properties import left_view,right_view
 )
 def show_screen_switch(value):
     print("show_screen_switch")
-    if value=="Predict Property And Screen":
+    if value=="Predict property and screen":
         return None
     else:
         return {"display": "none"}

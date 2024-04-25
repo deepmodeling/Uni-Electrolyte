@@ -8,7 +8,7 @@ from views.helper import render_section, render_secondary_section
 def options_view():
     return html.Div(
         [
-            dbc.Label("Homo Range ", className="dp-form-label"),
+            dbc.Label("HOMO range ", className="dp-form-label"),
             html.P("The targeted HOMO interval. In unit eV.", className="intro"),
             dcc.RangeSlider(
                 min=-9,
@@ -23,10 +23,10 @@ def options_view():
                 id={
                     "view": "screen_molecules_from_database",
                     "type": "input",
-                    "name": "HOMO Range RangeSlider",
+                    "name": "HOMO range RangeSlider",
                 },
             ),
-            dbc.Label("Lumo Range", className="dp-form-label"),
+            dbc.Label("LUMO range", className="dp-form-label"),
             html.P("The targeted LUMO interval. In unit eV.", className="intro"),
             dcc.RangeSlider(
                 min=-4,
@@ -41,10 +41,10 @@ def options_view():
                 id={
                     "view": "screen_molecules_from_database",
                     "type": "input",
-                    "name": "LUMO Range RangeSlider",
+                    "name": "LUMO range RangeSlider",
                 },
             ),
-            dbc.Label("Binding Energy Range ", className="dp-form-label"),
+            dbc.Label("Binding energy range ", className="dp-form-label"),
             html.P("The targeted binding_energy interval. In unit eV.", className="intro"),
             dcc.RangeSlider(
                 min=-4,
@@ -62,7 +62,7 @@ def options_view():
                     "name": "Binding Energy Range RangeSlider",
                 },
             ),
-            dbc.Label("Log Viscosity Range ", className="dp-form-label"),
+            dbc.Label("Log viscosity range ", className="dp-form-label"),
             html.P("The targeted viscosity interval. In log form and unit mPa*s without log.",
                    className="intro"),
             dcc.RangeSlider(
@@ -81,7 +81,7 @@ def options_view():
                     "name": "Log Viscosity Range RangeSlider",
                 },
             ),
-            dbc.Label("Log Dielectric Constant Range", className="dp-form-label"),
+            dbc.Label("Log dielectric constant range", className="dp-form-label"),
             html.P("The targeted viscosity interval. In log form and unit mPa*s without log.",
                    className="intro"),
             dcc.RangeSlider(
@@ -112,7 +112,7 @@ def options_view():
             #    disabled=True,
             # ),
             dbc.Button(
-                "Start Exploration",
+                "Start exploration",
                 id="screen_molecules_from_database_btn-run",
                 n_clicks=0,
                 color="primary",

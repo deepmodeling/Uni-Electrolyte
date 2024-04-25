@@ -38,7 +38,7 @@ def middle_view():
 def right_view():
     return html.Div(
         [
-            dbc.Label("N Molecules ", className="dp-form-label"),
+            dbc.Label("Number molecules ", className="dp-form-label"),
             html.P("Total number of molecules in the database to be returned. Maximum value is 50.", className="intro"),
             dbc.Input(
                 id="Query_molecules_with_similar_properties_N_Molecules_Input",
@@ -50,7 +50,7 @@ def right_view():
             ),
             "",
             dbc.Button(
-                "Start Exploration",
+                "Start exploration",
                 id="Query_molecules_with_similar_properties_btn-run",
                 n_clicks=0,
                 color="primary",

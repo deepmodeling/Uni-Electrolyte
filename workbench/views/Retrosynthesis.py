@@ -10,7 +10,7 @@ import dash_uploader as du
 def middle_view():
     return html.Div(
         [
-            dbc.Label("Input Mode - Options ", className="dp-form-label"),
+            dbc.Label("Input mode options ", className="dp-form-label"),
             dbc.Select(
                 id=
                 {
@@ -53,7 +53,7 @@ def middle_view():
             html.Div(
                 du.Upload(
                     id="upload-Retrosynthesis-input",
-                    text="Drag and Drop or Select Files ( One SMILES per line)",
+                    text="Drag and drop or select files ( One SMILES per line)",
                     max_files=1,
                     max_file_size=5 * 1024,  # 5GB
                     disabled=False,
@@ -82,7 +82,7 @@ def middle_view():
                 },
             ),
             dbc.Button(
-                "Start Exploration",
+                "Start exploration",
                 id="Retrosynthesis_btn-run",
                 n_clicks=0,
                 color="primary",
