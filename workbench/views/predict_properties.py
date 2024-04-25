@@ -64,7 +64,7 @@ def right_view():
 
             dbc.Label("Screen Switch - Options", className="dp-form-label"),
 
-            dbc.RadioItems(
+            dbc.Select(
                 id=
                 {
                     "view": "predict_properties",
@@ -75,7 +75,7 @@ def right_view():
                     {"label": "Predict Property Only", "value": "Predict Property Only"},
                     {"label": "Predict Property And Screen", "value": "Predict Property And Screen"}
                 ],
-                inline=True,
+
                 value="Predict Property Only",
             ),
 
@@ -174,7 +174,7 @@ def right_view():
                         },
                     ),
 
-                ], id="Predict Property And Screen RangeSlider"),
+                ], id="Predict Property And Screen RangeSlider", style={"display": "none"}),
 
 
             # dbc.Switch(

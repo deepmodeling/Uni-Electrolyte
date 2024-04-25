@@ -6,19 +6,21 @@ import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
 from views.predict_properties import left_view,right_view
 
-# @callback(
-#     Output("Predict Property And Screen","style", allow_duplicate=True),
-#     [Input("Screen molecules from database","n_clicks"),],
-#     prevent_initial_call=True,
-# )
-# def show_screen_switch(value):
-#     print("show_screen_switch")
-#     if value=="Predict Property And Screen":
-#         return None
-#     else:
-#         return ""
-
-
+@callback(
+    Output("Predict Property And Screen RangeSlider","style", allow_duplicate=True),
+    [Input({
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "screen-switch",
+                },"value"),],
+    prevent_initial_call=True,
+)
+def show_screen_switch(value):
+    print("show_screen_switch")
+    if value=="Predict Property And Screen":
+        return None
+    else:
+        return {"display": "none"}
 
 @callback(
      [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
