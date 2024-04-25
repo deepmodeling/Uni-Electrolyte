@@ -23,7 +23,7 @@ import controllers.screen_molecules_from_database # noqa
 import controllers.Query_molecules_with_similar_properties # noqa
 import controllers.Generate_molecules_and_predict_properties # noqa
 import controllers.Retrosynthesis # noqa
-import controllers.Interfacial_reaction # noqa
+# import controllers.Interfacial_reaction # noqa
 
 
 from ids import KETCHER_COMPONENT_ID
