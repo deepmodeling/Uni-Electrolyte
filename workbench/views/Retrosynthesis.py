@@ -19,7 +19,7 @@ def middle_view():
                     "name": "Input Mode - Options ",
                 },
                 options=[
-                    {"label": "Upload molecules with csv files ", "value": "Upload molecules with csv files "},
+                    {"label": "Upload molecules with file ", "value": "Upload molecules with file "},
                     {"label": "Draw a molecule", "value": "Draw a molecule"},
 
                 ],
@@ -53,14 +53,14 @@ def middle_view():
             html.Div(
                 du.Upload(
                     id="upload-Retrosynthesis-input",
-                    text="Drag and Drop or Select Files (accept .csv ,with 'smiles' or 'SMILES' column)",
+                    text="Drag and Drop or Select Files ( One SMILES per line)",
                     max_files=1,
                     max_file_size=5 * 1024,  # 5GB
                     disabled=False,
                     pause_button=False,
                     cancel_button=False,
                     text_disabled="Log in to upload files",
-                    filetypes=["csv"],
+                    #filetypes=["csv"],
                     default_style={
                         "width": "155px",
                         "height": "80px",
@@ -75,6 +75,11 @@ def middle_view():
                         "minHeight": "40px",
                     },
                 ),
+                id="Retrosynthesis_upload-input",
+                style=
+                {
+                    "display": "none",
+                },
             ),
             dbc.Button(
                 "Start Exploration",

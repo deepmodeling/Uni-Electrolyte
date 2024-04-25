@@ -7,6 +7,28 @@ from views.helper import render_section, render_secondary_section
 from views.Retrosynthesis import  middle_view
 
 
+@callback(
+    [
+        Output("Retrosynthesis Draw a molecule options", "style", allow_duplicate=True),
+        Output("Retrosynthesis_upload-input","style", allow_duplicate=True),
+
+
+    ],
+    [Input({
+                    "view": "Retrosynthesis",
+                    "type": "input",
+                    "name": "Input Mode - Options ",
+                },"value"),],
+    prevent_initial_call=True,
+)
+def show_retro_switch(value):
+    print("show_gen_switch")
+    if value=="Upload molecules with file ":
+        return None,{"display": "none"}
+    elif value=="Draw a molecule":
+        return {"display": "none"},None
+    else:
+        return {"display": "none"},{"display": "none"}
 
 
 @callback(

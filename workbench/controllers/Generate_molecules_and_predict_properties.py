@@ -42,7 +42,7 @@ def show_gen_switch(value):
     elif value=="Structure Finger Print":
         return {"display": "none"},{"display": "none"},None
     else:
-        return {"display": "none"},{"display": "none"},{"display": "none"},{"display": "none"}
+        return {"display": "none"},{"display": "none"},{"display": "none"}
 
 @callback(
      [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
