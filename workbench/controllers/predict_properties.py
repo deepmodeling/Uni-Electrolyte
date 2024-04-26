@@ -26,7 +26,7 @@ def show_screen_switch(value):
      [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
      Output("right sidebar","sidebarChildren", allow_duplicate=True),
      Output("Exploration Details","sidebarChildren", allow_duplicate=True),
-     Output("Exploration Details","mainChildren", allow_duplicate=True),],
+     Output("Exploration Details Content view","children", allow_duplicate=True),],
     [Input("Predict properties", "n_clicks")],
     prevent_initial_call=True,
 )

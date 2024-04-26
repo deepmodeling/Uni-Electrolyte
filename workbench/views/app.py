@@ -296,6 +296,17 @@ def render_app():
                                 },
                             ),
                             dbc.Row(
+                                "",
+                                id="Exploration Details Content view",
+                                style={
+                                    "flex": "8",
+                                    "minHeight": "400px",
+                                    "height": "100%",
+                                    "alignItems": "flexStart",
+                                    "width": "100%",
+                                },
+                            ),
+                            dbc.Row(
                                 render_section("", "", running_view()),
                                 id="row-running-view",
                                 style={
@@ -306,17 +317,7 @@ def render_app():
                                     "alignItems": "flexStart",
                                 },
                             ),
-                            dbc.Row(
-                                render_section("", "main view", editor_view()),
-                                id="row-main-view",
-                                style={
-                                    "flex": "8",
-                                    "display": "none",
-                                    "minHeight": "400px",
-                                    "height": "100%",
-                                    "alignItems": "flexStart",
-                                },
-                            ),
+
                         ],
                         mainStyle={
                             "height": "100%",
