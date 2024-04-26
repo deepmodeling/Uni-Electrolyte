@@ -45,7 +45,7 @@ def show_Retrosynthesis(n_clicks):
 
 
 
-        right_sidebar= dbc.Row(
+        middle= dbc.Row(
                             render_secondary_section(
                                 "Options", "", middle_view()
                             ),
@@ -58,6 +58,6 @@ def show_Retrosynthesis(n_clicks):
                             },
                         ),
                         # UserTrack.get_component(),
-        return  right_sidebar,""
+        return  middle,""
     else:
-        return "","",""
+        return  "",""
