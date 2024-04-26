@@ -171,14 +171,42 @@ def render_app():
             ),
             DashPaneSplit(
                 id="left sidebar",
-                sidebarTitle="Upload files",
+                sidebarTitle="Session",
                 containerStyle={"height": "calc(100% - 55px)"},
                 splitMode="vertical",
                 panelOrder="sidebarFirst",
                 sidebarDefaultSize=200,
                 sidebarMinSize=200,
                 sidebarStyle={"display": "block"},
-                sidebarChildren="Upload files sidebarChildren",
+                sidebarChildren=#"Upload files sidebarChildren",
+                [
+                    dbc.Row(
+                        render_section(
+                            "Start a New Project", "", starter_view()
+                        ),
+                        id="row-starter-view",
+                        style={
+                            "flex": "8",
+                            "minHeight": "400px",
+                            "height": "100%",
+                            "alignItems": "flexStart",
+                            "width": "100%",
+                        },
+                    ),
+
+                    dbc.Row(
+                        render_section("", "", running_view()),
+                        id="row-running-view",
+                        style={
+                            "flex": "8",
+                            "display": "none",
+                            "minHeight": "400px",
+                            "height": "100%",
+                            "alignItems": "flexStart",
+                        },
+                    ),
+
+                ],
                 # [
                 #     dbc.Row(
                 #         [
@@ -280,45 +308,8 @@ def render_app():
                         #         "background": "#f9f9f9",
                         #     },
                         # ),
-                        mainChildren=#"Exploration Details mainChildren",
-                        [
-                            dbc.Row(
-                                render_section(
-                                    "Start a New Project", "", starter_view()
-                                ),
-                                id="row-starter-view",
-                                style={
-                                    "flex": "8",
-                                    "minHeight": "400px",
-                                    "height": "100%",
-                                    "alignItems": "flexStart",
-                                    "width": "100%",
-                                },
-                            ),
-                            dbc.Row(
-                                "",
-                                id="Exploration Details Content view",
-                                style={
-                                    "flex": "8",
-                                    "minHeight": "400px",
-                                    "height": "100%",
-                                    "alignItems": "flexStart",
-                                    "width": "100%",
-                                },
-                            ),
-                            dbc.Row(
-                                render_section("", "", running_view()),
-                                id="row-running-view",
-                                style={
-                                    "flex": "8",
-                                    "display": "none",
-                                    "minHeight": "400px",
-                                    "height": "100%",
-                                    "alignItems": "flexStart",
-                                },
-                            ),
-
-                        ],
+                        mainChildren="Exploration Details mainChildren",
+                        #,
                         mainStyle={
                             "height": "100%",
                             "width": "100%",

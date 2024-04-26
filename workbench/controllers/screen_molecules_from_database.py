@@ -9,7 +9,7 @@ from views.screen_molecules_from_database import options_view
 
 
 @callback(
-    [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
+    [#Output("left sidebar", "sidebarChildren", allow_duplicate=True),
      Output("right sidebar", "sidebarChildren", allow_duplicate=True),
      Output("Exploration Details", "sidebarChildren", allow_duplicate=True),
      Output("Exploration Details", "mainChildren", allow_duplicate=True), ],
@@ -35,6 +35,6 @@ def show_predict_properties(n_clicks):
                         ),
                         # UserTrack.get_component(),
 
-        return "",right_sidebar,"",""
+        return  right_sidebar,"",""
     else:
-        return "","","",""
+        return "","",""

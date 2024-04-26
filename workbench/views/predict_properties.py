@@ -4,42 +4,90 @@ from dash.exceptions import PreventUpdate
 from dash import html, dcc
 import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
-
+import dash_ketcher
 import dash_uploader as du
 
-def left_view():
+def middle_view():
     return html.Div(
         [
-        du.Upload(
-            id=
-            {
-                "view": "predict_properties",
-                "type": "input",
-                "name": "upload",
-            }
-            ,
-            text="Drag and drop or select files (File with one SMILES per line or xyz file)",
-            max_files=1,
-            max_file_size=5 * 1024,  # 5GB
-            disabled=False,
-            pause_button=False,
-            cancel_button=False,
-            text_disabled="Log in to upload files",
-            #filetypes=["csv"],
-            default_style={
-                "width": "155px",
-                "height": "80px",
-                "cursor": "pointer",
-                "lineHeight": "10px",
-                "borderWidth": "1px",
-                "borderStyle": "dashed",
-                "borderRadius": "5px",
-                "textAlign": "center",
-                "marginTop": "1rem",
-                "marginBottom": "1rem",
-                "minHeight": "40px",
-            },
-        ),
+            dbc.Label("Input mode options ", className="dp-form-label"),
+            dbc.Select(
+                id=
+                {
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "Input Mode - Options ",
+                },
+                options=[
+                    {"label": "Upload molecules with file ", "value": "Upload molecules with file "},
+                    {"label": "Draw a molecule", "value": "Draw a molecule"},
+
+                ],
+                value="Draw a molecule",
+            ),
+
+            html.Div(
+                [
+                    dbc.Label("Molecule to be predicted", className="dp-form-label"),
+                    # html.P("The targeted HOMO interval. In unit eV.", className="intro"),
+                    dbc.Input(
+                        id="predict_properties_input-molecule",
+                        name="molecule",
+                        placeholder="SMILES required",
+                        style={"width": "755px"},
+                        valid=False,
+                        value="",
+                    ),
+                    html.Div(
+                        dash_ketcher.DashKetcher(
+                            id="predict_properties_dash_ketcher",
+                            input_molecule="",
+                            style={
+                                "height": "450px",
+                                "width": "100%",
+                                # "paddingBottom": "50px",
+                            },
+                        ),
+                    ),
+                ], id="predict_properties Draw a molecule options"),
+            html.Div(
+                du.Upload(
+                    id=
+                    {
+                        "view": "predict_properties",
+                        "type": "input",
+                        "name": "upload",
+                    }
+                    ,
+                    text="Drag and drop or select files (File with one SMILES per line or xyz file)",
+                    max_files=1,
+                    max_file_size=5 * 1024,  # 5GB
+                    disabled=False,
+                    pause_button=False,
+                    cancel_button=False,
+                    text_disabled="Log in to upload files",
+                    # filetypes=["csv"],
+                    default_style={
+                        "width": "155px",
+                        "height": "80px",
+                        "cursor": "pointer",
+                        "lineHeight": "10px",
+                        "borderWidth": "1px",
+                        "borderStyle": "dashed",
+                        "borderRadius": "5px",
+                        "textAlign": "center",
+                        "marginTop": "1rem",
+                        "marginBottom": "1rem",
+                        "minHeight": "40px",
+                    },
+                ),
+                id="predict_properties_upload-input",
+                style=
+                {
+                    "display": "none",
+                },
+            ),
+
             dbc.Label("Target", className="dp-form-label"),
             html.P("Target properties to be predicted.", className="intro"),
 
@@ -61,8 +109,13 @@ def left_view():
                 value=["Binding energy", "Dielectric constant", "Viscosity", "HOMO", "LUMO"],
             ),
             html.Br(),
+
+
         ]
+
     )
+
+
 def right_view():
     return html.Div(
         [
@@ -180,7 +233,8 @@ def right_view():
                         },
                     ),
 
-                ], id="Predict property and screen RangeSlider", style={"display": "none"}),
+                ], id="Predict property and screen RangeSlider", style={"display": "none"}
+            ),
 
 
             # dbc.Switch(

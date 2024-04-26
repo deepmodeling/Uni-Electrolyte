@@ -32,7 +32,7 @@ def show_retro_switch(value):
 
 
 @callback(
-     [Output("left sidebar", "sidebarChildren", allow_duplicate=True),
+     [#Output("left sidebar", "sidebarChildren", allow_duplicate=True),
          Output("Exploration Details","mainChildren", allow_duplicate=True),
       Output("right sidebar","sidebarChildren", allow_duplicate=True)],
     [Input("Retrosynthesis", "n_clicks")],
@@ -58,6 +58,6 @@ def show_Retrosynthesis(n_clicks):
                             },
                         ),
                         # UserTrack.get_component(),
-        return "",right_sidebar,""
+        return  right_sidebar,""
     else:
         return "","",""
