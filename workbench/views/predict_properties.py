@@ -11,7 +11,13 @@ def left_view():
     return html.Div(
         [
         du.Upload(
-            id="upload-predict-input-dataset",
+            id=
+            {
+                "view": "predict_properties",
+                "type": "input",
+                "name": "upload",
+            }
+            ,
             text="Drag and drop or select files (File with one SMILES per line or xyz file)",
             max_files=1,
             max_file_size=5 * 1024,  # 5GB

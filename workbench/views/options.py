@@ -2,7 +2,7 @@ import dash_bootstrap_components as dbc
 from dash import html, dcc
 from views.helper import get_modalable_molecule
 
-
+"""
 def render_rerun_backup(smiles, viewport=None):
     return (
         [
@@ -128,3 +128,4 @@ def options_view():
             ),
         ],
     )
+"""
