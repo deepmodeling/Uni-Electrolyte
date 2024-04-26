@@ -12,5 +12,3 @@ pip install -r requirements.txt -i  https://repo.mlops.dp.tech/repository/pypi-g
 pip install pydantic --upgrade
 #ADD . ./
 #ENTRYPOINT ["/app/run_service.sh"]
-
-http://skut1130282.bohrium.tech:50000/

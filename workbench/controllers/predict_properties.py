@@ -50,7 +50,7 @@ def show_predict_properties(n_clicks):
 
         right_sidebar= dbc.Row(
                             render_secondary_section(
-                                "Configure Exploration", "", right_view()
+                                "Configure exploration", "", right_view()
                             ),
                             id="row-options-view",
                             style={

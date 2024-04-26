@@ -171,14 +171,14 @@ def render_app():
             ),
             DashPaneSplit(
                 id="left sidebar",
-                sidebarTitle="Upload Files",
+                sidebarTitle="Upload files",
                 containerStyle={"height": "calc(100% - 55px)"},
                 splitMode="vertical",
                 panelOrder="sidebarFirst",
                 sidebarDefaultSize=200,
                 sidebarMinSize=200,
                 sidebarStyle={"display": "block"},
-                sidebarChildren="Upload Files sidebarChildren",
+                sidebarChildren="Upload files sidebarChildren",
                 # [
                 #     dbc.Row(
                 #         [
@@ -208,7 +208,7 @@ def render_app():
                     # [
                     #     dbc.Row(
                     #         render_secondary_section(
-                    #             "Configure Exploration", "", options_view()
+                    #             "Configure exploration", "", options_view()
                     #         ),
                     #         id="row-options-view",
                     #         style={

@@ -1,5 +1,5 @@
 install:
-	pip install -r requirements.txt
+	pip install -r requirements.txt  -i  https://repo.mlops.dp.tech/repository/pypi-group/simple
 run-caddy:
 	bash run_caddy.sh
 run:
