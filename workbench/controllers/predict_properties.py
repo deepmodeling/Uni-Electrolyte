@@ -60,7 +60,7 @@ def show_predict_properties(n_clicks):
     if n_clicks is not None:
         # 在这里编写你要输出的内容
 
-        middle_sidebar= dbc.Row(
+        middle_main= dbc.Row(
                             render_secondary_section(
                                 "Upload Files", "",middle_view()
                             ),
@@ -86,7 +86,7 @@ def show_predict_properties(n_clicks):
                             },
                         ),
                         # UserTrack.get_component(),
-        return right_sidebar,middle_sidebar,""
+        return right_sidebar,"",middle_main
     else:
         return  "","",""
 
