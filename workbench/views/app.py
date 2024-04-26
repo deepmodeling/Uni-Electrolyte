@@ -280,44 +280,44 @@ def render_app():
                         #         "background": "#f9f9f9",
                         #     },
                         # ),
-                        mainChildren="Exploration Details mainChildren",
-                        # [
-                        #     dbc.Row(
-                        #         render_section(
-                        #             "Start a New Project", "", starter_view()
-                        #         ),
-                        #         id="row-starter-view",
-                        #         style={
-                        #             "flex": "8",
-                        #             "minHeight": "400px",
-                        #             "height": "100%",
-                        #             "alignItems": "flexStart",
-                        #             "width": "100%",
-                        #         },
-                        #     ),
-                        #     dbc.Row(
-                        #         render_section("", "", running_view()),
-                        #         id="row-running-view",
-                        #         style={
-                        #             "flex": "8",
-                        #             "display": "none",
-                        #             "minHeight": "400px",
-                        #             "height": "100%",
-                        #             "alignItems": "flexStart",
-                        #         },
-                        #     ),
-                        #     dbc.Row(
-                        #         render_section("", "main view", editor_view()),
-                        #         id="row-main-view",
-                        #         style={
-                        #             "flex": "8",
-                        #             "display": "none",
-                        #             "minHeight": "400px",
-                        #             "height": "100%",
-                        #             "alignItems": "flexStart",
-                        #         },
-                        #     ),
-                        # ],
+                        mainChildren=#"Exploration Details mainChildren",
+                        [
+                            dbc.Row(
+                                render_section(
+                                    "Start a New Project", "", starter_view()
+                                ),
+                                id="row-starter-view",
+                                style={
+                                    "flex": "8",
+                                    "minHeight": "400px",
+                                    "height": "100%",
+                                    "alignItems": "flexStart",
+                                    "width": "100%",
+                                },
+                            ),
+                            dbc.Row(
+                                render_section("", "", running_view()),
+                                id="row-running-view",
+                                style={
+                                    "flex": "8",
+                                    "display": "none",
+                                    "minHeight": "400px",
+                                    "height": "100%",
+                                    "alignItems": "flexStart",
+                                },
+                            ),
+                            dbc.Row(
+                                render_section("", "main view", editor_view()),
+                                id="row-main-view",
+                                style={
+                                    "flex": "8",
+                                    "display": "none",
+                                    "minHeight": "400px",
+                                    "height": "100%",
+                                    "alignItems": "flexStart",
+                                },
+                            ),
+                        ],
                         mainStyle={
                             "height": "100%",
                             "width": "100%",

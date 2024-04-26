@@ -57,31 +57,31 @@ def starter_view():
                 id="error-alert",
                 style={"width": "755px"},
             ),
-            html.H6("Configure Target Molecule", style={"marginTop": "2em"}),
-            html.P("molecule to be synthesized", className="intro"),
-            dbc.Input(
-                id="input-molecule",
-                name="molecule",
-                placeholder="SMILES required",
-                style={"width": "755px"},
-                valid=False,
-                value="",
-            ),
-            html.Div(
-                id="input-molecule-error-alert",
-                style={"width": "755px"},
-            ),
-            # html.Div(id="molecule_editor_view"),
-            html.Div(
-                dash_ketcher.DashKetcher(
-                    id=KETCHER_COMPONENT_ID.get_identifier(),
-                    input_molecule="",
-                    style={
-                        "height": "450px",
-                        "width": "100%",
-                        # "paddingBottom": "50px",
-                    },
-                ),
-            ),
+            # html.H6("Configure Target Molecule", style={"marginTop": "2em"}),
+            # html.P("molecule to be synthesized", className="intro"),
+            # dbc.Input(
+            #     id="input-molecule",
+            #     name="molecule",
+            #     placeholder="SMILES required",
+            #     style={"width": "755px"},
+            #     valid=False,
+            #     value="",
+            # ),
+            # html.Div(
+            #     id="input-molecule-error-alert",
+            #     style={"width": "755px"},
+            # ),
+            # # html.Div(id="molecule_editor_view"),
+            # html.Div(
+            #     dash_ketcher.DashKetcher(
+            #         id=KETCHER_COMPONENT_ID.get_identifier(),
+            #         input_molecule="",
+            #         style={
+            #             "height": "450px",
+            #             "width": "100%",
+            #             # "paddingBottom": "50px",
+            #         },
+            #     ),
+            # ),
         ],
     )
