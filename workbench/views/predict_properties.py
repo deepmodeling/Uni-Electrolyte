@@ -10,6 +10,7 @@ import dash_uploader as du
 def middle_view():
     return html.Div(
         [
+
             dbc.Label("Input mode options ", className="dp-form-label"),
             dbc.Select(
                 id=
@@ -274,6 +275,11 @@ def right_view():
             #    value=False,
             #    disabled=True,
             # ),
+            dbc.Alert(None,id={
+                            "view": "predict_properties",
+                            "type": "input",
+                            "name": "alert",
+                        }),
             dbc.Button(
                 "Start exploration",
                 id="predict_properties_btn-run",

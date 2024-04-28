@@ -125,6 +125,11 @@ def show_predict_properties(n_clicks):
         Topics.Slots.job_id.get_output("data",allow_duplicate=True),
         Topics.Slots.job_status.get_output("data",allow_duplicate=True),
         Topics.Slots.target_molecule.get_output("data",allow_duplicate=True),
+        Output({
+                            "view": "predict_properties",
+                            "type": "input",
+                            "name": "alert",
+                        },"children",allow_duplicate=True),
     ],
     [
         Input("predict_properties_btn-run", "n_clicks"),
@@ -223,27 +228,35 @@ def do_run_exploration(
     #params,
     #target_molecule_state,
     bohrium_project_id,
-predict_properties,input_a_molecule,input_a_molecule_options,draw_a_molecule,draw_a_molecule_options,
+input_mode_options,input_a_molecule,input_a_molecule_options,draw_a_molecule,draw_a_molecule_options,
 upload,upload_input,target_selection,screen_switch,HOMO_range_rangeSlider,LUMO_range_rangeSlider,
 binding_energy_range_rangeSlider,log_viscosity_range_rangeSlider,log_dielectric_constant_range_rangeSlider,
 predict_property_and_screen_rangeSlider
 ):
     if n_clicks:
         print("dddddddddddddddd")
+        print("n_clicks",n_clicks)
+        print("exploration_name",exploration_name)
+        print("input_exp_name",input_exp_name)
+        print("token",token)
+        print("bohrium_project_id",bohrium_project_id)
+        print("input_mode_options",input_mode_options)
+        print("input_a_molecule",input_a_molecule)
+        print("input_a_molecule_options",input_a_molecule_options)
+        print("draw_a_molecule",draw_a_molecule)
+        print("draw_a_molecule_options",draw_a_molecule_options)
+        print("upload",upload)
+        print("upload_input",upload_input)
+        print("target_selection",target_selection)
+        print("screen_switch",screen_switch)
+        print("HOMO_range_rangeSlider",HOMO_range_rangeSlider)
+        print("LUMO_range_rangeSlider",LUMO_range_rangeSlider)
+        print("binding_energy_range_rangeSlider",binding_energy_range_rangeSlider)
+        print("log_viscosity_range_rangeSlider",log_viscosity_range_rangeSlider)
+        print("log_dielectric_constant_range_rangeSlider",log_dielectric_constant_range_rangeSlider)
+        print("predict_property_and_screen_rangeSlider",predict_property_and_screen_rangeSlider)
+        return "","","","","","dddddddd"
 
-    print(n_clicks,
-    exploration_name,
-    input_exp_name,
-    #target_molecule,
-    token,
-    #params,
-    #target_molecule_state,
-    bohrium_project_id)
-    print(predict_properties,input_a_molecule,input_a_molecule_options,draw_a_molecule,draw_a_molecule_options,
-upload,upload_input,target_selection,screen_switch,HOMO_range_rangeSlider,LUMO_range_rangeSlider,
-binding_energy_range_rangeSlider,log_viscosity_range_rangeSlider,log_dielectric_constant_range_rangeSlider,
-predict_property_and_screen_rangeSlider)
-    return "", "", "", "", ""
     if not n_clicks:
         raise PreventUpdate
 
