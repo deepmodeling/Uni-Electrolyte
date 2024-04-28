@@ -35,7 +35,7 @@ app = Dash(
 app.layout = render_app()
 app._favicon = "favicon.png"
 
-du.configure_upload(app, UPLOAD_ROOT)
+du.configure_upload(app, UPLOAD_ROOT, upload_api="/uni-electrolyte/workbench/API/dash-uploader")
 
 
 @app.server.after_request
