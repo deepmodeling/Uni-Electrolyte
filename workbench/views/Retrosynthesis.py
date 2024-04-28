@@ -16,7 +16,7 @@ def middle_view():
                 {
                     "view": "Retrosynthesis",
                     "type": "input",
-                    "name": "Input Mode - Options ",
+                    "name": "input_mode_options",
                 },
                 options=[
                     {"label": "Upload molecules with file ", "value": "Upload molecules with file "},

@@ -17,7 +17,7 @@ from views.Retrosynthesis import  middle_view
     [Input({
                     "view": "Retrosynthesis",
                     "type": "input",
-                    "name": "Input Mode - Options ",
+                    "name": "input_mode_options",
                 },"value"),],
     prevent_initial_call=True,
 )

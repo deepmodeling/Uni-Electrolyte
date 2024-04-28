@@ -13,11 +13,7 @@ def middle_view():
             dbc.Label("Input mode options ", className="dp-form-label"),
             dbc.Select(
                 id=
-                {
-                    "view": "predict_properties",
-                    "type": "input",
-                    "name": "Input Mode - Options ",
-                },
+                {"view": "predict_properties", "type": "input", "name": "input_mode_options"},
                 options=[
                     {"label": "Input a molecule with SMILES", "value": "Input a molecule with SMILES"},
                     {"label": "Upload molecules with file ", "value": "Upload molecules with file "},
@@ -33,14 +29,18 @@ def middle_view():
                         id={
                     "view": "predict_properties",
                     "type": "input",
-                    "name": "input a molecule",
+                    "name": "input_a_molecule",
                 },
                         name="molecule",
                         placeholder="SMILES required",
                         style={"width": "755px"},
                         valid=False,
                         value="",
-                    )],id="predict_properties input a molecule options",
+                    )],id= {
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "input_a_molecule_options",
+                },
                 style={
                     "display": "none",
                 }
@@ -55,7 +55,7 @@ def middle_view():
                             id={
                     "view": "predict_properties",
                     "type": "input",
-                    "name": "draw a molecule",
+                    "name": "draw_a_molecule",
                 },
                             input_molecule="",
                             style={
@@ -65,7 +65,11 @@ def middle_view():
                             },
                         ),
                     ),
-                ], id="predict_properties Draw a molecule options"),
+                ], id= {
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "draw_a_molecule_options",
+                }),
             html.Div(
                 du.Upload(
                     id=
@@ -97,7 +101,11 @@ def middle_view():
                         "minHeight": "40px",
                     },
                 ),
-                id="predict_properties_upload-input",
+                id= {
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "upload_input",
+                },
                 style=
                 {
                     "display": "none",
@@ -144,7 +152,7 @@ def right_view():
                 {
                     "view": "predict_properties",
                     "type": "input",
-                    "name": "screen-switch",
+                    "name": "screen_switch",
                 },
                 options=[
                     {"label": "Predict property only", "value": "Predict property only"},
@@ -171,7 +179,7 @@ def right_view():
                         id={
                             "view": "predict_properties",
                             "type": "input",
-                            "name": "HOMO range RangeSlider",
+                            "name": "HOMO_range_rangeSlider",
                         },
                     ),
                     dbc.Label("LUMO range", className="dp-form-label"),
@@ -189,7 +197,7 @@ def right_view():
                         id={
                             "view": "predict_properties",
                             "type": "input",
-                            "name": "LUMO range RangeSlider",
+                            "name": "LUMO_range_rangeSlider",
                         },
                     ),
                     dbc.Label("Binding energy range ", className="dp-form-label"),
@@ -207,7 +215,7 @@ def right_view():
                         id={
                             "view": "predict_properties",
                             "type": "input",
-                            "name": "Binding Energy Range RangeSlider",
+                            "name": "binding_energy_range_rangeSlider",
                         },
                     ),
                     dbc.Label("Log viscosity range ", className="dp-form-label"),
@@ -226,7 +234,7 @@ def right_view():
                         id={
                             "view": "predict_properties",
                             "type": "input",
-                            "name": "Log Viscosity Range RangeSlider",
+                            "name": "log_viscosity_range_rangeSlider",
                         },
                     ),
                     dbc.Label("Log dielectric constant range", className="dp-form-label"),
@@ -245,11 +253,15 @@ def right_view():
                         id={
                             "view": "predict_properties",
                             "type": "input",
-                            "name": "Log Dielectric Constant Range RangeSlider",
+                            "name": "log_dielectric_constant_range_rangeSlider",
                         },
                     ),
 
-                ], id="Predict property and screen RangeSlider", style={"display": "none"}
+                ], id= {
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "predict_property_and_screen_rangeSlider",
+                }, style={"display": "none"}
             ),
 
 

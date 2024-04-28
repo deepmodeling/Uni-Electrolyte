@@ -23,7 +23,7 @@ def options_view():
                 id={
                     "view": "screen_molecules_from_database",
                     "type": "input",
-                    "name": "HOMO range RangeSlider",
+                    "name": "HOMO_range_rangeSlider",
                 },
             ),
             dbc.Label("LUMO range", className="dp-form-label"),
@@ -41,7 +41,7 @@ def options_view():
                 id={
                     "view": "screen_molecules_from_database",
                     "type": "input",
-                    "name": "LUMO range RangeSlider",
+                    "name": "LUMO_range_rangeSlider",
                 },
             ),
             dbc.Label("Binding energy range ", className="dp-form-label"),
@@ -59,7 +59,7 @@ def options_view():
                 id={
                     "view": "screen_molecules_from_database",
                     "type": "input",
-                    "name": "Binding Energy Range RangeSlider",
+                    "name": "binding_energy_range_rangeSlider",
                 },
             ),
             dbc.Label("Log viscosity range ", className="dp-form-label"),
@@ -78,7 +78,7 @@ def options_view():
                 id={
                     "view": "screen_molecules_from_database",
                     "type": "input",
-                    "name": "Log Viscosity Range RangeSlider",
+                    "name": "log_viscosity_range_rangeSlider",
                 },
             ),
             dbc.Label("Log dielectric constant range", className="dp-form-label"),
@@ -97,7 +97,7 @@ def options_view():
                 id={
                     "view": "screen_molecules_from_database",
                     "type": "input",
-                    "name": "Log Dielectric Constant Range RangeSlider",
+                    "name": "log_dielectric_constant_range_rangeSlider",
                 },
             ),
 

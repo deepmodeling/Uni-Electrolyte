@@ -43,7 +43,7 @@ def middle_view():
                     id={
                         "view": "Generate_molecules_and_predict_properties",
                         "type": "input",
-                        "name": "HOMO range RangeSlider",
+                        "name": "HOMO_range_rangeSlider",
                     },
                 ),
                 dbc.Label("LUMO range", className="dp-form-label"),
@@ -61,7 +61,7 @@ def middle_view():
                     id={
                         "view":"Generate_molecules_and_predict_properties",
                         "type": "input",
-                        "name": "LUMO range RangeSlider",
+                        "name": "LUMO_range_rangeSlider",
                     },
                 ),
 
