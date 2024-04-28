@@ -47,14 +47,14 @@ def show_screen_switch(value):
 )
 def show_input_switch(value):
     print("show_gen_switch")
-    if value=="Upload molecules with file ":
+    if value=="Input a molecule with SMILES":
         return None,{"display": "none"},{"display": "none"}
     if value=="Draw a molecule":
         return {"display": "none"}, None,{"display": "none"}
     elif value=="Upload molecules with file " :
         return {"display": "none"},{"display": "none"},None
     else:
-        return {"display": "none"},{"display": "none"}
+        return {"display": "none"},{"display": "none"},{"display": "none"}
 
 
 @callback(
