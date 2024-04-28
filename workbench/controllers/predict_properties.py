@@ -1,3 +1,11 @@
+
+from launching.app import submit_job, get_job_status, get_job_result
+from models.session import Session, Exploration, Job, JobStatus, ExplorationStatus
+from utils.token_helper import get_user_id
+from utils.id import get_uuid
+from utils.tracer import trace_time
+from utils.enhanced_callback import callback_with_metrics
+
 from loguru import logger
 from dash import callback, no_update, ALL, ctx, Input, State,Output
 from dash.exceptions import PreventUpdate
@@ -24,7 +32,7 @@ def show_screen_switch(value):
 
 
 @callback(
-    [
+    [   Output("predict_properties input a molecule options","style",allow_duplicate=True),
         Output("predict_properties Draw a molecule options", "style", allow_duplicate=True),
         Output("predict_properties_upload-input","style", allow_duplicate=True),
 
@@ -39,10 +47,12 @@ def show_screen_switch(value):
 )
 def show_input_switch(value):
     print("show_gen_switch")
+    if value=="Upload molecules with file ":
+        return None,{"display": "none"},{"display": "none"}
     if value=="Draw a molecule":
-        return None,{"display": "none"}
+        return {"display": "none"}, None,{"display": "none"}
     elif value=="Upload molecules with file " :
-        return {"display": "none"},None
+        return {"display": "none"},{"display": "none"},None
     else:
         return {"display": "none"},{"display": "none"}
 
@@ -91,6 +101,110 @@ def show_predict_properties(n_clicks):
         return  "","",""
 
 
+"""
+@callback_with_metrics(
+    [
+        Topics.Slots.exploration_name.get_output("data"),
+        Topics.Slots.exploration_status.get_output("data"),
+        Topics.Slots.job_id.get_output("data"),
+        Topics.Slots.job_status.get_output("data"),
+        Topics.Slots.target_molecule.get_output("data"),
+    ],
+    [
+        Input("predict_properties_btn-run", "n_clicks"),
+    ],
+    [
+        Topics.Slots.exploration_name.get_state("data"),
+        State("input-project-name", "value"),
+        #State("input-molecule", "value"),
+        Topics.Slots.token.get_state("data"),
+        #Topics.Slots.options.get_state("data"),
+        Topics.Slots.target_molecule.get_state("data"),
+        State("input-bohrium-project", "value"),
+State({
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "screen-switch",
+                }, "value"),
+
+    ],
+    prevent_initial_call=True,
+)
+@trace_time
+def do_run_exploration(
+    n_clicks,
+    exploration_name,
+    input_exp_name,
+    #target_molecule,
+    token,
+    #params,
+    target_molecule_state,
+    bohrium_project_id,
+):
+    if not n_clicks:
+        raise PreventUpdate
+
+    # do_run_exploration
+    # submit jobs
+    # save session to redis( only put current exploration)
+    # save exploration_name if not state.exploration_name
+    # save current_exploration_status to init
+    # save current_jobs_status to init
+    # save current_jobs_id to init
+    # performance issue: do_run_exploration took 3.8596789836883545 seconds
+    if target_molecule_state:
+        target_molecule = target_molecule_state
+
+    user_id = get_user_id(token)
+    if not user_id:
+        logger.error("failed to get_user_id")
+        raise PreventUpdate
+    s = Session.load(user_id)
+    if not exploration_name:
+        exploration_name = input_exp_name
+    if not exploration_name:
+        logger.error("exploration_name is empty")
+        raise PreventUpdate
+    exp_idx = s.get_exploration_index(exploration_name)
+    size = len(s.explorations)
+    if exp_idx == -1:
+        exp = Exploration(
+            id=get_uuid(),
+            name=exploration_name,
+            target_molecule=target_molecule,
+            bohrium_project_id=bohrium_project_id,
+        )
+        s.explorations.append(exp)
+        exp_idx = size
+    else:
+        exp: Exploration = s.explorations[exp_idx]
+
+    # save params to topics and load params
+    if not params.get("input_ligand", ""):
+        params["input_ligand"] = target_molecule
+    logger.info(
+        f"start do_run_exploration {exploration_name} for {target_molecule} \n"
+        f"    params {params}"
+    )
+    params["brm_token"] = token
+    job_id = submit_job(
+        token,
+        params=params,
+        job_name=exploration_name,
+        bohrium_project_id=bohrium_project_id,
+    )
+    job = Job(id=job_id, name=job_id)
+    exp.jobs.append(job)
+    s.explorations[exp_idx] = exp
+    # s.updated_at = datetime.now()
+    s.save()
+    logger.info(
+        f"finish do_run_exploration exploration_name {exploration_name}, exp.status {exp.status},"
+        f" job_id {job_id}, job.status {job.status}"
+    )
+
+    return exploration_name, exp.status, job_id, job.status, target_molecule
+
 
 
 @callback(
@@ -134,3 +248,4 @@ def toggle_update_options(
     res["input_ligand"] = target_molecule
     logger.info(f"return res {res}")
     return res
+"""

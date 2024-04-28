@@ -19,28 +19,44 @@ def middle_view():
                     "name": "Input Mode - Options ",
                 },
                 options=[
+                    {"label": "Input a molecule with SMILES", "value": "Input a molecule with SMILES"},
                     {"label": "Upload molecules with file ", "value": "Upload molecules with file "},
                     {"label": "Draw a molecule", "value": "Draw a molecule"},
 
                 ],
                 value="Draw a molecule",
             ),
-
             html.Div(
-                [
-                    dbc.Label("Molecule to be predicted", className="dp-form-label"),
+                [dbc.Label("Molecule to be predicted", className="dp-form-label"),
                     # html.P("The targeted HOMO interval. In unit eV.", className="intro"),
                     dbc.Input(
-                        id="predict_properties_input-molecule",
+                        id={
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "input a molecule",
+                },
                         name="molecule",
                         placeholder="SMILES required",
                         style={"width": "755px"},
                         valid=False,
                         value="",
-                    ),
+                    )],id="predict_properties input a molecule options",
+                style={
+                    "display": "none",
+                }
+            ),
+            html.Div(
+                [
+                    dbc.Label("Molecule to be predicted", className="dp-form-label"),
+                    # html.P("The targeted HOMO interval. In unit eV.", className="intro"),
+
                     html.Div(
                         dash_ketcher.DashKetcher(
-                            id="predict_properties_dash_ketcher",
+                            id={
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "draw a molecule",
+                },
                             input_molecule="",
                             style={
                                 "height": "450px",
