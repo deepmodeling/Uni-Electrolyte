@@ -228,8 +228,9 @@ def do_run_exploration(
 # binding_energy_range_rangeSlider,log_viscosity_range_rangeSlider,log_dielectric_constant_range_rangeSlider,
 # predict_property_and_screen_rangeSlider
 ):
-    print("dddddddddddddddd")
-    print(n_clicks)
+    if n_clicks:
+        print("dddddddddddddddd")
+        print(n_clicks)
     return "","","","","",""
 #     print(n_clicks,
 #     exploration_name,
