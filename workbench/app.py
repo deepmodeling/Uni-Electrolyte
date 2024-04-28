@@ -3,7 +3,7 @@ import sys
 from dash import Dash
 import dash_bootstrap_components as dbc
 
-from controllers import *
+
 from loguru import logger
 from views import render_app
 from flask import request
@@ -36,7 +36,7 @@ app.layout = render_app()
 app._favicon = "favicon.png"
 
 du.configure_upload(app, UPLOAD_ROOT, upload_api="/uni-electrolyte/workbench/API/dash-uploader")
-
+from controllers import *
 
 @app.server.after_request
 def after_request(response: Response):
