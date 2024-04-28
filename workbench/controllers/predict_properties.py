@@ -121,7 +121,7 @@ def show_predict_properties(n_clicks):
 
 # 上传 csv 后，解析 header
 @du.callback(
-    output=Topics.Slots.predict_options.get_output("data", allow_duplicate=True),
+    output=Topics.Slots.predict_properties_options.get_output("data", allow_duplicate=True),
     state=[
         Topics.Slots.token.get_state("data"),
         Topics.Slots.predict_properties_options.get_state("data"),
