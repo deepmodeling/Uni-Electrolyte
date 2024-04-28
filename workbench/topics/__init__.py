@@ -20,6 +20,7 @@ class Topics:
         job_status = DashIDGenerator(page="session", type="topics", name="job_status")
         route_id = DashIDGenerator(page="session", type="topics", name="route_id")
         options = DashIDGenerator(page="session", type="topics", name="options")
+        predict_properties_options = DashIDGenerator(page="session", type="topics", name="predict_properties_options")
         tour_shown = DashIDGenerator(page="session", type="topics", name="tour_shown")
 
     @classmethod

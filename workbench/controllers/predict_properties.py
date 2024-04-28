@@ -5,7 +5,7 @@ from utils.token_helper import get_user_id
 from utils.id import get_uuid
 from utils.tracer import trace_time
 from utils.enhanced_callback import callback_with_metrics
-
+from utils.alert import status_alert
 from loguru import logger
 from dash import callback, no_update, ALL, ctx, Input, State,Output
 from dash.exceptions import PreventUpdate
@@ -14,6 +14,7 @@ import dash_bootstrap_components as dbc
 from views.helper import render_section, render_secondary_section
 from views.predict_properties import middle_view,right_view
 from topics import Topics
+import dash_uploader as du
 @callback(
     Output( {
                     "view": "predict_properties",
@@ -117,6 +118,38 @@ def show_predict_properties(n_clicks):
         return  "","",""
 
 
+
+# 上传 csv 后，解析 header
+@du.callback(
+    output=Topics.Slots.predict_options.get_output("data", allow_duplicate=True),
+    state=[
+        Topics.Slots.token.get_state("data"),
+        Topics.Slots.predict_properties_options.get_state("data"),
+    ],
+    id="upload-predict-input-dataset",
+)
+def upload_predict_data(status: du.UploadStatus, token, predict_properties_options: dict):
+    if not predict_properties_options:
+        predict_properties_options = {}
+    user_id = get_user_id(token)
+    if not user_id:
+        return no_update, no_update
+
+    session = Session.load(user_id)
+    if not session:
+        return status_alert("Session not found.", color="danger"), no_update
+
+    if status.is_completed:
+        if len(status.uploaded_files) == 0:
+            return status_alert("No file uploaded.", color="danger"), no_update
+        elif len(status.uploaded_files) > 1:
+            return status_alert("Only one file is allowed.", color="danger"), no_update
+        fpath = status.uploaded_files[0]
+        predict_properties_options["predict_data_path"] = str(fpath)
+        return predict_properties_options
+
+
+
 #"""
 @callback_with_metrics(
     [
@@ -139,7 +172,7 @@ def show_predict_properties(n_clicks):
         State("input-project-name", "value"),
         #State("input-molecule", "value"),
         Topics.Slots.token.get_state("data"),
-        #Topics.Slots.options.get_state("data"),
+        Topics.Slots.predict_properties_options.get_state("data"),
         #Topics.Slots.target_molecule.get_state("data"),
         State("input-bohrium-project", "value"),
         State({"view": "predict_properties", "type": "input", "name": "input_mode_options"}, "value"),
@@ -163,11 +196,7 @@ def show_predict_properties(n_clicks):
                     "type": "input",
                     "name": "draw_a_molecule_options",
                 },"value"),
-        State({
-                        "view": "predict_properties",
-                        "type": "input",
-                        "name": "upload",
-                    },"uploadedFileNames"),
+
         State({
                     "view": "predict_properties",
                     "type": "input",
@@ -225,11 +254,11 @@ def do_run_exploration(
     input_exp_name,
     #target_molecule,
     token,
-    #params,
+    params,
     #target_molecule_state,
     bohrium_project_id,
 input_mode_options,input_a_molecule,input_a_molecule_options,draw_a_molecule,draw_a_molecule_options,
-upload,upload_input_option,target_selection,screen_switch,HOMO_range_rangeSlider,LUMO_range_rangeSlider,
+upload_input_option,target_selection,screen_switch,HOMO_range_rangeSlider,LUMO_range_rangeSlider,
 binding_energy_range_rangeSlider,log_viscosity_range_rangeSlider,log_dielectric_constant_range_rangeSlider,
 predict_property_and_screen_rangeSlider
 ):
@@ -239,13 +268,13 @@ predict_property_and_screen_rangeSlider
         print("exploration_name",exploration_name)
         print("input_exp_name",input_exp_name)
         print("token",token)
+        print("params",params)
         print("bohrium_project_id",bohrium_project_id)
         print("input_mode_options",input_mode_options)
         print("input_a_molecule",input_a_molecule)
         print("input_a_molecule_options",input_a_molecule_options)
         print("draw_a_molecule",draw_a_molecule)
         print("draw_a_molecule_options",draw_a_molecule_options)
-        print("upload",upload)
         print("upload_input_option",upload_input_option)
         print("target_selection",target_selection)
         print("screen_switch",screen_switch)
