@@ -49,7 +49,7 @@ def show_screen_switch(value):
         Output( {
                     "view": "predict_properties",
                     "type": "input",
-                    "name": "upload_input",
+                    "name": "upload_input_option",
                 },"style", allow_duplicate=True),
 
 
@@ -167,11 +167,11 @@ def show_predict_properties(n_clicks):
                         "view": "predict_properties",
                         "type": "input",
                         "name": "upload",
-                    },"value"),
+                    },"uploadedFileNames"),
         State({
                     "view": "predict_properties",
                     "type": "input",
-                    "name": "upload_input",
+                    "name": "upload_input_option",
                 },"value"),
         State({
                     "view": "predict_properties",
@@ -229,7 +229,7 @@ def do_run_exploration(
     #target_molecule_state,
     bohrium_project_id,
 input_mode_options,input_a_molecule,input_a_molecule_options,draw_a_molecule,draw_a_molecule_options,
-upload,upload_input,target_selection,screen_switch,HOMO_range_rangeSlider,LUMO_range_rangeSlider,
+upload,upload_input_option,target_selection,screen_switch,HOMO_range_rangeSlider,LUMO_range_rangeSlider,
 binding_energy_range_rangeSlider,log_viscosity_range_rangeSlider,log_dielectric_constant_range_rangeSlider,
 predict_property_and_screen_rangeSlider
 ):
@@ -246,7 +246,7 @@ predict_property_and_screen_rangeSlider
         print("draw_a_molecule",draw_a_molecule)
         print("draw_a_molecule_options",draw_a_molecule_options)
         print("upload",upload)
-        print("upload_input",upload_input)
+        print("upload_input_option",upload_input_option)
         print("target_selection",target_selection)
         print("screen_switch",screen_switch)
         print("HOMO_range_rangeSlider",HOMO_range_rangeSlider)

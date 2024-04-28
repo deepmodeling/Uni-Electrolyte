@@ -105,7 +105,7 @@ def middle_view():
                 id= {
                     "view": "predict_properties",
                     "type": "input",
-                    "name": "upload_input",
+                    "name": "upload_input_option",
                 },
                 style=
                 {
