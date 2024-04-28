@@ -120,11 +120,11 @@ def show_predict_properties(n_clicks):
 #"""
 @callback_with_metrics(
     [
-        Topics.Slots.exploration_name.get_output("data"),
-        # Topics.Slots.exploration_status.get_output("data"),
-        # Topics.Slots.job_id.get_output("data"),
-        # Topics.Slots.job_status.get_output("data"),
-        # Topics.Slots.target_molecule.get_output("data"),
+        Topics.Slots.exploration_name.get_output("data",allow_duplicate=True),
+        Topics.Slots.exploration_status.get_output("data",allow_duplicate=True),
+        Topics.Slots.job_id.get_output("data",allow_duplicate=True),
+        Topics.Slots.job_status.get_output("data",allow_duplicate=True),
+        Topics.Slots.target_molecule.get_output("data",allow_duplicate=True),
     ],
     [
         Input("predict_properties_btn-run", "n_clicks"),
@@ -230,7 +230,7 @@ def do_run_exploration(
 ):
     print("dddddddddddddddd")
     print(n_clicks)
-    return ""
+    return "","","","","",""
 #     print(n_clicks,
 #     exploration_name,
 #     input_exp_name,
