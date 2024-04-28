@@ -129,122 +129,121 @@ def show_predict_properties(n_clicks):
     [
         Input("predict_properties_btn-run", "n_clicks"),
     ],
-    # [
-    #     Topics.Slots.exploration_name.get_state("data"),
-    #     State("input-project-name", "value"),
-    #     #State("input-molecule", "value"),
-    #     Topics.Slots.token.get_state("data"),
-    #     #Topics.Slots.options.get_state("data"),
-    #     #Topics.Slots.target_molecule.get_state("data"),
-    #     State("input-bohrium-project", "value"),
-    #     State({"view": "predict_properties", "type": "input", "name": "input_mode_options"}, "value"),
-    #     State({
-    #                 "view": "predict_properties",
-    #                 "type": "input",
-    #                 "name": "input_a_molecule",
-    #             },"value"),
-    #     State( {
-    #                 "view": "predict_properties",
-    #                 "type": "input",
-    #                 "name": "input_a_molecule_options",
-    #             },"value"),
-    #     State({
-    #                 "view": "predict_properties",
-    #                 "type": "input",
-    #                 "name": "draw_a_molecule",
-    #             },"value"),
-    #     State({
-    #                 "view": "predict_properties",
-    #                 "type": "input",
-    #                 "name": "draw_a_molecule_options",
-    #             },"value"),
-    #     State({
-    #                     "view": "predict_properties",
-    #                     "type": "input",
-    #                     "name": "upload",
-    #                 },"value"),
-    #     State({
-    #                 "view": "predict_properties",
-    #                 "type": "input",
-    #                 "name": "upload_input",
-    #             },"value"),
-    #     State({
-    #                 "view": "predict_properties",
-    #                 "type": "input",
-    #                 "name": "target_selection",
-    #             },"value"),
-    #     State({
-    #                 "view": "predict_properties",
-    #                 "type": "input",
-    #                 "name": "screen_switch",
-    #             },"value"),
-    #     State({
-    #                         "view": "predict_properties",
-    #                         "type": "input",
-    #                         "name": "HOMO_range_rangeSlider",
-    #                     },"value"),
-    #     State({
-    #                         "view": "predict_properties",
-    #                         "type": "input",
-    #                         "name": "LUMO_range_rangeSlider",
-    #                     },"value"),
-    #     State({
-    #                         "view": "predict_properties",
-    #                         "type": "input",
-    #                         "name": "binding_energy_range_rangeSlider",
-    #                     },"value"),
-    #     State({
-    #                         "view": "predict_properties",
-    #                         "type": "input",
-    #                         "name": "log_viscosity_range_rangeSlider",
-    #                     },"value"),
-    #     State({
-    #                         "view": "predict_properties",
-    #                         "type": "input",
-    #                         "name": "log_dielectric_constant_range_rangeSlider",
-    #                     },"value"),
-    #     State({
-    #                 "view": "predict_properties",
-    #                 "type": "input",
-    #                 "name": "predict_property_and_screen_rangeSlider",
-    #             },"value"),
-    #
-    #
-    # ],
+    [
+        Topics.Slots.exploration_name.get_state("data"),
+        State("input-project-name", "value"),
+        #State("input-molecule", "value"),
+        Topics.Slots.token.get_state("data"),
+        #Topics.Slots.options.get_state("data"),
+        #Topics.Slots.target_molecule.get_state("data"),
+        State("input-bohrium-project", "value"),
+        State({"view": "predict_properties", "type": "input", "name": "input_mode_options"}, "value"),
+        State({
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "input_a_molecule",
+                },"value"),
+        State( {
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "input_a_molecule_options",
+                },"value"),
+        State({
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "draw_a_molecule",
+                },"value"),
+        State({
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "draw_a_molecule_options",
+                },"value"),
+        State({
+                        "view": "predict_properties",
+                        "type": "input",
+                        "name": "upload",
+                    },"value"),
+        State({
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "upload_input",
+                },"value"),
+        State({
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "target_selection",
+                },"value"),
+        State({
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "screen_switch",
+                },"value"),
+        State({
+                            "view": "predict_properties",
+                            "type": "input",
+                            "name": "HOMO_range_rangeSlider",
+                        },"value"),
+        State({
+                            "view": "predict_properties",
+                            "type": "input",
+                            "name": "LUMO_range_rangeSlider",
+                        },"value"),
+        State({
+                            "view": "predict_properties",
+                            "type": "input",
+                            "name": "binding_energy_range_rangeSlider",
+                        },"value"),
+        State({
+                            "view": "predict_properties",
+                            "type": "input",
+                            "name": "log_viscosity_range_rangeSlider",
+                        },"value"),
+        State({
+                            "view": "predict_properties",
+                            "type": "input",
+                            "name": "log_dielectric_constant_range_rangeSlider",
+                        },"value"),
+        State({
+                    "view": "predict_properties",
+                    "type": "input",
+                    "name": "predict_property_and_screen_rangeSlider",
+                },"value"),
+
+
+    ],
     prevent_initial_call=True,
 )
 @trace_time
 def do_run_exploration(
     n_clicks,
-#     exploration_name,
-#     input_exp_name,
-#     #target_molecule,
-#     token,
-#     #params,
-#     #target_molecule_state,
-#     bohrium_project_id,
-# predict_properties,input_a_molecule,input_a_molecule_options,draw_a_molecule,draw_a_molecule_options,
-# upload,upload_input,target_selection,screen_switch,HOMO_range_rangeSlider,LUMO_range_rangeSlider,
-# binding_energy_range_rangeSlider,log_viscosity_range_rangeSlider,log_dielectric_constant_range_rangeSlider,
-# predict_property_and_screen_rangeSlider
+    exploration_name,
+    input_exp_name,
+    #target_molecule,
+    token,
+    #params,
+    #target_molecule_state,
+    bohrium_project_id,
+predict_properties,input_a_molecule,input_a_molecule_options,draw_a_molecule,draw_a_molecule_options,
+upload,upload_input,target_selection,screen_switch,HOMO_range_rangeSlider,LUMO_range_rangeSlider,
+binding_energy_range_rangeSlider,log_viscosity_range_rangeSlider,log_dielectric_constant_range_rangeSlider,
+predict_property_and_screen_rangeSlider
 ):
     if n_clicks:
         print("dddddddddddddddd")
-        print(n_clicks)
-    return "","","","","",""
-#     print(n_clicks,
-#     exploration_name,
-#     input_exp_name,
-#     #target_molecule,
-#     token,
-#     #params,
-#     #target_molecule_state,
-#     bohrium_project_id)
-#     print(predict_properties,input_a_molecule,input_a_molecule_options,draw_a_molecule,draw_a_molecule_options,
-# upload,upload_input,target_selection,screen_switch,HOMO_range_rangeSlider,LUMO_range_rangeSlider,
-# binding_energy_range_rangeSlider,log_viscosity_range_rangeSlider,log_dielectric_constant_range_rangeSlider,
-# predict_property_and_screen_rangeSlider)
 
+    print(n_clicks,
+    exploration_name,
+    input_exp_name,
+    #target_molecule,
+    token,
+    #params,
+    #target_molecule_state,
+    bohrium_project_id)
+    print(predict_properties,input_a_molecule,input_a_molecule_options,draw_a_molecule,draw_a_molecule_options,
+upload,upload_input,target_selection,screen_switch,HOMO_range_rangeSlider,LUMO_range_rangeSlider,
+binding_energy_range_rangeSlider,log_viscosity_range_rangeSlider,log_dielectric_constant_range_rangeSlider,
+predict_property_and_screen_rangeSlider)
+    return "", "", "", "", ""
     if not n_clicks:
         raise PreventUpdate
 
