@@ -118,11 +118,6 @@ def show_predict_properties(n_clicks):
         return  "","",""
 
 
-State({
-                        "view": "predict_properties",
-                        "type": "input",
-                        "name": "upload",
-                    },"uploadedFileNames")
 # 上传 csv 后，解析 header
 # @du.callback(
 #     output=Topics.Slots.predict_properties_options.get_output("data", allow_duplicate=True),
