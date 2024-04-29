@@ -231,6 +231,16 @@ def show_predict_properties(n_clicks):
                     "type": "input",
                     "name": "predict_property_and_screen_rangeSlider",
                 },"value"),
+        State({
+            "view": "predict_properties",
+            "type": "input",
+            "name": "upload",
+        }, "uploaded_files"),
+State({
+            "view": "predict_properties",
+            "type": "input",
+            "name": "upload",
+        }, "upload_id"),
 ],
     prevent_initial_call=True,
 )
@@ -240,7 +250,7 @@ def update_options(
 input_mode_options,input_a_molecule,input_a_molecule_options,draw_a_molecule,draw_a_molecule_options,
 upload_input_option,target_selection,screen_switch,HOMO_range_rangeSlider,LUMO_range_rangeSlider,
 binding_energy_range_rangeSlider,log_viscosity_range_rangeSlider,log_dielectric_constant_range_rangeSlider,
-predict_property_and_screen_rangeSlider
+predict_property_and_screen_rangeSlider,uploaded_files,upload_id
 ):
     if n_clicks:
 
@@ -259,6 +269,7 @@ predict_property_and_screen_rangeSlider
             "log_viscosity_range_rangeSlider":log_viscosity_range_rangeSlider,
             "log_dielectric_constant_range_rangeSlider":log_dielectric_constant_range_rangeSlider,
            "predict_property_and_screen_rangeSlider":predict_property_and_screen_rangeSlider,
+            "uploaded_files":uploaded_files,"upload_id":upload_id,
         }
         logger.info(res)
         return res,False
