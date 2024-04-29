@@ -257,10 +257,13 @@ def do_run_exploration(
     )
 
     user_id = get_user_id(token)
+    logger.info(f"user_id: {user_id}")
     if not user_id:
         logger.error("failed to get_user_id")
         raise PreventUpdate
     s = Session.load(user_id)
+    session_id=s.session_id
+    logger.info(f"session_id: {session_id}")
     if not exploration_name:
         exploration_name = input_exp_name
     if not exploration_name:
