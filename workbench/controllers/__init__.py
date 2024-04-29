@@ -75,13 +75,13 @@ def sync_molecule(molecule, current_molecule, viewport):
     return molecule
 
 
-@callback(
-    Topics.Slots.target_molecule.get_output("data"),
-    KETCHER_COMPONENT_ID.get_output("input_molecule", allow_duplicate=False),
-    Input("input-molecule", "value"),
-    State("viewport", "data"),
-    prevent_initial_call=True,
-)
-def sync_molecule_render(molecule, viewport):
-    logger.info(f"sync molecule")
-    return molecule, molecule
+# @callback(
+#     Topics.Slots.target_molecule.get_output("data"),
+#     KETCHER_COMPONENT_ID.get_output("input_molecule", allow_duplicate=False),
+#     Input("input-molecule", "value"),
+#     State("viewport", "data"),
+#     prevent_initial_call=True,
+# )
+# def sync_molecule_render(molecule, viewport):
+#     logger.info(f"sync molecule")
+#     return molecule, molecule
