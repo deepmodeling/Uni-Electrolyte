@@ -119,37 +119,41 @@ def show_predict_properties(n_clicks):
 
 
 
-# # 上传 csv 后，解析 header
-# @du.callback(
-#     output=Topics.Slots.predict_properties_options.get_output("data", allow_duplicate=True),
-#     state=[
-#         Topics.Slots.token.get_state("data"),
-#         Topics.Slots.predict_properties_options.get_state("data"),
-#     ],
-#     id="upload-predict-input-dataset",
-# )
-# def upload_predict_data(status: du.UploadStatus, token, predict_properties_options: dict):
-#     if not predict_properties_options:
-#         predict_properties_options = {}
-#     user_id = get_user_id(token)
-#     if not user_id:
-#         return no_update, no_update
-#
-#     session = Session.load(user_id)
-#     if not session:
-#         return status_alert("Session not found.", color="danger"), no_update
-#
-#     if status.is_completed:
-#         if len(status.uploaded_files) == 0:
-#             return status_alert("No file uploaded.", color="danger"), no_update
-#         elif len(status.uploaded_files) > 1:
-#             return status_alert("Only one file is allowed.", color="danger"), no_update
-#         fpath = status.uploaded_files[0]
-#         predict_properties_options["predict_data_path"] = str(fpath)
-#         return predict_properties_options
-#
-#
-#
+# 上传 csv 后，解析 header
+@du.callback(
+    output=Topics.Slots.predict_properties_options.get_output("data", allow_duplicate=True),
+    state=[
+        Topics.Slots.token.get_state("data"),
+        Topics.Slots.predict_properties_options.get_state("data"),
+    ],
+    id={
+                        "view": "predict_properties",
+                        "type": "input",
+                        "name": "upload",
+                    }
+)
+def upload_predict_data(status: du.UploadStatus, token, predict_properties_options: dict):
+    if not predict_properties_options:
+        predict_properties_options = {}
+    user_id = get_user_id(token)
+    if not user_id:
+        return no_update, no_update
+
+    session = Session.load(user_id)
+    if not session:
+        return status_alert("Session not found.", color="danger"), no_update
+
+    if status.is_completed:
+        if len(status.uploaded_files) == 0:
+            return status_alert("No file uploaded.", color="danger"), no_update
+        elif len(status.uploaded_files) > 1:
+            return status_alert("Only one file is allowed.", color="danger"), no_update
+        fpath = status.uploaded_files[0]
+        predict_properties_options["predict_data_path"] = str(fpath)
+        return predict_properties_options
+
+
+
 
 @callback_with_metrics(
     [Topics.Slots.predict_properties_options.get_output("data", allow_duplicate=False),
