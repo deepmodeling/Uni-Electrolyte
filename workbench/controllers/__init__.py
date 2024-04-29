@@ -7,7 +7,7 @@ from views.molecule import render_target_molecule
 from topics import Topics
 
 import controllers.validators.options  # noqa
-import controllers.options  # noqa
+#import controllers.options  # noqa
 import controllers.running  # noqa
 import controllers.starter  # noqa
 import controllers.editor  # noqa
