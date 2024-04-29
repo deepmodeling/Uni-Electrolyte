@@ -281,12 +281,20 @@ def right_view():
                             "name": "alert",
                         }),
             dbc.Button(
+                "Confirm parameters",
+                id="predict_properties_btn-conf",
+                n_clicks=0,
+                color="primary",
+                className="me-6",
+                disabled=False,
+            ),
+            dbc.Button(
                 "Start exploration",
                 id="predict_properties_btn-run",
                 n_clicks=0,
                 color="primary",
                 className="me-6",
-                disabled=False,
+                disabled=True,
             ),
         ],
     )

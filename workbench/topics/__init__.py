@@ -13,9 +13,9 @@ class Topics:
         exploration_status = DashIDGenerator(
             page="session", type="topics", name="exploration_status"
         )
-        target_molecule = DashIDGenerator(
-            page="session", type="topics", name="target_molecule"
-        )
+        # target_molecule = DashIDGenerator(
+        #     page="session", type="topics", name="target_molecule"
+        # )
         job_id = DashIDGenerator(page="session", type="topics", name="job_id")
         job_status = DashIDGenerator(page="session", type="topics", name="job_status")
         route_id = DashIDGenerator(page="session", type="topics", name="route_id")
