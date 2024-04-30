@@ -1,3 +1,4 @@
+import os.path
 
 from launching.app import submit_job, get_job_status, get_job_result
 from models.session import Session, Exploration, Job, JobStatus, ExplorationStatus
@@ -15,6 +16,8 @@ from views.helper import render_section, render_secondary_section
 from views.predict_properties import middle_view,right_view
 from topics import Topics
 import dash_uploader as du
+from config import UPLOAD_ROOT
+
 @callback(
     Output( {
                     "view": "predict_properties",
@@ -330,6 +333,36 @@ def do_run_predict_properties(
         f"params: {params} \n"
         f"bohrium_project_id: {bohrium_project_id} \n"
     )
+    #解析参数
+    if  params['screen_switch']=='Predict property only':
+
+        bohrium_params_json_dict = {
+            "output_directory": "./output",
+            "Screen_Switch": {
+                "type": "predict_property_only",
+                "input_file_path": os.path.join(UPLOAD_ROOT, params["upload_id"], params['uploadedFileNames']),
+                "target": params['target_selection'],
+            }
+        }
+    elif params['screen_switch']=='Predict property and screen':
+        bohrium_params_json_dict = {
+            "output_directory": "./output",
+            "Screen_Switch": {
+                "type": "predict_property_and_screen",
+                "input_file_path":  params['uploadedFileNames'] ,
+                "HOMO_range":params[ 'HOMO_range_rangeSlider'],
+                "LUMO_range":params[ 'LUMO_range_rangeSlider'],
+                "binding_energy_range":params[ 'binding_energy_range_rangeSlider'],
+                "log_viscosity_range":params[ 'log_viscosity_range_rangeSlider'],
+                "log_dielectric_constant_range":params[ 'log_dielectric_constant_range_rangeSlider'],
+            }
+        }
+
+    else:
+        raise ValueError("screen_switch is not valid")
+
+
+
 
     user_id = get_user_id(token)
     logger.info(f"user_id: {user_id}")
@@ -366,13 +399,7 @@ def do_run_predict_properties(
         f"    params {params}"
     )
     params["brm_token"] = token
-    job_id =222222
-    # submit_job(
-    #     token,
-    #     params=params,
-    #     job_name=exploration_name,
-    #     bohrium_project_id=bohrium_project_id,
-    # )
+    job_id =submit_job(params=bohrium_params_json_dict, root_dir=UPLOAD_ROOT,job_name=exploration_name)
     job = Job(id=job_id, name=job_id)
     exp.jobs.append(job)
     s.explorations[exp_idx] = exp
