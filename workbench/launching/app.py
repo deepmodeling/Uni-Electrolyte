@@ -29,8 +29,21 @@ def submit_job(
     # payment_info: PaymentInfo = payment_info,
 
 ):
+
     logger.info(json.dumps(params))
-    json.dump(params, open(os.path.join(root_dir,"lbg.json"), "w"))
+    json.dump(params, open(os.path.join(root_dir,"app_param.json"), "w"))
+
+    lbj_json_dict={
+        "job_name": job_name,
+        "command": "python /root/launching_entry/gen_score_screen.py score_screen --json-config  %s "%(os.path.join(root_dir,"app_param.json")),
+        "platform": "ali",
+        "disk_size": 200,
+        "machine_type": "c8_m31_1 * NVIDIA T4",
+        "image_name": "registry.dp.tech/dptech/prod-11729/sub:0312",
+        "program_id": 14480
+    }
+    json.dump(lbj_json_dict, open(os.path.join(root_dir, "lbg.json"), "w"))
+
     logger.info("lbg job submit -i %s -p  %s"%(os.path.join(root_dir,"lbg.json"),root_dir))
     result = subprocess.run(["lbg","job","submit","-i",os.path.join(root_dir,"lbg.json"),"-p",root_dir])
     logger.info(result.stdout)
