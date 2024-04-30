@@ -50,8 +50,9 @@ def submit_job(
     # logger.info(result.stdout)
     # 使用正则表达式匹配 JOB ID 后面的数字
     fp=open(os.path.join(root_dir,"log"))
-    logger.info(fp.read())
-    match = re.search(r'JOB ID: (\d+)',fp.read())
+    log_str=fp.read()
+    logger.info(log_str)
+    match = re.search(r'JOB ID: (\d+)',log_str)
 
     if match:
         job_id = match.group(1)
