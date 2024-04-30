@@ -45,10 +45,13 @@ def submit_job(
     json.dump(lbj_json_dict, open(os.path.join(root_dir, "lbg.json"), "w"))
 
     logger.info("lbg job submit -i %s -p  %s"%(os.path.join(root_dir,"lbg.json"),root_dir))
-    result = subprocess.run(["lbg","job","submit","-i",os.path.join(root_dir,"lbg.json"),"-p",root_dir])
-    logger.info(result.stdout)
+    os.system("lbg job submit -i %s -p  %s >%s"%(os.path.join(root_dir,"lbg.json"),root_dir,os.path.join(root_dir,"log")))
+    # result = subprocess.run(["lbg","job","submit","-i",os.path.join(root_dir,"lbg.json"),"-p",root_dir])
+    # logger.info(result.stdout)
     # 使用正则表达式匹配 JOB ID 后面的数字
-    match = re.search(r'JOB ID: (\d+)', result.stdout)
+    fp=open(os.path.join(root_dir,"log"))
+    logger.info(fp.read())
+    match = re.search(r'JOB ID: (\d+)',fp.read())
 
     if match:
         job_id = match.group(1)
