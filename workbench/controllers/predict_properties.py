@@ -340,7 +340,7 @@ def do_run_predict_properties(
             "output_directory": "./output",
             "Screen_Switch": {
                 "type": "predict_property_only",
-                "input_file_path": os.path.join(UPLOAD_ROOT, params["upload_id"], params['uploadedFileNames']),
+                "input_file_path":  params['uploadedFileNames'][0] ,
                 "target": params['target_selection'],
             }
         }
@@ -349,7 +349,7 @@ def do_run_predict_properties(
             "output_directory": "./output",
             "Screen_Switch": {
                 "type": "predict_property_and_screen",
-                "input_file_path":  params['uploadedFileNames'] ,
+                "input_file_path":  params['uploadedFileNames'][0] ,
                 "HOMO_range":params[ 'HOMO_range_rangeSlider'],
                 "LUMO_range":params[ 'LUMO_range_rangeSlider'],
                 "binding_energy_range":params[ 'binding_energy_range_rangeSlider'],
