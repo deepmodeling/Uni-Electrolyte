@@ -31,7 +31,7 @@ def submit_job(
 ):
     logger.info(json.dumps(params))
     json.dump(params, open(os.path.join(root_dir,"lbg.json"), "w"))
-    #"lbg job submit -i %s -p  %s"%(os.path.join(root_dir,"lbg.json"),root_dir)
+    logger.info("lbg job submit -i %s -p  %s"%(os.path.join(root_dir,"lbg.json"),root_dir))
     result = subprocess.run(["lbg","job","submit","-i",os.path.join(root_dir,"lbg.json"),"-p",root_dir])
     logger.info(result.stdout)
     # 使用正则表达式匹配 JOB ID 后面的数字
