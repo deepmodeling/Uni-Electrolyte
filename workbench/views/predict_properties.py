@@ -123,15 +123,15 @@ def middle_view():
                     "name": "target_selection",
                 },
                 options=[
-                    {"label": "Binding energy", "value": "Binding energy"},
-                    {"label": "Dielectric constant", "value": "Dielectric constant"},
+                    {"label": "Binding energy", "value": "Binding_Energy"},
+                    {"label": "Dielectric constant", "value": "Dielectric_Constant"},
                     {"label": "Viscosity", "value": "Viscosity"},
                     {"label": "HOMO", "value": "HOMO"},
                     {"label": "LUMO", "value": "LUMO"},
                     # {"label": "Database", "value": "database"},
                 ],
 
-                value=["Binding energy", "Dielectric constant", "Viscosity", "HOMO", "LUMO"],
+                value=["Binding_Energy", "Dielectric_Constant", "Viscosity", "HOMO", "LUMO"],
             ),
             html.Br(),
 
