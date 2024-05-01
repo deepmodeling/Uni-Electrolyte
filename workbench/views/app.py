@@ -8,12 +8,12 @@ from views.helper import render_section, render_secondary_section
 from views.starter import starter_view
 # from views.molecule import molecule_view
 # from views.options import options_view
-# from views.result import result_view
-# from views.jobs import jobs_view
+from views.result import result_view
+from views.jobs import jobs_view
 from views.running import running_view
 from views.tour import render_tour
 
-# from views.summary import summary_view
+from views.summary import summary_view
 # from views.route import route_view
 from views.login import LoginModal
 from views.projects import ProjectMenu, DeleteProjectModal
@@ -255,59 +255,59 @@ def render_app():
                         sidebarDefaultSize=250,
                         sidebarSize=10,
                         panelOrder="mainFirst",
-                        sidebarChildren="Exploration Details sidebarChildren",
-                        # html.Div(
-                        #     dbc.Tabs(
-                        #         [
-                        #             dbc.Tab(
-                        #                 jobs_view(),
-                        #                 label="Explorations",
-                        #                 tab_id="tab-jobs",
-                        #                 style={
-                        #                     "paddingTop": "40px",
-                        #                     "overflowY": "auto",
-                        #                 },
-                        #             ),
-                        #             dbc.Tab(
-                        #                 route_view(),
-                        #                 label="Candidate Routes",
-                        #                 tab_id="tab-routes",
-                        #                 style={
-                        #                     "paddingTop": "40px",
-                        #                     "overflowY": "auto",
-                        #                 },
-                        #             ),
-                        #             dbc.Tab(
-                        #                 result_view(),
-                        #                 label="Alternative Reactions",
-                        #                 tab_id="tab-backups",
-                        #                 style={
-                        #                     "paddingTop": "40px",
-                        #                     "overflowY": "auto",
-                        #                 },
-                        #             ),
-                        #             # dbc.Tab(
-                        #             #    summary_view(),
-                        #             #    label="Summary",
-                        #             #    tab_id="tab-summary",
-                        #             # ),
-                        #         ],
-                        #         id="tabs",
-                        #         active_tab="tab-routes",
-                        #         style={
-                        #             "position": "absolute",
-                        #             "top": "1px",
-                        #             "width": "100%",
-                        #             "background": "#f9f9f9",
-                        #         },
-                        #     ),
-                        #     style={
-                        #         "width": "100%",
-                        #         "height": "100%",
-                        #         "marginTop": "0.2rem",
-                        #         "background": "#f9f9f9",
-                        #     },
-                        # ),
+                        sidebarChildren=
+                        html.Div(
+                            dbc.Tabs(
+                                [
+                                    dbc.Tab(
+                                        jobs_view(),
+                                        label="Explorations",
+                                        tab_id="tab-jobs",
+                                        style={
+                                            "paddingTop": "40px",
+                                            "overflowY": "auto",
+                                        },
+                                    ),
+                                    dbc.Tab(
+                                        "route_view",
+                                        label="Candidate Routes",
+                                        tab_id="tab-routes",
+                                        style={
+                                            "paddingTop": "40px",
+                                            "overflowY": "auto",
+                                        },
+                                    ),
+                                    dbc.Tab(
+                                        result_view(),
+                                        label="Alternative Reactions",
+                                        tab_id="tab-backups",
+                                        style={
+                                            "paddingTop": "40px",
+                                            "overflowY": "auto",
+                                        },
+                                    ),
+                                    dbc.Tab(
+                                       summary_view(),
+                                       label="Summary",
+                                       tab_id="tab-summary",
+                                    ),
+                                ],
+                                id="tabs",
+                                active_tab="tab-routes",
+                                style={
+                                    "position": "absolute",
+                                    "top": "1px",
+                                    "width": "100%",
+                                    "background": "#f9f9f9",
+                                },
+                            ),
+                            style={
+                                "width": "100%",
+                                "height": "100%",
+                                "marginTop": "0.2rem",
+                                "background": "#f9f9f9",
+                            },
+                        ),
                         mainChildren="Exploration Details mainChildren",
                         #,
                         mainStyle={
