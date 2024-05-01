@@ -53,7 +53,7 @@ def submit_job(
     fp=open(os.path.join(root_dir,"log"))
     log_str=fp.read()
     logger.info(log_str)
-    match = re.search(r'JOB ID: (\d+)',log_str)
+    match = re.search(r'JOB GROUP ID: (\d+)',log_str)
 
     if match:
         job_id = match.group(1)
