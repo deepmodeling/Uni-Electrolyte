@@ -9,6 +9,7 @@ from dp.launching.app.app import PaymentInfo
 from utils.token_helper import get_user_key
 from utils.bohrium import get_default_project
 from utils.tracer import trace_time
+from config import VAR_ROOT
 
 retro_synthesis_app: App = App(
     "retro-synthesis", os.environ.get("LAUNCHING_APPLICATION_TOKEN")
@@ -116,7 +117,14 @@ def submit_job(
 def get_job_status(
     job_id: str,
 ):
-    return retro_synthesis_app.get_job_status(None, job_id)
+
+    logger.info("lbg job ls -jg   %s| awk '{print $9}'| grep -v status >%s/%s_status"%(job_id,VAR_ROOT,job_id))
+    os.system( "lbg job ls -jg   %s| awk '{print $9}'| grep -v status >%s/%s_status"%(job_id,VAR_ROOT,job_id))
+    fp = open("%s/%s_status"%(VAR_ROOT,job_id))
+    status_str = fp.read().strip()
+    logger.info("status_str:%s"%status_str)
+    return status_str.lower()
+    #return retro_synthesis_app.get_job_status(None, job_id)
 
 
 def get_job_root():
