@@ -36,7 +36,7 @@ def submit_job(
 
     lbj_json_dict={
         "job_name": job_name,
-        "command": "python /root/launching_entry/gen_score_screen.py score_screen --json-config  %s "%(os.path.join(root_dir,"app_param.json")),
+        "command": "python /root/launching_entry/gen_score_screen.py score_screen --json-config  app_param.json",
         "platform": "ali",
         "disk_size": 200,
         "machine_type": "c8_m31_1 * NVIDIA T4",
