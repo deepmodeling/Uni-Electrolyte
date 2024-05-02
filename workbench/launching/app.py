@@ -149,9 +149,10 @@ def get_job_result(
     _job_id: str,
 ):
     job_id,job_group_id=_job_id.split("_")
-    output_path = Path(
-        os.environ.get("SAMPLE_OUTPUT_DIR") or get_job_output_path(job_id)
-    )
+    # output_path = Path(
+    #     os.environ.get("SAMPLE_OUTPUT_DIR") or get_job_output_path(job_id)
+    # )
+    output_path= get_job_output_path(job_id)
     lbg_str= "lbg job download %s -p" % (job_id,output_path)
     logger.info(lbg_str)
     os.system(lbg_str)
