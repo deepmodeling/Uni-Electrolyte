@@ -153,6 +153,9 @@ def get_job_result(
     #     os.environ.get("SAMPLE_OUTPUT_DIR") or get_job_output_path(job_id)
     # )
     output_path= get_job_output_path(job_id)
+    #建立下载目录 output_path
+    if not output_path.exists():
+        output_path.mkdir(parents=True, exist_ok=True)
     lbg_str= "lbg job download %s -p %s" % (job_id,str(output_path))
     logger.info(lbg_str)
     os.system(lbg_str)
