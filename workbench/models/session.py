@@ -30,7 +30,7 @@ class JobStatus(str, Enum):
     start = "start"
     preprocessed = "preprocessed"
     running = "running"
-    success = "success"
+    success = "finished"
     downloading = "downloading"
     stopping = "stopping"
     stopped = "stopped"
