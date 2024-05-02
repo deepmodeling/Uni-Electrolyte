@@ -56,12 +56,20 @@ def submit_job(
     match = re.search(r'JOB GROUP ID: (\d+)',log_str)
 
     if match:
+        job_group_id = match.group(1)
+        logger.info(f"submit_job {job_name} finish jobg_roup_id {job_group_id}")
+    else:
+        logger.info("Job group ID not found.")
+        raise Exception("Job group ID not found.")
+
+    match = re.search(r'JOB ID: (\d+)', log_str)
+    if match:
         job_id = match.group(1)
         logger.info(f"submit_job {job_name} finish job_id {job_id}")
-        return job_id
     else:
         logger.info("Job ID not found.")
         raise Exception("Job ID not found.")
+    return job_id,job_group_id
 
 
 #
@@ -116,10 +124,12 @@ def submit_job(
 
 def get_job_status(
     job_id: str,
+    job_group_id: str,
+
 ):
 
-    logger.info("lbg job ls -jg   %s| awk '{print $9}'| grep -v status >%s/%s_status"%(job_id,VAR_ROOT,job_id))
-    os.system( "lbg job ls -jg   %s| awk '{print $9}'| grep -v status >%s/%s_status"%(job_id,VAR_ROOT,job_id))
+    logger.info("lbg job ls -jg   %s| awk '{print $9}'| grep -v status >%s/%s_status"%(job_group_id,VAR_ROOT,job_id))
+    os.system( "lbg job ls -jg   %s| awk '{print $9}'| grep -v status >%s/%s_status"%(job_group_id,VAR_ROOT,job_id))
     fp = open("%s/%s_status"%(VAR_ROOT,job_id))
     status_str = fp.read().strip()
     logger.info("status_str:%s"%status_str)
@@ -143,6 +153,10 @@ def get_job_result(
     output_path = Path(
         os.environ.get("SAMPLE_OUTPUT_DIR") or get_job_output_path(job_id)
     )
+    lbg_str= "lbg job download %s -p" % (job_id,output_path)
+    logger.info(lbg_str)
+    os.system(lbg_str)
+    return None
     sample_path = output_path / "sample.json"
     if sample_path.exists():
         result_path = sample_path

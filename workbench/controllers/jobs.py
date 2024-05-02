@@ -99,7 +99,7 @@ def toggle_job_tab(tab_id, exp_name, token):
         if job.status in RUNNING_JOB_STATUS or (
             job.status == JobStatus.success and not job.routes
         ):
-            status = get_job_status(job.id)
+            status = get_job_status(job.id,job.job_group_id)
             job.status = status
             if status == JobStatus.success:
                 logger.info(f"get_job_result {job.id}")
