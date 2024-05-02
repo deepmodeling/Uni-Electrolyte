@@ -69,7 +69,7 @@ def submit_job(
     else:
         logger.info("Job ID not found.")
         raise Exception("Job ID not found.")
-    return job_id,job_group_id
+    return (job_id,job_group_id)%(job_id,job_group_id)
 
 
 #
@@ -123,11 +123,9 @@ def submit_job(
 
 
 def get_job_status(
-    job_id: str,
-    job_group_id: str,
-
+    _job_id: str,
 ):
-
+    job_id,job_group_id=_job_id.split("_")
     logger.info("lbg job ls -jg   %s| awk '{print $9}'| grep -v status >%s/%s_status"%(job_group_id,VAR_ROOT,job_id))
     os.system( "lbg job ls -jg   %s| awk '{print $9}'| grep -v status >%s/%s_status"%(job_group_id,VAR_ROOT,job_id))
     fp = open("%s/%s_status"%(VAR_ROOT,job_id))
@@ -148,8 +146,9 @@ def get_job_output_path(job_id: str):
 
 
 def get_job_result(
-    job_id: str,
+    _job_id: str,
 ):
+    job_id,job_group_id=_job_id.split("_")
     output_path = Path(
         os.environ.get("SAMPLE_OUTPUT_DIR") or get_job_output_path(job_id)
     )

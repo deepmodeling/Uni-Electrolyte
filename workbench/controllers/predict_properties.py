@@ -399,8 +399,8 @@ def do_run_predict_properties(
         f"    params {params}"
     )
     params["brm_token"] = token
-    job_id,job_group_id =submit_job(params=bohrium_params_json_dict, root_dir=os.path.join(UPLOAD_ROOT,params["upload_id"]),job_name=exploration_name)
-    job = Job(id=job_id, name=job_id,job_group_id=job_group_id)
+    job_id =submit_job(params=bohrium_params_json_dict, root_dir=os.path.join(UPLOAD_ROOT,params["upload_id"]),job_name=exploration_name)
+    job = Job(id=job_id, name=job_id)
     exp.jobs.append(job)
     s.explorations[exp_idx] = exp
     # s.updated_at = datetime.now()
