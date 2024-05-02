@@ -57,6 +57,7 @@ RUNNING_JOB_STATUS = (
 @dataclass
 class Job:
     id: str
+    job_group_id: str
     name: str
     routes: Optional[List[Route]] = field(default_factory=list)
     status: JobStatus = JobStatus.init
