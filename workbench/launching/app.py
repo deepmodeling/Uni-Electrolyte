@@ -69,7 +69,7 @@ def submit_job(
     else:
         logger.info("Job ID not found.")
         raise Exception("Job ID not found.")
-    return (job_id,job_group_id)%(job_id,job_group_id)
+    return "%s_%s"%(job_id,job_group_id)
 
 
 #
