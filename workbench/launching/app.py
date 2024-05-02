@@ -153,7 +153,7 @@ def get_job_result(
     #     os.environ.get("SAMPLE_OUTPUT_DIR") or get_job_output_path(job_id)
     # )
     output_path= get_job_output_path(job_id)
-    lbg_str= "lbg job download %s -p" % (job_id,output_path)
+    lbg_str= "lbg job download %s -p" % (job_id,str(output_path))
     logger.info(lbg_str)
     os.system(lbg_str)
     return None
