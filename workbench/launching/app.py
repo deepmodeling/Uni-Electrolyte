@@ -156,9 +156,9 @@ def get_job_result(
     #建立下载目录 output_path
     if not output_path.exists():
         output_path.mkdir(parents=True, exist_ok=True)
-    lbg_str= "lbg job download %s -p %s" % (job_id,str(output_path))
-    logger.info(lbg_str)
-    os.system(lbg_str)
+        lbg_str= "lbg job download %s -p %s" % (job_id,str(output_path))
+        logger.info(lbg_str)
+        os.system(lbg_str)
     return None
     sample_path = output_path / "sample.json"
     if sample_path.exists():
