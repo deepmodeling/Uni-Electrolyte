@@ -68,6 +68,10 @@ def toggle_render_job_active(n_clicks, exp_name, token):
             "active_tab",
         ),
         Topics.Slots.exploration_name.get_input("data"),
+        Input(
+            "progress-interval",
+            "n_intervals",
+        )
     ],
     [
         Topics.Slots.token.get_state("data"),
@@ -75,7 +79,7 @@ def toggle_render_job_active(n_clicks, exp_name, token):
     prevent_initial_call=True,
 )
 @trace_time
-def toggle_job_tab(tab_id, exp_name, token):
+def toggle_job_tab(tab_id, exp_name,n, token):
     # TODO performance issue: batch query job status for performance issue.
     logger.info(f"toggle_job_tab {tab_id} {exp_name}")
     if ctx.triggered_id == "tabs" and tab_id != "tab-jobs":

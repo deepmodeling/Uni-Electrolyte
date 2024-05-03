@@ -10,7 +10,7 @@ from views.starter import starter_view
 # from views.options import options_view
 from views.result import result_view
 from views.jobs import jobs_view
-from views.running import running_view
+#from views.running import running_view
 from views.tour import render_tour
 
 from views.summary import summary_view
@@ -193,6 +193,12 @@ def render_app():
                             "width": "100%",
                         },
                     ),
+                    dcc.Interval(
+                                            id="progress-interval",
+                                            n_intervals=0,
+                                            interval=2000,
+                                            disabled=False,
+                                        ),
 
                     # dbc.Row(
                     #     render_section("", "", running_view()),
