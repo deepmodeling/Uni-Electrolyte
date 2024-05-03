@@ -194,17 +194,17 @@ def render_app():
                         },
                     ),
 
-                    dbc.Row(
-                        render_section("", "", running_view()),
-                        id="row-running-view",
-                        style={
-                            "flex": "8",
-                            "display": "none",
-                            "minHeight": "400px",
-                            "height": "100%",
-                            "alignItems": "flexStart",
-                        },
-                    ),
+                    # dbc.Row(
+                    #     render_section("", "", running_view()),
+                    #     id="row-running-view",
+                    #     style={
+                    #         "flex": "8",
+                    #         "display": "none",
+                    #         "minHeight": "400px",
+                    #         "height": "100%",
+                    #         "alignItems": "flexStart",
+                    #     },
+                    # ),
 
                 ],
                 # [
