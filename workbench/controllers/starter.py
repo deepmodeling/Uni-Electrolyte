@@ -61,33 +61,33 @@ def toggle_validate_smiles(smiles):
             "* Invalid SMILES", color="danger", className="dp-alert"
         )  # SMILES is invalid
 
-
-# 当切换到 New 时展示 starter view
-@callback(
-    Output("row-starter-view", "style"),
-    [
-        Topics.Slots.exploration_name.get_input("data"),
-    ],
-    prevent_initial_call=True,
-)
-@trace_time
-def toggle_starter_view(exp_name):
-    # TODO running 状态下切换 tab 有问题
-    logger.info(f"toggle_starter_view {ctx.triggered_id}, exp_name {exp_name}")
-    if (
-        isinstance(ctx.triggered_id, dict)
-        and ctx.triggered_id.get("name") == "exploration_name"
-    ):
-        if exp_name == "":
-            # raise Exception
-            return {
-                "flex": "8",
-                "minHeight": "400px",
-                "height": "550px",
-                "alignItems": "flexStart",
-                "width": "100%",
-            }
-        else:
-            return {"display": "none"}
-    else:
-        return {"display": "none"}
+#
+# # 当切换到 New 时展示 starter view
+# @callback(
+#     Output("row-starter-view", "style"),
+#     [
+#         Topics.Slots.exploration_name.get_input("data"),
+#     ],
+#     prevent_initial_call=True,
+# )
+# @trace_time
+# def toggle_starter_view(exp_name):
+#     # TODO running 状态下切换 tab 有问题
+#     logger.info(f"toggle_starter_view {ctx.triggered_id}, exp_name {exp_name}")
+#     if (
+#         isinstance(ctx.triggered_id, dict)
+#         and ctx.triggered_id.get("name") == "exploration_name"
+#     ):
+#         if exp_name == "":
+#             # raise Exception
+#             return {
+#                 "flex": "8",
+#                 "minHeight": "400px",
+#                 "height": "550px",
+#                 "alignItems": "flexStart",
+#                 "width": "100%",
+#             }
+#         else:
+#             return {"display": "none"}
+#     else:
+#         return {"display": "none"}
