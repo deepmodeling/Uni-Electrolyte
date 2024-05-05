@@ -1,11 +1,11 @@
-# from loguru import logger
-# from dash import callback, Input, Output, ctx, ALL, State, no_update
-#
-# from views.result import render_backup_reactions
-# from utils.token_helper import get_user_id
-# from models.session import Session, Exploration, Job, Route
-# from topics import Topics
-# from views.route import render_candidate_routes
+from loguru import logger
+from dash import callback, Input, Output, ctx, ALL, State, no_update
+
+#from views.result import render_backup_reactions
+from utils.token_helper import get_user_id
+from models.session import Session, Exploration, Job, Route
+from topics import Topics
+#from views.route import render_candidate_routes
 #
 #
 # @callback(
@@ -125,3 +125,59 @@
 #     if not exp_name:
 #         return render_candidate_routes("", []), render_backup_reactions([], "")
 #     return no_update, no_update
+
+
+
+#显示所有结果为分子的任务的结果
+@callback(
+    Output("Exploration Details","mainChildren", allow_duplicate=True),
+    [
+        Input({"view": "jobs","table": "job","type": "btn","job_id": ALL,},  "n_clicks"),
+
+    ],
+
+    prevent_initial_call=True,
+)
+def toggle_molecule_result_view(events):
+    logger.info(f"toggle_molecule_result_view {events}")
+    job_id=ctx.triggered_id.get("job_id")
+    logger.info(f"toggle_molecule_result_view {job_id}")
+    return job_id
+    # get_job_output_path
+    # if (
+    #     isinstance(ctx.triggered_id, dict)
+    #     and ctx.triggered_id.get("view") == "editor-main"
+    #     and events
+    #     and events[0]
+    # ):
+    #     event = events[0]
+    #     event_type = event.get("type")
+    #     if event_type != "node":
+    #         logger.info(f"skip type {event_type} event for now.")
+    #     nodes = event.get("nodes")
+    #     if not nodes or len(nodes) < 1:
+    #         logger.warning(f"skip type {event_type} event due to no nodes found.")
+    #         return render_backup_reactions([], viewport)
+    #     smiles = nodes[0]["data"]["value"]
+    #
+    #     # get backup_reactions
+    #     exp_name = nodes[0]["data"]["exp_name"]
+    #     job_id = nodes[0]["data"]["job_id"]
+    #     route_id = nodes[0]["data"]["route_id"]
+    #     user_id = get_user_id(token)
+    #     if not user_id:
+    #         logger.error("failed to get_user_id")
+    #         return no_update
+    #     if not exp_name:
+    #         return no_update
+    #     s: Session = Session.load(user_id)
+    #     exp = s.explorations[s.get_exploration_index(exp_name)]
+    #     job = exp.jobs[exp.get_job_index(job_id)]
+    #     route: Route = job.routes[route_id]
+    #
+    #     backup_reactions = route.workflow.get("backup_reactions").get(smiles, [])
+    #
+    #     return render_backup_reactions(backup_reactions, viewport)
+    # else:
+    #     return render_backup_reactions([], viewport)
+

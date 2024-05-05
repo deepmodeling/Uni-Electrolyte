@@ -47,7 +47,7 @@ def render_jobs(jobs: [Job]):
                             "view": "jobs",
                             "table": "job",
                             "type": "btn",
-                            "index": i,
+                            "job_id": job.id,
                         },
                         n_clicks=0,
                         color="primary",
