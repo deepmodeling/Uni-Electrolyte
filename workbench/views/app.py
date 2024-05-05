@@ -196,7 +196,7 @@ def render_app():
                     dcc.Interval(
                                             id="progress-interval",
                                             n_intervals=0,
-                                            interval=2000,
+                                            interval=20000,
                                             disabled=False,
                                         ),
 

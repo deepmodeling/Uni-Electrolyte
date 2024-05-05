@@ -2,16 +2,16 @@ import dash_bootstrap_components as dbc
 from dash import html
 from models.session import Job, JobStatus
 
-
+from models.session import  JobStatus
 table_header = [
     html.Thead(
         html.Tr(
             [
                 html.Th("Exploration Id"),
                 html.Th("Name"),
-                html.Th("Description"),
                 html.Th("Status"),
                 html.Th("Created"),
+                html.Th("Result"),
             ]
         )
     )
@@ -24,6 +24,10 @@ def render_jobs(jobs: [Job]):
         job = jobs[i]
         # TODO add app ingress and replace domain
         job_url = f"https://app.bohrium.dp.tech/retro-synthesis-jobs/?request=GET%3A%2Fapplications%2Fretro-synthesis%2Fjobs%2F{job.name}"
+        if job.status == JobStatus.success:
+            disable=True
+        else:
+            disable=False
         rows.append(
             html.Tr(
                 [
@@ -33,9 +37,23 @@ def render_jobs(jobs: [Job]):
                     html.Td(
                         html.A(job.name, href=job_url, target="_blank"),
                     ),
-                    html.Td(job.descriptions),
+                    #html.Td(job.descriptions),
+
                     html.Td(job.status),
                     html.Td(job.created_at),
+                    dbc.Button(
+                        "Result",
+                        id={
+                            "view": "jobs",
+                            "table": "job",
+                            "type": "btn",
+                            "index": i,
+                        },
+                        n_clicks=0,
+                        color="primary",
+                        className="me-6",
+                        disabled=disable,
+                    ),
                 ],
                 id={
                     "view": "jobs",
