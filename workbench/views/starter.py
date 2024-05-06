@@ -57,6 +57,14 @@ def starter_view():
                 id="error-alert",
                 style={"width": "755px"},
             ),
+            dbc.Button(
+                "Result test",
+                id="Result test",
+                n_clicks=0,
+                color="primary",
+                className="me-6",
+
+            ),
             # html.H6("Configure Target Molecule", style={"marginTop": "2em"}),
             # html.P("molecule to be synthesized", className="intro"),
             # dbc.Input(
