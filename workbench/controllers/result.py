@@ -166,7 +166,7 @@ def toggle_molecule_result_view(n_clicks):
         logger.info(f"toggle_molecule_result_view selected event {n_clicks}")
         job_id = "12330944"
         output_path = get_job_output_path(job_id)
-        csv_file_path = output_path + "/"+"output_properties.csv"
+        csv_file_path = str(output_path) + "/"+"output_properties.csv"
 
         options=[0]*10
         common_style = {"padding": "0 16px", "borderBottom": "1px solid #eee"}
@@ -179,7 +179,7 @@ def toggle_molecule_result_view(n_clicks):
                                 dmc.Text("a", weight=500),
 
                             ],
-                            position="apart",
+                            #position="apart",
                             mt="md",
                             mb="xs",
                         ),
@@ -206,14 +206,14 @@ def toggle_molecule_result_view(n_clicks):
                                     dmc.Text(
                                         f"Rank: {0}",
                                         size="sm",
-                                        color="dimmed",
+                                        #color="dimmed",
                                     )
                                 ),
                                 dmc.ListItem(
                                     dmc.Text(
                                         f"Score: {0}",
                                         size="sm",
-                                        color="dimmed",
+                                        #color="dimmed",
                                     )
                                 ),
 
