@@ -27,3 +27,5 @@ dataclasses-json
 dash_id_utils
 gunicorn==21.2.0
 feffery-antd-components==0.3.0b3
+dash-mantine-components
+dash-iconify
