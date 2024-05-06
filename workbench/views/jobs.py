@@ -37,7 +37,7 @@ def render_jobs(jobs: [Job]):
                     html.Td(
                         html.A(job.name, href=job_url, target="_blank"),
                     ),
-
+                    #html.Td(job.descriptions),
 
                     html.Td(job.status),
                     html.Td(job.created_at),
@@ -46,16 +46,14 @@ def render_jobs(jobs: [Job]):
                         id={
                             "view": "jobs",
                             "table": "job",
-                            "type": "result",
-                            "index": i,
+                            "type": "btn",
+                            "job_id": job.id,
                         },
                         n_clicks=0,
                         color="primary",
                         className="me-6",
-                       # disabled=disable,
+                        disabled=disable,
                     ),
-
-
                 ],
                 id={
                     "view": "jobs",
