@@ -148,6 +148,8 @@ def toggle_molecule_result_view(n_clicks):
     if n_clicks:
         logger.info(f"toggle_molecule_result_view selected event {n_clicks}")
         return "ssss"
+    else:
+        return no_update
     # get_job_output_path
     # if (
     #     isinstance(ctx.triggered_id, dict)
