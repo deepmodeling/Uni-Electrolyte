@@ -199,7 +199,14 @@ def render_app():
                                             interval=20000,
                                             disabled=False,
                                         ),
+                    dbc.Button(
+                        "Result test",
+                        id="Result test",
+                        n_clicks=0,
+                        color="primary",
+                        className="me-6",
 
+                    ),
                     # dbc.Row(
                     #     render_section("", "", running_view()),
                     #     id="row-running-view",
