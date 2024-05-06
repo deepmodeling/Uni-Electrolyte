@@ -5,6 +5,7 @@ from dash import callback, Input, Output, ctx, ALL, State, no_update
 from utils.token_helper import get_user_id
 from models.session import Session, Exploration, Job, Route
 from topics import Topics
+from launching.app import get_job_output_path
 #from views.route import render_candidate_routes
 #
 #
@@ -132,22 +133,18 @@ from topics import Topics
 @callback(
     Output("Exploration Details","mainChildren", allow_duplicate=True),
     [
-        Input({
-                            "view": "jobs",
-                            "table": "job",
-                            "type": "btn",
-                            "job_id": ALL,
-                        },  "n_clicks"),
-
+        Input("Result test",  "n_clicks"),
     ],
-
     prevent_initial_call=True,
 )
-def toggle_molecule_result_view(events):
-    logger.info(f"toggle_molecule_result_view {events}")
-    job_id=ctx.triggered_id.get("job_id")
-    logger.info(f"toggle_molecule_result_view {job_id}")
-    return job_id
+def toggle_molecule_result_view(n_clicks):
+    if n_clicks:
+        logger.info(f"toggle_molecule_result_view selected event {n_clicks}")
+        job_id = 12330944
+        output_path = get_job_output_path(job_id)
+        return output_path
+    else:
+        return no_update
     # get_job_output_path
     # if (
     #     isinstance(ctx.triggered_id, dict)
