@@ -23,7 +23,15 @@ from topics import Topics
         Topics.Slots.job_id.get_output("data"),
         Topics.Slots.job_status.get_output("data"),
     ],
-    Input("Query molecules with similar properties", "n_clicks"),
+    Input(
+        {
+            "view": "jobs",
+            "table": "job",
+            "type": "tr",
+            "index": ALL,
+        },
+        "n_clicks",
+    ),
     [
         Topics.Slots.exploration_name.get_state("data"),
         Topics.Slots.token.get_state("data"),
@@ -32,7 +40,6 @@ from topics import Topics
 )
 @trace_time
 def toggle_render_job_active(n_clicks, exp_name, token):
-    return no_update, no_update, no_update
     if not ctx.triggered_id:
         return no_update
     logger.info(
