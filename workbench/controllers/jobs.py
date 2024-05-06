@@ -8,56 +8,57 @@ from launching.app import get_job_status, get_job_result
 from utils.tracer import trace_time
 from topics import Topics
 
-#
-# @callback(
-#     [
-#         Output(
-#             {
-#                 "view": "jobs",
-#                 "table": "job",
-#                 "type": "tr",
-#                 "index": ALL,
-#             },
-#             "className",
-#         ),
-#         Topics.Slots.job_id.get_output("data"),
-#         Topics.Slots.job_status.get_output("data"),
-#     ],
-#     Input(
-#         {
-#             "view": "jobs",
-#             "table": "job",
-#             "type": "tr",
-#             "index": ALL,
-#         },
-#         "n_clicks",
-#     ),
-#     [
-#         Topics.Slots.exploration_name.get_state("data"),
-#         Topics.Slots.token.get_state("data"),
-#     ],
-#     prevent_initial_call=True,
-# )
-# @trace_time
-# def toggle_render_job_active(n_clicks, exp_name, token):
-#     if not ctx.triggered_id:
-#         return no_update
-#     logger.info(
-#         f"toggle_render_job_active index {ctx.triggered_id.get('index')} n_clicks {n_clicks} trigger_id {ctx.triggered_id}"
-#     )
-#     user_id = get_user_id(token)
-#     if not user_id:
-#         logger.error("failed to get_user_id")
-#         return no_update, no_update, no_update
-#     index = int(ctx.triggered_id.get("index"))
-#     if not any(n_clicks):
-#         index = -1
-#     class_names = ["" for i in range(0, len(n_clicks))]
-#     class_names[index] = "table-active"
-#     s: Session = Session.load(user_id)
-#     exp = s.explorations[s.get_exploration_index(exp_name)]
-#     job = exp.jobs[index]
-#     return class_names, job.id, job.status
+
+@callback(
+    [
+        Output(
+            {
+                "view": "jobs",
+                "table": "job",
+                "type": "tr",
+                "index": ALL,
+            },
+            "className",
+        ),
+        Topics.Slots.job_id.get_output("data"),
+        Topics.Slots.job_status.get_output("data"),
+    ],
+    Input(
+        {
+            "view": "jobs",
+            "table": "job",
+            "type": "tr",
+            "index": 0,
+        },
+        "n_clicks",
+    ),
+    [
+        Topics.Slots.exploration_name.get_state("data"),
+        Topics.Slots.token.get_state("data"),
+    ],
+    prevent_initial_call=True,
+)
+@trace_time
+def toggle_render_job_active(n_clicks, exp_name, token):
+    return no_update, no_update, no_update
+    if not ctx.triggered_id:
+        return no_update
+    logger.info(
+        f"toggle_render_job_active index {ctx.triggered_id.get('index')} n_clicks {n_clicks} trigger_id {ctx.triggered_id}"
+    )
+    user_id = get_user_id(token)
+    if not user_id:
+        logger.error("failed to get_user_id")
+        return no_update, no_update, no_update
+    index = int(ctx.triggered_id.get("index"))
+    if not any(n_clicks):
+        index = -1
+    class_names = ["" for i in range(0, len(n_clicks))]
+    class_names[index] = "table-active"
+    s: Session = Session.load(user_id)
+    exp = s.explorations[s.get_exploration_index(exp_name)]
+    job = exp.jobs[index]
+    return class_names, job.id, job.status
 
 
 @callback(
