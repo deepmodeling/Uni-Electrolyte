@@ -108,8 +108,8 @@ def toggle_job_tab(tab_id, exp_name,n, token):
             if status == JobStatus.success:
                 logger.info(f"get_job_result {job.id}")
                 routes_data = get_job_result(job.id)
-                if routes_data:
-                    job.set_routes(routes_data)
+                # if routes_data:
+                #     job.set_routes(routes_data)
             jobs[i] = job
             changed = True
     if changed:
