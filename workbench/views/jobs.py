@@ -41,16 +41,20 @@ def render_jobs(jobs: [Job]):
 
                     html.Td(job.status),
                     html.Td(job.created_at),
-                    html.Td(
-
-                        "sss",#disable_n_clicks=disable,
+                    dbc.Button(
+                        "Result",
                         id={
                             "view": "jobs",
                             "table": "job",
                             "type": "result",
                             "index": i,
                         },
+                        n_clicks=0,
+                        color="primary",
+                        className="me-6",
+                       # disabled=disable,
                     ),
+
 
                 ],
                 id={
