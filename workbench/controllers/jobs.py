@@ -23,15 +23,7 @@ from topics import Topics
         Topics.Slots.job_id.get_output("data"),
         Topics.Slots.job_status.get_output("data"),
     ],
-    Input(
-        {
-            "view": "jobs",
-            "table": "job",
-            "type": "tr",
-            "index": 0,
-        },
-        "n_clicks",
-    ),
+    Input("Query molecules with similar properties", "n_clicks"),
     [
         Topics.Slots.exploration_name.get_state("data"),
         Topics.Slots.token.get_state("data"),
