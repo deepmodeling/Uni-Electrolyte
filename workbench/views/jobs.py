@@ -52,7 +52,7 @@ def render_jobs(jobs: [Job]):
                         n_clicks=0,
                         color="primary",
                         className="me-6",
-                        disabled=disable,
+                        disabled=False,
                     ),
                 ],
                 id={
