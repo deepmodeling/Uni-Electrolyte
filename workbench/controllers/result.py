@@ -132,12 +132,12 @@ from topics import Topics
 @callback(
     Output("Exploration Details","mainChildren", allow_duplicate=True),
     [
-        Input({{
+        Input({
                             "view": "jobs",
                             "table": "job",
                             "type": "btn",
                             "job_id": ALL,
-                        }},  "n_clicks"),
+                        },  "n_clicks"),
 
     ],
 
