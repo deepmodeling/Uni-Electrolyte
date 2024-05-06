@@ -12,7 +12,7 @@ import controllers.running  # noqa
 import controllers.starter  # noqa
 #import controllers.editor  # noqa
 #import controllers.molecule  # noqa
-#import controllers.result  # noqa
+import controllers.result  # noqa
 import controllers.common  # noqa
 #import controllers.route  # noqa
 import controllers.jobs  # noqa
