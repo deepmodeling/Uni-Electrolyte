@@ -157,7 +157,12 @@ def get_card_btn(id, icon_id, icon):
 @callback(
     Output("Exploration Details","mainChildren", allow_duplicate=True),
     [
-        Input("Result test",  "n_clicks"),
+        Input({
+                            "view": "jobs",
+                            "table": "job",
+                            "type": "btn",
+                            "job_id": ALL,
+                        },  "n_clicks"),
     ],
     prevent_initial_call=True,
 )
