@@ -334,6 +334,11 @@ def do_run_predict_properties(
         f"bohrium_project_id: {bohrium_project_id} \n"
     )
     #解析参数
+    if params['input_mode_options']=='Draw a molecule':
+        smiles=params['input_a_molecule']
+    elif params["input_mode_options"]=="Input a molecule with SMILES":
+        smiles=params['draw_a_molecule']
+
     if  params['screen_switch']=='Predict property only':
 
         bohrium_params_json_dict = {
