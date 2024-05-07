@@ -171,7 +171,7 @@ def toggle_molecule_result_view(n_clicks):
 
         options=[0]*10
         common_style = {"padding": "0 16px", "borderBottom": "1px solid #eee"}
-        result=[
+        return [
             dmc.Card(
                 children=[
                     dmc.CardSection(
@@ -226,57 +226,6 @@ def toggle_molecule_result_view(n_clicks):
                             "paddingBottom": "16px",
                         },
                     ),
-
-                    # dmc.CardSection(
-                    #     [
-                    #         get_card_btn(
-                    #             id={
-                    #                 "type": USE_THIS_LIGAND_KEY,
-                    #                 "ligand_path": str(ligand.get("path")),
-                    #             },
-                    #             icon_id={
-                    #                 "type": "Use_This_Ligand_Icon",
-                    #                 "ligand_path": str(ligand.get("path")),
-                    #             },
-                    #             icon="material-symbols:check",
-                    #         ).get_element(),
-                    #         dmc.Divider(variant="solid", orientation="vertical"),
-                    #         get_card_btn(
-                    #             id={
-                    #                 "type": "Download_Ligand",
-                    #                 "ligand_path": str(ligand.get("path")),
-                    #             },
-                    #             icon_id={
-                    #                 "type": "Download_Ligand_Icon",
-                    #                 "ligand_path": str(ligand.get("path")),
-                    #             },
-                    #             icon="material-symbols:download",
-                    #         ).get_element(),
-                    #         dmc.Divider(variant="solid", orientation="vertical"),
-                    #         get_thumb_btn(
-                    #             id={
-                    #                 "type": LIKE_LIGAND_KEY,
-                    #                 "ligand_path": str(ligand.get("path")),
-                    #             },
-                    #             type=LIKE_LIGAND_KEY,
-                    #             ligand=str(ligand.get("path")),
-                    #             filled=feedbacks.get(str(ligand.get("path")))
-                    #                    == LIKE_LIGAND_KEY,
-                    #         ).get_element(),
-                    #         dmc.Divider(variant="solid", orientation="vertical"),
-                    #         get_thumb_btn(
-                    #             id={
-                    #                 "type": DISLIKE_LIGAND_KEY,
-                    #                 "ligand_path": str(ligand.get("path")),
-                    #             },
-                    #             type=DISLIKE_LIGAND_KEY,
-                    #             ligand=str(ligand.get("path")),
-                    #             filled=feedbacks.get(str(ligand.get("path")))
-                    #                    == DISLIKE_LIGAND_KEY,
-                    #         ).get_element(),
-                    #     ],
-                    #     style={"display": "flex"},
-                    # ),
                 ],
                 withBorder=True,
                 shadow="sm",
@@ -288,7 +237,7 @@ def toggle_molecule_result_view(n_clicks):
             )
             for ligand in options
         ]
-        return result
+
     else:
         return no_update
     # get_job_output_path
