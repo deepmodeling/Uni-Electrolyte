@@ -10,3 +10,6 @@
 [submodule "retrosynthesis/g2gretro"]
 	path = retrosynthesis/g2gretro
 	url = https://github.com/yinliangying/G2Gretro.git
+[submodule "electrolyte_workbench"]
+	path = electrolyte_workbench
+	url = https://github.com/yinliangying/electrolyte_workbench.git
