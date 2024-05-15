@@ -1,6 +1,3 @@
-[submodule "interfacial_reaction/HiPRGen"]
-	path = interfacial_reaction/HiPRGen
-	url = https://github.com/BlauGroup/HiPRGen.git
 [submodule "retrosynthesis/ASKCOS2"]
 	path = retrosynthesis/ASKCOS2
 	url = https://github.com/yinliangying/ASKCOS.git
