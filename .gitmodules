@@ -13,3 +13,4 @@
 [submodule "interfacial_reaction/HiPRGen"]
 	path = interfacial_reaction/HiPRGen
 	url = https://github.com/yinliangying/HiPRGen.git
+
