@@ -10,3 +10,6 @@
 [submodule "electrolyte_workbench"]
 	path = electrolyte_workbench
 	url = https://github.com/yinliangying/electrolyte_workbench.git
+[submodule "interfacial_reaction/HiPRGen"]
+	path = interfacial_reaction/HiPRGen
+	url = https://github.com/yinliangying/HiPRGen.git
