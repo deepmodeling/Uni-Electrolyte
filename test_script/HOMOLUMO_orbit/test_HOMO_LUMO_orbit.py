@@ -85,7 +85,7 @@ def test_score_task():
     print(command)
     # os.system(command)
     # return
-    json.dump(launching_json_dict, open("./input/test_gen_task_launching.json", "w"), indent=2)
+    json.dump(launching_json_dict, open("./input/test_score_task_launching.json", "w"), indent=2)
     lbj_json_dict = {
         "job_name": "test_score_task",
         "command": command,
