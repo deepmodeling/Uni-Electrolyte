@@ -217,6 +217,8 @@ def gen_task(opts: gen_Model):
     dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir)
     # 2. get cube files with pyscf overlap
     generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, basis='def2svp')
+    # 3. visualize cube files
+    cubes_2_htmls(out_path='ham_output', iso_value=0.03)
 
 class score_screen_Model(BaseModel):
     Screen_Switch: Union[predict_property_only, predict_property_and_screen] = Field(discriminator="type")
@@ -238,6 +240,8 @@ def score_screen_task(opts: score_screen_Model):
     dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir)
     # 2. get cube files with pyscf overlap
     generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, basis='def2svp')
+    # 3. visualize cube files
+    cubes_2_htmls(out_path='ham_output', iso_value=0.03)
 
 class HOMO_LUMO_orbit_Model(BaseModel):
     n_grids: Int = Field(default=75, description='The number of grids in the 3D space each dim.')
