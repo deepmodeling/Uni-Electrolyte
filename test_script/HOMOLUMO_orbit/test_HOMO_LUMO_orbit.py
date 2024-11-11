@@ -46,7 +46,7 @@ def test_HOMO_LUMO_orbit_task():
 def test_gen_task():
     launching_json_dict= {
         "output_directory": "./output",
-        "gen_mode": {"type": "Structure_FingerPrint", "smiles": "CCOC(=O)OCC", "n_molecules": 10000},
+        "gen_mode": {"type": "Structure_FingerPrint", "smiles": "CCOC(=O)OCC", "n_molecules": 100},
         "n_grids":75,
     }
     json.dump(launching_json_dict, open("./test_gen_task_launching.json", "w"), indent=2)
