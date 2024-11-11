@@ -16,7 +16,7 @@ def test_HOMO_LUMO_orbit_task():
                 "output_directory": "./output",
                 "n_grids": 75,
                 "smiles_name": "smiles",
-                "csv_file_path": "./input/input_4.csv",
+                "csv_file_path": "input_4.csv",
             }
     json.dump(launching_json_dict, open("./test_HOMO_LUMO_orbit_task_launching.json", "w"), indent=2)
     command="python /root/launching_entry/gen_score_screen.py HOMO_LUMO_orbit --json-config  ./test_HOMO_LUMO_orbit_task_launching.json"
