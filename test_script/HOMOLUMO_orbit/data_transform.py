@@ -359,7 +359,7 @@ def csv_2_db(csv_path: str, db_path: str, fail_smile_path: str, properties: list
                         raise RuntimeError(f'Property {property} has not been found in csv file.')
                 property_idx_dict = dict(zip(properties, idx_list))
                 if output_csv_path is not None:
-                    fp_out_csv.write(','.join(row))
+                    print(','.join(row),file=fp_out_csv)
                 continue
             a_smile = row[smile_idx]
             try:
@@ -370,7 +370,7 @@ def csv_2_db(csv_path: str, db_path: str, fail_smile_path: str, properties: list
                 db.write(atoms=an_atoms, data=data, smile=a_smile)
                 real_count = real_count + 1
                 if output_csv_path is not None:
-                    fp_out_csv.write(','.join(row))
+                    print(','.join(row),file=fp_out_csv)
             except Exception as e:
                 print(e)
                 fail_count = fail_count + 1
