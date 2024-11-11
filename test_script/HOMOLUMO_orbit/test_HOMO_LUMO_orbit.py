@@ -76,7 +76,7 @@ def test_gen_task():
 
 def test_score_task():
     launching_json_dict={"output_directory": "./output",
-                         "Screen_Switch": {"type": "predict_property_only", "input_file_path": "./input/input_4.csv",
+                         "Screen_Switch": {"type": "predict_property_only", "input_file_path": "smiles",
                                             "target": ["Binding_Energy", "Dielectric_Constant", "Viscosity","HOMO", "LUMO"]},
                          "n_grids": 75,
                          }
@@ -108,4 +108,5 @@ def test_score_task():
 
 if __name__ == "__main__":
     image_name=""
-    test_HOMO_LUMO_orbit_task()
+    test_score_task()
+    #test_HOMO_LUMO_orbit_task()
