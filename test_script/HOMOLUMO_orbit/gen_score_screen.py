@@ -253,7 +253,7 @@ def HOMO_LUMO_orbit_task(opts:  HOMO_LUMO_orbit_Model):
     properties=df.columns.tolist()
     smiles_idx=properties.index(opts.smiles_name)
 
-    if opts.output_directory.get_full_path() is None:
+    if not os.path.exists(opts.output_directory.get_full_path()):
         os.mkdir(opts.output_directory.get_full_path())
     ase_db_path=f"{opts.output_directory.get_full_path()}/dump.db"
     fail_smiles_path=f"{opts.output_directory.get_full_path()}/fail_smiles.txt"
