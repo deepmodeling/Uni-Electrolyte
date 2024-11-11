@@ -260,7 +260,7 @@ def HOMO_LUMO_orbit_task(opts:  HOMO_LUMO_orbit_Model):
     ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
     output_csv_path=f"{opts.output_directory.get_full_path()}/output.csv"
     csv_2_db(csv_path=opts.csv_file_path, db_path=ase_db_path, fail_smile_path=fail_smiles_path,
-             properties=df.columns.tolist(), smile_idx=smiles_idx,output_csv_path=output_csv_path)
+             properties=[], smile_idx=smiles_idx,output_csv_path=output_csv_path)
     # 1. get predicted hamiltonian matrix
     dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir)
     # 2. get cube files with pyscf overlap
