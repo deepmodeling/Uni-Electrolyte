@@ -18,13 +18,13 @@ def test_HOMO_LUMO_orbit_task():
                 "smiles_name": "smiles",
                 "csv_file_path": "input_4.csv",
             }
-    json.dump(launching_json_dict, open("./test_HOMO_LUMO_orbit_task_launching.json", "w"), indent=2)
+    json.dump(launching_json_dict, open("./input/test_HOMO_LUMO_orbit_task_launching.json", "w"), indent=2)
     command="python /root/launching_entry/gen_score_screen.py HOMO_LUMO_orbit --json-config  ./test_HOMO_LUMO_orbit_task_launching.json"
     print(command)
-    os.system(command)
+    # os.system(command)
+    # return
 
-    return
-
+    json.dump(launching_json_dict, open("./input/test_HOMO_LUMO_orbit_task_launching.json", "w"), indent=2)
     lbj_json_dict = {
         "job_name": "test_HOMO_LUMO_orbit_task",
         "command": command,
@@ -42,7 +42,7 @@ def test_HOMO_LUMO_orbit_task():
     shell_str = f"lbg job submit -i test_HOMO_LUMO_orbit_task_launching_lbg.json"
     os.system(shell_str)
     print(shell_str)
-    os.system(command)
+
 def test_gen_task():
     launching_json_dict= {
         "output_directory": "./output",
@@ -52,11 +52,9 @@ def test_gen_task():
     json.dump(launching_json_dict, open("./test_gen_task_launching.json", "w"), indent=2)
     command="python /root/launching_entry/gen_score_screen.py gen_with_score --json-config  test_gen_task_launching.json"
     print(command)
-    os.system(command)
-
-
-    return
-
+    # os.system(command)
+    # return
+    json.dump(launching_json_dict, open("./input/test_gen_task_launching.json", "w"), indent=2)
     lbj_json_dict = {
         "job_name": "test_gen_task",
         "command": command,
@@ -84,10 +82,9 @@ def test_score_task():
 
     command="python /root/launching_entry/gen_score_screen.py score_screen --json-config test_score_task_launching.json"
     print(command)
-    os.system(command)
-
-    return
-
+    # os.system(command)
+    # return
+    json.dump(launching_json_dict, open("./input/test_gen_task_launching.json", "w"), indent=2)
     lbj_json_dict = {
         "job_name": "test_score_task",
         "command": command,
@@ -107,6 +104,7 @@ def test_score_task():
 
 
 if __name__ == "__main__":
-    image_name=""
-    test_score_task()
+    image_name="registry.dp.tech/dptech/prod-17396/sub:1111"
+    #test_score_task()
     #test_HOMO_LUMO_orbit_task()
+    #test_gen_task()
