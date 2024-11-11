@@ -64,6 +64,7 @@ def test_gen_task():
         # c12_m92_1 * NVIDIA V100  c8_m31_1 * NVIDIA T4
         "image_name": image_name,
         "program_id": 14480,
+        "input": "input",
         "result": "bohrium_output",
 
     }
@@ -94,6 +95,7 @@ def test_score_task():
         # c12_m92_1 * NVIDIA V100  c8_m31_1 * NVIDIA T4
         "image_name": image_name,
         "program_id": 14480,
+        "input": "input",
         "result": "bohrium_output",
 
     }
