@@ -1,7 +1,7 @@
 
 #registry.dp.tech/dptech/prod-17396/sub:
 #增加HOMOLUMO可视化结果
-#/opt/uni_electrolyte/src/uni_electrolyte/evaluator/dataset/data_transform.py
+#/root/launching_entry/gen_score_screen.py
 
 
 import os
@@ -253,6 +253,8 @@ def HOMO_LUMO_orbit_task(opts:  HOMO_LUMO_orbit_Model):
     properties=df.columns.tolist()
     smiles_idx=properties.index(opts.smiles_name)
 
+    if opts.output_directory.get_full_path() is None:
+        os.mkdir(opts.output_directory.get_full_path())
     ase_db_path=f"{opts.output_directory.get_full_path()}/dump.db"
     fail_smiles_path=f"{opts.output_directory.get_full_path()}/fail_smiles.txt"
     ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
