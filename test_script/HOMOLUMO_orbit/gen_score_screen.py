@@ -13,7 +13,7 @@ from uni_electrolyte.evaluator.dataset.data_transform import csv_2_db, smile_2_d
 from dp.launching.cli import to_runner, SubParser, default_minimal_exception_handler, run_sp_and_exit
 from dp.launching.typing import BaseModel, Field
 from dp.launching.typing import InputFilePath, OutputDirectory, MinMaxRange
-from dp.launching.typing import Int, Float, List, Enum, String, Set, Union, Literal, Optional
+from dp.launching.typing import Int, Float, List, Enum, String, Set, Union, Literal, Optional,Boolean
 from dp.launching.typing.io import InputMoleculeContent
 from uni_electrolyte.evaluator.inference import pyG_infer, pyg_infer_with_dpdispatcher, screen_csv_with_conditions
 from uni_electrolyte.generator.gen_pipeline import comp_be_pipeline, homo_lumo_pipeline, fp_pipeline, \
@@ -198,6 +198,7 @@ def homo_lumo_task(opts: HOMO_LUMO, output_directory):
 class gen_Model(BaseModel):
     gen_mode: Union[HOMO_LUMO, Structure_FingerPrint, Binding_Energy_and_Formular] = Field(discriminator="type")
     output_directory: OutputDirectory = Field(default='./output')
+    Generate_HOMO_LUMO_orbit: String = Field(default="")
     n_grids: Int = Field(default=75, description='The number of grids in the 3D space each dim.')
 
 
@@ -211,18 +212,21 @@ def gen_task(opts: gen_Model):
     else:
         raise NotImplementedError
 
-    ase_db_path =f"{opts.output_directory.get_full_path()}/Gen_with_Score_Results/synthesizable.db"
-    ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
-    # 1. get predicted hamiltonian matrix
-    dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir)
-    # 2. get cube files with pyscf overlap
-    generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, basis='def2svp')
-    # 3. visualize cube files
-    cubes_2_htmls(out_path=ham_output_dir, iso_value=0.03)
+    if opts.Generate_HOMO_LUMO_orbit !="":
+        ase_db_path =f"{opts.output_directory.get_full_path()}/Gen_with_Score_Results/synthesizable.db"
+        ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
+        # 1. get predicted hamiltonian matrix
+        dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir)
+        # 2. get cube files with pyscf overlap
+        generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, basis='def2svp')
+        # 3. visualize cube files
+        cubes_2_htmls(out_path=ham_output_dir, iso_value=0.03)
 
 class score_screen_Model(BaseModel):
     Screen_Switch: Union[predict_property_only, predict_property_and_screen] = Field(discriminator="type")
     output_directory: OutputDirectory = Field(default='./output')
+    #加一个字段，为True时，生成HOMOLUMO
+    Generate_HOMO_LUMO_orbit: String = Field(default="")
     n_grids: Int = Field(default=75, description='The number of grids in the 3D space each dim.')
 
 
@@ -234,14 +238,15 @@ def score_screen_task(opts: score_screen_Model):
     else:
         raise NotImplementedError
 
-    ase_db_path =f"{opts.output_directory.get_full_path()}/data/input.db"
-    ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
-    # 1. get predicted hamiltonian matrix
-    dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir)
-    # 2. get cube files with pyscf overlap
-    generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, basis='def2svp')
-    # 3. visualize cube files
-    cubes_2_htmls(out_path=ham_output_dir, iso_value=0.03)
+    if opts.Generate_HOMO_LUMO_orbit != "":
+        ase_db_path =f"{opts.output_directory.get_full_path()}/data/input.db"
+        ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
+        # 1. get predicted hamiltonian matrix
+        dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir)
+        # 2. get cube files with pyscf overlap
+        generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, basis='def2svp')
+        # 3. visualize cube files
+        cubes_2_htmls(out_path=ham_output_dir, iso_value=0.03)
 
 class HOMO_LUMO_orbit_Model(BaseModel):
     n_grids: Int = Field(default=75, description='The number of grids in the 3D space each dim.')
