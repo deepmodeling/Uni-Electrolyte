@@ -214,9 +214,9 @@ def gen_task(opts: gen_Model):
     ase_db_path =f"{opts.output_directory.get_full_path()}/Gen_with_Score_Results/synthesizable.db"
     ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
     # 1. get predicted hamiltonian matrix
-    dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir)
+    dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir, limit=200)
     # 2. get cube files with pyscf overlap
-    generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, basis='def2svp')
+    generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids,dm_flag=False, limit=200)
     # 3. visualize cube files
     cubes_2_htmls(out_path=ham_output_dir, iso_value=0.03)
 
@@ -237,9 +237,9 @@ def score_screen_task(opts: score_screen_Model):
     ase_db_path =f"{opts.output_directory.get_full_path()}/data/input.db"
     ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
     # 1. get predicted hamiltonian matrix
-    dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir)
+    dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir, limit=200) #, device='cpu'
     # 2. get cube files with pyscf overlap
-    generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, basis='def2svp')
+    generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, dm_flag=False, limit=200)
     # 3. visualize cube files
     cubes_2_htmls(out_path=ham_output_dir, iso_value=0.03)
 
@@ -266,9 +266,9 @@ def HOMO_LUMO_orbit_task(opts:  HOMO_LUMO_orbit_Model):
     csv_2_db(csv_path=opts.csv_file_path, db_path=ase_db_path, fail_smile_path=fail_smiles_path,
              properties=[], smile_idx=smiles_idx,output_csv_path=output_csv_path)
     # 1. get predicted hamiltonian matrix
-    dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir)
+    dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir, limit=200)
     # 2. get cube files with pyscf overlap
-    generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, basis='def2svp')
+    generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, dm_flag=False, limit=200)
     # 3. visualize cube files
     cubes_2_htmls(out_path=ham_output_dir, iso_value=0.03)
 
