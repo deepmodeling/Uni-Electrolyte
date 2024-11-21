@@ -198,7 +198,7 @@ def homo_lumo_task(opts: HOMO_LUMO, output_directory):
 class gen_Model(BaseModel):
     gen_mode: Union[HOMO_LUMO, Structure_FingerPrint, Binding_Energy_and_Formular] = Field(discriminator="type")
     output_directory: OutputDirectory = Field(default='./output')
-    n_grids: Int = Field(default=75, description='The number of grids in the 3D space each dim.')
+    n_grids: Int = Field(default=-1, description='The number of grids in the 3D space each dim.')
 
 
 def gen_task(opts: gen_Model):
@@ -211,19 +211,21 @@ def gen_task(opts: gen_Model):
     else:
         raise NotImplementedError
 
-    ase_db_path =f"{opts.output_directory.get_full_path()}/Gen_with_Score_Results/synthesizable.db"
-    ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
-    # 1. get predicted hamiltonian matrix
-    dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir, limit=200)
-    # 2. get cube files with pyscf overlap
-    generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids,dm_flag=False, limit=200)
-    # 3. visualize cube files
-    cubes_2_htmls(out_path=ham_output_dir, iso_value=0.03)
+
+    if opts.n_grids > 0:
+        ase_db_path =f"{opts.output_directory.get_full_path()}/Gen_with_Score_Results/synthesizable.db"
+        ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
+        # 1. get predicted hamiltonian matrix
+        dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir, limit=200)
+        # 2. get cube files with pyscf overlap
+        generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids,dm_flag=False, limit=200)
+        # 3. visualize cube files
+        cubes_2_htmls(out_path=ham_output_dir, iso_value=0.03)
 
 class score_screen_Model(BaseModel):
     Screen_Switch: Union[predict_property_only, predict_property_and_screen] = Field(discriminator="type")
     output_directory: OutputDirectory = Field(default='./output')
-    n_grids: Int = Field(default=75, description='The number of grids in the 3D space each dim.')
+    n_grids: Int = Field(default=-1, description='The number of grids in the 3D space each dim.')
 
 
 def score_screen_task(opts: score_screen_Model):
@@ -234,23 +236,25 @@ def score_screen_task(opts: score_screen_Model):
     else:
         raise NotImplementedError
 
-    ase_db_path =f"{opts.output_directory.get_full_path()}/data/input.db"
-    ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
-    # 1. get predicted hamiltonian matrix
-    dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir, limit=200) #, device='cpu'
-    # 2. get cube files with pyscf overlap
-    generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, dm_flag=False, limit=200)
-    # 3. visualize cube files
-    cubes_2_htmls(out_path=ham_output_dir, iso_value=0.03)
+    if opts.n_grids > 0:
+        ase_db_path =f"{opts.output_directory.get_full_path()}/data/input.db"
+        ham_output_dir=f"{opts.output_directory.get_full_path()}/ham_output"
+        # 1. get predicted hamiltonian matrix
+        dptb_infer_from_ase_db(ase_db_path=ase_db_path, out_path=ham_output_dir, limit=200) #, device='cpu'
+        # 2. get cube files with pyscf overlap
+        generate_cube_files(ase_db_path=ase_db_path, out_path=ham_output_dir, n_grid=opts.n_grids, dm_flag=False, limit=200)
+        # 3. visualize cube files
+        cubes_2_htmls(out_path=ham_output_dir, iso_value=0.03)
 
 class HOMO_LUMO_orbit_Model(BaseModel):
-    n_grids: Int = Field(default=75, description='The number of grids in the 3D space each dim.')
+    n_grids: Int = Field(default=-1, description='The number of grids in the 3D space each dim.')
     smiles_name: String = Field(default='smiles', description='The name of the column in the csv file.')
     csv_file_path: String = Field( description='The path of the csv file.')
     output_directory: OutputDirectory = Field(default='./output')
 
 def HOMO_LUMO_orbit_task(opts:  HOMO_LUMO_orbit_Model):
-
+    if not opts.n_grids > 0:
+        raise ValueError("n_grids must be greater than 0")
     import pandas as pd
     df=pd.read_csv(opts.csv_file_path)
 
